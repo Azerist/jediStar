@@ -23,10 +23,16 @@ public class RaidCommand implements JediStarBotCommand {
 	private final static Integer RANCOR_P3 = 35098;
 	private final static Integer RANCOR_P4 = 21080;
 	
+	//Représente 1% de HP pour les différentes phases du Tank
+		private final static Integer TANK_P1 = 43000;
+		private final static Integer TANK_P2 = 192000;
+		private final static Integer TANK_P3 = 120000;
+		private final static Integer TANK_P4 = 120000;
+	
 	private final static String HELP = "Commandes possibles :\rraid rancor p1 5.5%\rraid rancor p1 10% 5%\rraid rancor p1 100000"
 										+ "\rraid aat p1 5.5%\rraid aat p1 10% 5%\rraid aat p1 100000";
 	
-	public String repondre(List<String> params) {
+	public String answer(List<String> params) {
 		
 		if(params.size() != 3 && params.size() != 4) {
 			return HELP;
@@ -44,8 +50,24 @@ public class RaidCommand implements JediStarBotCommand {
 
 
 	private String doTank(List<String> params) {
-		// TODO Auto-generated method stub
-		return null;
+String command = params.get(1);
+		
+		String value = params.get(2);
+		String secondValue = params.size() == 4 ? params.get(3) : null;
+		
+		if(COMMANDE_P1.equalsIgnoreCase(command)){
+			return doPhase(value, secondValue,TANK_P1,COMMANDE_TANK,1);
+		}
+		else if(COMMANDE_P2.equalsIgnoreCase(command)){
+			return doPhase(value, secondValue,TANK_P2,COMMANDE_TANK,2);
+		}
+		else if(COMMANDE_P3.equalsIgnoreCase(command)){
+			return doPhase(value, secondValue,TANK_P3,COMMANDE_TANK,3);
+		}
+		else if(COMMANDE_P4.equalsIgnoreCase(command)){
+			return doPhase(value, secondValue,TANK_P4,COMMANDE_TANK,4);
+		}
+		return HELP;
 	}
 
 
@@ -71,48 +93,93 @@ public class RaidCommand implements JediStarBotCommand {
 	}
 
 
-	private String doPhase(String value, String secondValue, Integer phaseHP1percent,String nomRaid,Integer numeroPhase) {
-		if(secondValue != null) {
+	private String doPhase(String value, String secondValue, Integer phaseHP1percent,String raidName,Integer phaseNumber) {
+		if(secondValue != null) {		
+			return doPhaseWithTwoParameters(value, secondValue, phaseHP1percent, raidName, phaseNumber);
+		}
+		else {
+			return doPhaseWithOneParameter(value,phaseHP1percent,raidName,phaseNumber);
+		}
+	}
+
+
+	private String doPhaseWithOneParameter(String value, Integer phaseHP1percent, String raidName,
+			Integer phaseNumber) {
+		
+		value = value.replace("%", "");
+		value = value.replace(",", ".");
+
+		try {
+			Float valueAsFloat = Float.parseFloat(value);
 			
-			value = value.replace("%", "");
-			value = value.replace(",", ".");
-			secondValue = secondValue.replace("%", "");
-			secondValue = secondValue.replace(",", ".");
-			
-			try {
-				Float secondValueAsFloat = Math.min(100,Float.valueOf(secondValue));
-				Float valueAsFloat = Math.min(100,Float.valueOf(value));
-				
-				
-				Float paramValue = valueAsFloat - secondValueAsFloat;
-				
-				if(paramValue < 0) {
-					Float temp = secondValueAsFloat;
-					secondValueAsFloat = valueAsFloat;
-					valueAsFloat = temp;
-					
-					String temp2 = secondValue;
-					secondValue = value;
-					value = temp2;
-					
-					paramValue = valueAsFloat - secondValueAsFloat;
-				}
-				
-				Integer responseValue = (int) (paramValue * phaseHP1percent);
-				String formattedValue = NumberFormat.getIntegerInstance().format(responseValue);
-				
-				return String.format("De *%s%%* à *%s%%* sur le %s en phase %d, votre équipe a fait **%s** dégâts.",
-										value,
-										secondValue,
-										nomRaid,
-										numeroPhase,
-										formattedValue);
+			if(valueAsFloat < 0) {
+				valueAsFloat = -1 * valueAsFloat;
 			}
-			catch(NumberFormatException e) {
-				return HELP;
+			
+			if(valueAsFloat < 100) {
+				//Il s'agit d'un pourcentage
+				Integer responseValue = (int) (valueAsFloat * phaseHP1percent);
+				
+				String formattedValue = NumberFormat.getIntegerInstance().format(responseValue);
+
+				return String.format("Sur le %s en phase %d, *%s%%* correspondent à **%s** dégâts", 
+						raidName,phaseNumber,value,formattedValue);
+			}
+			else {
+				//Il s'agit d'une valeur en dégâts
+				Float responseValue = valueAsFloat / phaseHP1percent;
+				
+				String formattedValue = NumberFormat.getIntegerInstance().format(Integer.parseInt(value));
+				
+				return String.format("Sur le %s en phase %d, *%s* dégâts correspondent à **%.1f%%**", 
+									raidName,phaseNumber,formattedValue,responseValue);
 			}
 		}
-		return HELP;
+
+		catch(NumberFormatException e) {
+			return HELP;
+		}
+	}
+
+
+	private String doPhaseWithTwoParameters(String value, String secondValue, Integer phaseHP1percent, String raidName,Integer phaseNumber) {
+		value = value.replace("%", "");
+		value = value.replace(",", ".");
+		secondValue = secondValue.replace("%", "");
+		secondValue = secondValue.replace(",", ".");
+		
+		try {
+			Float secondValueAsFloat = Math.min(100,Float.valueOf(secondValue));
+			Float valueAsFloat = Math.min(100,Float.valueOf(value));
+			
+			
+			Float paramValue = valueAsFloat - secondValueAsFloat;
+			
+			if(paramValue < 0) {
+				Float temp = secondValueAsFloat;
+				secondValueAsFloat = valueAsFloat;
+				valueAsFloat = temp;
+				
+				String temp2 = secondValue;
+				secondValue = value;
+				value = temp2;
+				
+				paramValue = valueAsFloat - secondValueAsFloat;
+			}
+			
+			Integer responseValue = (int) (paramValue * phaseHP1percent);
+			String formattedValue = NumberFormat.getIntegerInstance().format(responseValue);
+			
+			return String.format("De *%s%%* à *%s%%* sur le %s en phase %d, votre équipe a fait **%s** dégâts.",
+									value,
+									secondValue,
+									raidName,
+									phaseNumber,
+									formattedValue);
+		}
+		catch(NumberFormatException e) {
+			return HELP;
+		}
 	}
 
 }

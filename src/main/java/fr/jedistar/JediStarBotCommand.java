@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface JediStarBotCommand {
 
-	public String repondre(List<String> params);
+	public String answer(List<String> params);
 }
