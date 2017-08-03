@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.jedistar</groupId>
+	<artifactId>JediStarBot</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<repositories>
+		<repository>
+			<id>javacord-repo</id>
+			<url>http://repo.bastian-oppermann.de</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>de.btobastian.javacord</groupId>
+			<artifactId>javacord</artifactId>
+			<classifier>shaded</classifier>
+			<version>2.0.14</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+	
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>de.btobastian.javacord</groupId>
+				<artifactId>javacord</artifactId>
+				<version>2.0.14</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+	<build>
+     <plugins>
+      <plugin>
+       <groupId>org.codehaus.mojo</groupId>
+       <artifactId>exec-maven-plugin</artifactId>
+       <version>1.1.1</version>
+       <executions>
+        <execution>
+         <phase>test</phase>
+         <goals>
+          <goal>java</goal>
+         </goals>
+         <configuration>
+          <mainClass>fr.jedistar.Main</mainClass>
+         </configuration>
+        </execution>
+       </executions>
+      </plugin>
+     </plugins>
+    </build>
+</project>
+
