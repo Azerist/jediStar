@@ -50,7 +50,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>Main</mainClass>
+							<mainClass>fr.jedistar.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
