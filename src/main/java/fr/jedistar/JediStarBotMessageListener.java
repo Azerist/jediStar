@@ -17,6 +17,8 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 
 	Map<String,JediStarBotCommand> commandsMap;
 	
+	private static String MESSAGE = "Bonjour %s,\r%s";
+	
 	public JediStarBotMessageListener() {
 		super();
 		
@@ -55,13 +57,13 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		String reponse = botCommand.answer(messageParts);
+		String answer = botCommand.answer(messageParts);
 		
-		if(reponse == null || reponse == "") {
+		if(answer == null || answer == "") {
 			return;
 		}
 		
-		messageRecu.reply(reponse);
+		messageRecu.reply(String.format(MESSAGE, messageRecu.getAuthor().getMentionTag(),answer));
 	}
 
 }
