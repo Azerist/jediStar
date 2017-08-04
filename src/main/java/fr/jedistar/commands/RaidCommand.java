@@ -79,7 +79,7 @@ public class RaidCommand implements JediStarBotCommand {
 				return doPhaseWithTwoParameters(params.get(2),params.get(3), raidName, phaseNumber);		
 			}
 			else {
-				return error("Nombre de paramètres incorrects");
+				return error("Nombre de paramètres incorrect");
 			}
 		}
 		catch(NumberFormatException e) {
