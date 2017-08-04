@@ -28,7 +28,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 	}
 	public void onMessageCreate(DiscordAPI api, Message messageRecu) {
 		
-		String messageAsString = messageRecu.getContent();
+		String messageAsString = messageRecu.getContent().toLowerCase();
 		
 		//Si le message est vide ou ne commence pas par ! : Ne rien faire.
 		if(messageAsString == null
