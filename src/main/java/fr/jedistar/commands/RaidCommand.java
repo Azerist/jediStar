@@ -67,14 +67,15 @@ public class RaidCommand implements JediStarBotCommand {
 			return error("Nom du raid non reconnu");
 		}
 		
-		try {
-			String phaseName = params.get(1).replace("p","");
-
-			Integer phaseNumber = Integer.parseInt(phaseName);
+		try {			
 			if(params.size() == 3) {
+				String phaseName = params.get(1).replace("p","");
+				Integer phaseNumber = Integer.parseInt(phaseName);
 				return doPhaseWithOneParameter(params.get(2), raidName, phaseNumber);		
 			}
 			else if(params.size() == 4) {
+				String phaseName = params.get(1).replace("p","");
+				Integer phaseNumber = Integer.parseInt(phaseName);
 				return doPhaseWithTwoParameters(params.get(2),params.get(3), raidName, phaseNumber);		
 			}
 			else {
@@ -132,10 +133,7 @@ public class RaidCommand implements JediStarBotCommand {
 
 
 	private String doPhaseWithTwoParameters(String value, String secondValue, String raidName,Integer phaseNumber) {
-		
-		
-		
-		
+
 		value = value.replace("%", "");
 		value = value.replace(",", ".");
 		secondValue = secondValue.replace("%", "");
