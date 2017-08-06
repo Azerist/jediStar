@@ -67,22 +67,21 @@ public class RaidCommand implements JediStarBotCommand {
 			return error("Nom du raid non reconnu");
 		}
 		
-		try {			
-			if(params.size() == 3) {
-				String phaseName = params.get(1).replace("p","");
-				Integer phaseNumber = Integer.parseInt(phaseName);
+		try {		
+			String phaseName = params.get(1).replace("p","");
+			Integer phaseNumber = Integer.parseInt(phaseName);
+
+			if(params.size() == 3) {			
 				return doPhaseWithOneParameter(params.get(2), raidName, phaseNumber);		
 			}
 			else if(params.size() == 4) {
-				String phaseName = params.get(1).replace("p","");
-				Integer phaseNumber = Integer.parseInt(phaseName);
 				return doPhaseWithTwoParameters(params.get(2),params.get(3), raidName, phaseNumber);		
 			}
 			else {
 				return error("Nombre de paramètres incorrect");
 			}
 		}
-		catch(NumberFormatException e) {
+		catch(NumberFormatException | IndexOutOfBoundsException e) {
 			return error("Nom de la phase non reconnu");
 		}
 		
@@ -96,11 +95,28 @@ public class RaidCommand implements JediStarBotCommand {
 			return error("Numéro de phase non trouvé pour ce raid");
 		}
 		
+		//Retirer le signe "%"
 		value = value.replace("%", "");
+		
+		//Accepter , ou .
 		value = value.replace(",", ".");
+		
+		Integer multiplier = 1;
+		//Accepter "k" à la fin d'un nombre
+		if(value.endsWith("k")) {
+			value = value.replace("k","");
+			multiplier = 1000;
+		}		
+		
+		//Accepter "M" à la fin d'un nombre
+		if(value.endsWith("m")) {
+			value = value.replace("m","");
+			multiplier = 1000000;
+		}
 
 		try {
-			Float valueAsFloat = Float.parseFloat(value);
+			
+			Float valueAsFloat = Float.parseFloat(value) * multiplier;
 			
 			if(valueAsFloat < 0) {
 				valueAsFloat = -1 * valueAsFloat;
@@ -119,7 +135,7 @@ public class RaidCommand implements JediStarBotCommand {
 				//Il s'agit d'une valeur en dégâts
 				Float responseValue = valueAsFloat / phaseHP1percent;
 				
-				String formattedValue = NumberFormat.getIntegerInstance().format(Integer.parseInt(value));
+				String formattedValue = NumberFormat.getIntegerInstance().format(valueAsFloat.intValue());
 				
 				return String.format(MESSAGE_DAMAGES, 
 									raidName,phaseNumber,formattedValue,responseValue);
@@ -134,15 +150,40 @@ public class RaidCommand implements JediStarBotCommand {
 
 	private String doPhaseWithTwoParameters(String value, String secondValue, String raidName,Integer phaseNumber) {
 
+		//Retirer le signe "%"
 		value = value.replace("%", "");
-		value = value.replace(",", ".");
 		secondValue = secondValue.replace("%", "");
+
+		//Accepter , ou .
+		value = value.replace(",", ".");
 		secondValue = secondValue.replace(",", ".");
+
+		Integer multiplier = 1;
+		Integer secondMultiplier = 1;
+		//Accepter "k" à la fin d'un nombre
+		if(value.endsWith("k")) {
+			value = value.replace("k","");
+			multiplier = 1000;
+		}
+		if(secondValue.endsWith("k")) {
+			secondValue = secondValue.replace("k","");
+			secondMultiplier = 1000;
+		}	
+		
+		//Accepter "M" à la fin d'un nombre
+		if(value.endsWith("m")) {
+			value = value.replace("m","");
+			multiplier = 1000000;
+		}
+		if(secondValue.endsWith("m")) {
+			secondValue = secondValue.replace("m","");
+			secondMultiplier = 1000000;
+		}
 		
 		try {
-			Float secondValueAsFloat = Float.valueOf(secondValue);
-			Float valueAsFloat = Float.valueOf(value);
-			
+			Float valueAsFloat = Float.valueOf(value) * multiplier;
+			Float secondValueAsFloat = Float.valueOf(secondValue) * secondMultiplier;
+
 			//Si valeurs négatives, on les repasse en positif…
 			if(valueAsFloat < 0) {
 				valueAsFloat = -1 * valueAsFloat;
