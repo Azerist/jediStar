@@ -11,6 +11,7 @@ import java.util.Map;
 import de.btobastian.javacord.DiscordAPI;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
+import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.RaidCommand;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
@@ -24,7 +25,8 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		
 		commandsMap = new HashMap<String,JediStarBotCommand>();
 		
-		commandsMap.put(RaidCommand.COMMANDE, new RaidCommand());
+		commandsMap.put(RaidCommand.COMMAND, new RaidCommand());
+		commandsMap.put(EquilibrageCommand.COMMAND,new EquilibrageCommand());
 	}
 	public void onMessageCreate(DiscordAPI api, Message messageRecu) {
 		
@@ -57,7 +59,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		String answer = botCommand.answer(messageParts);
+		String answer = botCommand.answer(messageParts,messageRecu.getAuthor());
 		
 		if(answer == null || answer == "") {
 			return;

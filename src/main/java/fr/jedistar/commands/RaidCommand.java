@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.btobastian.javacord.entities.User;
 import fr.jedistar.JediStarBotCommand;
 
 public class RaidCommand implements JediStarBotCommand {
@@ -14,7 +15,7 @@ public class RaidCommand implements JediStarBotCommand {
 	private static final String MESSAGE_DAMAGES = "Sur le **%s** en *phase %d*, *%s* dégâts correspondent à **%.1f%%**";
 	private static final String MESSAGE_PERCENT = "Sur le **%s** en *phase %d*, *%s%%* correspondent à **%s** dégâts";
 	private static final String MESSAGE_TARGET = "Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour atteindre votre objectif de *%s* dégâts, vous devez vous arrêter en **phase %d à %.1f%%**";
-	public final static String COMMANDE = "raid";
+	public final static String COMMAND = "raid";
 	
 	private final static String COMMANDE_RANCOR = "rancor";
 	private final static String COMMANDE_TANK = "tank";
@@ -52,7 +53,7 @@ public class RaidCommand implements JediStarBotCommand {
 
 	}
 	
-	public String answer(List<String> params) {
+	public String answer(List<String> params,User author) {
 
 		if(params.size() == 0) {
 			return HELP;

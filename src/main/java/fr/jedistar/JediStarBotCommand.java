@@ -2,7 +2,9 @@ package fr.jedistar;
 
 import java.util.List;
 
-public interface JediStarBotCommand {
+import de.btobastian.javacord.entities.User;
 
-	public String answer(List<String> params);
+public interface JediStarBotCommand {
+	
+	public String answer(List<String> params,User author);
 }
