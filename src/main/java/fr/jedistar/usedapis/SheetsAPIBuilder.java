@@ -1,6 +1,7 @@
 package fr.jedistar.usedapis;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
@@ -23,7 +24,7 @@ public class SheetsAPIBuilder{
 
     private final String APPLICATION_NAME ="Bot JediStar";
     
-    private InputStream in = SheetsAPIBuilder.class.getResourceAsStream("/client_secret.json");
+    private static String AUTH_FILE;
 
     private final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -40,6 +41,8 @@ public class SheetsAPIBuilder{
   
     public SheetsAPIBuilder(String sheetId,boolean readonly) throws IOException, GeneralSecurityException {
 
+    	InputStream in = new FileInputStream(AUTH_FILE);
+    	
     	HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
     	GoogleCredential credential = null;
@@ -57,6 +60,13 @@ public class SheetsAPIBuilder{
     	this.readOnly = readonly;
     }
 
+    /**
+     * Permet de définir de manière statique le chemin du fichier d'authentification à Google API
+     * @param path
+     */
+    public static void setAuthFilePath(String path) {
+    	AUTH_FILE = path;
+    }
     
     public List<List<Object>> getRange(String range) throws IOException{
     	

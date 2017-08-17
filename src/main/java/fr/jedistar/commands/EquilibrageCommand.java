@@ -21,7 +21,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	public static final String COMMAND = "equilibrage";
 	private final String COMMAND_UPDATE = "maj";
 	
-	private final String SHEET_ID = "1mhvKpVlTcIFpdaYem5lmgFHkln9pk3lN4hZMumsTpEo";
+	private static String SHEET_ID;
 	
 	private final String GOOGLE_API_ERROR = "Une erreur s'est produite lors de la connexion à Google Drive";
 	
@@ -41,6 +41,9 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private Map<String,Map<Integer,List<Integer>>> valuesPerUserPerRaid;
 	
 	
+	/**
+	 * Constructeur
+	 */
 	public EquilibrageCommand() {
 		super();
 		
@@ -54,6 +57,13 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		tableSheetRangesPerRaid.put(TANK, "Tank Héroique!B61:G110");
 	}
 	
+	/**
+	 * Sert à renseigner la variable statique SHEET_ID qui représente l'identifiant de la feuille Google Sheets à utiliser.
+	 * @param sheetId
+	 */
+	public static void setSheetId(String sheetId) {
+		SHEET_ID = sheetId;
+	}
 	
 	@Override
 	public String answer(List<String> params,User author) {
