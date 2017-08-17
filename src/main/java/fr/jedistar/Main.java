@@ -16,16 +16,27 @@ public class Main {
 	private static final String PARAM_TOKEN = "discordToken";
 	private static final String PARAM_GOOGLE_API = "googleAPI";
 
-	private static final String PARAMETERS_FILE = "settings.json";
+	private static final String DEFAULT_PARAMETERS_FILE = "settings.json";
 	
 	public static void main(String ... args) {
 		
+		String parametersFilePath = "";
+			
+		//Si un argument, on l'utilise comme chemin au fichier de paramètres
+		if(args.length != 0) {		
+			parametersFilePath = args[0];	
+		}
+		//Sinon, on utilise le chemin par défaut
+		else {
+			parametersFilePath = DEFAULT_PARAMETERS_FILE;	
+		}
+
 		String token = "";
 		
 		//Lecture du fichier Json et récupération des paramètres
 		try {
 			//Lecture du fichier
-			byte[] encoded = Files.readAllBytes(Paths.get(PARAMETERS_FILE));
+			byte[] encoded = Files.readAllBytes(Paths.get(parametersFilePath));
 			String parametersJson = new String(encoded, "utf-8");
 			
 			//Décodage du json
@@ -46,7 +57,7 @@ public class Main {
 			
 		}
 		catch(IOException e) {
-			System.out.println("Erreur lors de la lecture du fichier de paramètres");
+			System.out.println("Erreur lors de la lecture du fichier de paramètres "+parametersFilePath);
 			e.printStackTrace();
 			return;
 		}
