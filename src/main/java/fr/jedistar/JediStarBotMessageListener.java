@@ -1,11 +1,8 @@
 package fr.jedistar;
 
-import static fr.jedistar.JediStarBotConstantes.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.btobastian.javacord.DiscordAPI;
@@ -15,6 +12,8 @@ import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.RaidCommand;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
+
+	public static final String PREFIXE_COMMANDES = "!";
 
 	Map<String,JediStarBotCommand> commandsMap;
 	
