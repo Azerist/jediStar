@@ -70,8 +70,22 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 
 		if(params == null || params.size() == 0) {
-			//Appel sans paramètres
-			return HELP;
+			//Appel sans paramètres : retourner l'équilibrage sur tous les raids
+
+			//Si les tableaux n'ont pas été chargés, les charger maintenant...
+			if(valuesPerUserPerRaid == null) {
+				updateTables();
+			}
+			
+			Set<String> raids = rankingsPerRaid.keySet();
+			
+			String answer = "";
+			
+			for(String raidName : raids) {
+				answer += returnUserValues(raidName, author.getDiscriminator());
+			}
+			
+			return answer;
 		}
 		else if(params.size() == 1) {
 			//Appel avec un paramètre
