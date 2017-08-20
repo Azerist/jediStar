@@ -9,6 +9,7 @@ import de.btobastian.javacord.DiscordAPI;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
 import fr.jedistar.commands.EquilibrageCommand;
+import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.commands.RaidCommand;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
@@ -19,14 +20,19 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 	
 	private static String MESSAGE = "Bonjour %s,\r%s";
 	
+	private static String MESSAGE_TROP_LONG = "La réponse générée par l'application est trop longue pour être affichée sur Discord.\r\nEssaie de faire une recherche plus précise :wink: ";
+	
 	public JediStarBotMessageListener() {
 		super();
 		
 		commandsMap = new HashMap<String,JediStarBotCommand>();
 		
+		//AJOUTER ICI DE NOUVELLES COMMANDES
 		commandsMap.put(RaidCommand.COMMAND, new RaidCommand());
 		commandsMap.put(EquilibrageCommand.COMMAND,new EquilibrageCommand());
+		commandsMap.put(ModsCommand.COMMAND,new ModsCommand());
 	}
+	
 	public void onMessageCreate(DiscordAPI api, Message messageRecu) {
 		
 		String messageAsString = messageRecu.getContent().toLowerCase();
@@ -64,7 +70,15 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		messageRecu.reply(String.format(MESSAGE, messageRecu.getAuthor().getMentionTag(),answer));
+		String discordAnswer = String.format(MESSAGE, messageRecu.getAuthor().getMentionTag(),answer);
+		
+		if(discordAnswer.length() < 2000) {
+			messageRecu.reply(discordAnswer);
+		}
+		else {
+			messageRecu.reply(String.format(MESSAGE, messageRecu.getAuthor().getMentionTag(),MESSAGE_TROP_LONG));
+		}
+		
 	}
 
 }

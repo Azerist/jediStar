@@ -24,7 +24,7 @@ public class SheetsAPIBuilder{
 
     private final String APPLICATION_NAME ="Bot JediStar";
     
-    private static String AUTH_FILE;
+    private static String AUTH_FILE = null;
 
     private final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 

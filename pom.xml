@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.jedistar</groupId>
 	<artifactId>JediStarBot</artifactId>
-	<version>2.1.1</version>
+	<version>3.0.0</version>
 
 	<repositories>
 		<repository>
@@ -17,7 +17,6 @@
 		<dependency>
 			<groupId>de.btobastian.javacord</groupId>
 			<artifactId>javacord</artifactId>
-			<classifier>shaded</classifier>
 			<version>2.0.14</version>
 		</dependency>
 		<dependency>

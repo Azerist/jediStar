@@ -29,7 +29,7 @@ public class RaidCommand implements JediStarBotCommand {
 			"- **!raid aat p3 40000** ==> Donne le % correspondant à 40K de dégâts sur la p3 du tank\r\n" + 
 			"- **!raid tank p4 35% 100000** ==> Donne le % cible à atteindre pour réaliser 100K dégâts en commençant le combat à 35% sur la P4 du tank";
 	
-	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne comprends pas votre commande pour la raison suivante :\r\n";
+	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
 	
 	public RaidCommand() {
 		super();

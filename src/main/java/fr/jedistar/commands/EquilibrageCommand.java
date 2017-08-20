@@ -16,12 +16,14 @@ import fr.jedistar.usedapis.SheetsAPIBuilder;
 
 public class EquilibrageCommand implements JediStarBotCommand {
 
+	private static final String ERROR_GOOGLE_SHEETS = "La connexion à Google Sheets n'est pas bien configurée. Impossible d'utiliser cette fonction";
+
 	private SheetsAPIBuilder sheetsAPI;
 	
 	public static final String COMMAND = "equilibrage";
 	private final String COMMAND_UPDATE = "maj";
 	
-	private static String SHEET_ID;
+	private static String SHEET_ID = null;
 	
 	private final String GOOGLE_API_ERROR = "Une erreur s'est produite lors de la connexion à Google Drive";
 	
@@ -29,7 +31,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String MESSAGE_LINE = "**Tranche %s** : %d\r\n";
 		
 	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor";
-	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne comprends pas votre commande pour la raison suivante :\r\n";
+	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
 
 	private final String RANCOR = "rancor";
 	private final String TANK = "tank";
@@ -157,6 +159,9 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 	private String updateTables() {
 		
+		if(SHEET_ID == null) {
+			return ERROR_GOOGLE_SHEETS;
+		}
 		String returnMessage = "";
 		
 		try {

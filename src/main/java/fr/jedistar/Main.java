@@ -8,11 +8,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import fr.jedistar.commands.EquilibrageCommand;
+import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.usedapis.SheetsAPIBuilder;
 
 public class Main {
 	
 	//Noms des éléments dans le fichier de paramètres
+	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
+	private static final String PARAM_SHEET_ID = "equilibrageSheetID";
+	private static final String PARAM_AUTH_FILE = "authFile";
 	private static final String PARAM_TOKEN = "discordToken";
 	private static final String PARAM_GOOGLE_API = "googleAPI";
 
@@ -42,18 +46,22 @@ public class Main {
 			//Décodage du json
 			JSONObject parameters = new JSONObject(parametersJson);
 			
+			//METTRE LA LECTURE DES PARAMETRES DU PLUS IMPORTANT AU MOINS IMPORTANT
 			//Lecture du token Discord
 			token = parameters.getString(PARAM_TOKEN);
 			
 			//Lecture des paramètres pour Google API
 			JSONObject googleParams = parameters.getJSONObject(PARAM_GOOGLE_API);
-			String googleAuthFile = googleParams.getString("authFile");
+			String googleAuthFile = googleParams.getString(PARAM_AUTH_FILE);
 			SheetsAPIBuilder.setAuthFilePath(googleAuthFile);
 			
 			//Id de la Google Sheet pour l'équilibrage
-			String googleSheetID = googleParams.getString("equilibrageSheetID");
+			String googleSheetID = googleParams.getString(PARAM_SHEET_ID);
 			EquilibrageCommand.setSheetId(googleSheetID);
 			
+			//URI et encodage du JSON des mods conseillés
+			String modsJsonUri = parameters.getString(PARAM_MODS_JSON_URI);
+			ModsCommand.setJsonUri(modsJsonUri);
 			
 		}
 		catch(IOException e) {
