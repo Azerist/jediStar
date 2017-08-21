@@ -1,14 +1,21 @@
 package fr.jedistar.commands;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -170,6 +177,9 @@ public class ModsCommand implements JediStarBotCommand {
 	 * @throws UnsupportedEncodingException
 	 */
 	private JSONObject getHttpJsonFile() throws MalformedURLException, IOException, UnsupportedEncodingException {
+		
+		Date now = new Date();
+		
 		URL url = new URL(JSON_URI);
 		URLConnection connection = url.openConnection();
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
@@ -181,6 +191,8 @@ public class ModsCommand implements JediStarBotCommand {
 
 			String json = in.readLine();
 			
+			String timeMillis = ((Long)(new Date().getTime() - now.getTime())).toString() + "\r\n";
+			Files.write(Paths.get("httpLatencyMonitor"), timeMillis.getBytes(), StandardOpenOption.APPEND);
 			return new JSONObject(json);
 		}
 		finally {
