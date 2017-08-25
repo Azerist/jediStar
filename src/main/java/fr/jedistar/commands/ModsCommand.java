@@ -44,7 +44,7 @@ public class ModsCommand implements JediStarBotCommand {
 	private final static String JSON_ERROR = "L'API de mods a renvoyé une réponse mal formatée. Impossible d'utiliser cette fonction.";
 	private final static String MESSAGE_TOO_LONG = "**La réponse détaillée est trop longue pour être affichée sur Discord.\r\nVoici la liste des personnages correspondant à votre recherche :**\r\n";
 	
-	private final static String EMBED_TITLE = "Recherche de mods %s";
+	private final static String EMBED_TITLE = "Recherche de mods pour «%s»";
 	private final static Color EMBED_COLOR = Color.GREEN;
 	//Nom des éléments dans le JSON
 	private final static String JSON_DATA = "data";
@@ -131,6 +131,7 @@ public class ModsCommand implements JediStarBotCommand {
 				//sinon, on renvoi la réponse détaillée
 				for(Match match : exactMatches) {
 					embed.addField(match.charName, match.value, true);
+					embedEmpty = false;
 				}
 			}
 			
