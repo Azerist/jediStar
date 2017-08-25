@@ -1,5 +1,6 @@
 package fr.jedistar.commands;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -11,7 +12,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import de.btobastian.javacord.entities.User;
+import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.usedapis.SheetsAPIBuilder;
 
 public class EquilibrageCommand implements JediStarBotCommand {
@@ -27,7 +30,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	
 	private final String GOOGLE_API_ERROR = "Une erreur s'est produite lors de la connexion à Google Drive";
 	
-	private final String ANSWER_MESSAGE = "Votre équilibrage sur le raid **%s** est le suivant :\r\n";
+	private final String EMBED_TITLE = "Équilibrage de %s";
+	private final Color EMBED_COLOR = Color.BLUE;
 	private final String MESSAGE_LINE = "**Tranche %s** : %d\r\n";
 		
 	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor";
@@ -68,7 +72,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	}
 	
 	@Override
-	public String answer(List<String> params,User author) {
+	public CommandAnswer answer(List<String> params,User author) {
 		
 
 		if(params == null || params.size() == 0) {
@@ -81,20 +85,22 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			Set<String> raids = rankingsPerRaid.keySet();
 			
-			String answer = "";
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.setTitle(String.format(EMBED_TITLE, author.getName()));
+			embed.setColor(EMBED_COLOR);
 			
 			for(String raidName : raids) {
-				answer += returnUserValues(raidName, author.getDiscriminator());
+				embed.addField(raidName, returnUserValues(raidName, author.getDiscriminator()), true);
 			}
 			
-			return answer;
+			return new CommandAnswer(null,embed);
 		}
 		else if(params.size() == 1) {
 			//Appel avec un paramètre
 			String param = params.get(0);
 			
 			if(COMMAND_UPDATE.equals(param)) {
-				return updateTables();
+				return new CommandAnswer(updateTables(),null);
 			}
 			
 			//Si les tableaux n'ont pas été chargés, les charger maintenant...
@@ -109,10 +115,16 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			Set<String> raids = rankingsPerRaid.keySet();
 			
 			if(raids.contains(param)) {
-				return returnUserValues(param,author.getDiscriminator());
+				EmbedBuilder embed = new EmbedBuilder();
+				embed.setTitle(String.format(EMBED_TITLE, author.getMentionTag()));		
+				embed.setColor(EMBED_COLOR);
+
+				embed.addField(param, returnUserValues(param, author.getDiscriminator()), true);
+				
+				return new CommandAnswer(null,embed);
 			}
 			else {
-				return error("Nom du raid non reconnu");
+				return new CommandAnswer(error("Nom du raid non reconnu"),null);
 			}
 		}
 		
@@ -137,7 +149,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			return error("Votre numéro d'utilisateur n'a pas été trouvé dans le tableau d'équilibrage");
 		}
 		
-		String returnMessage = String.format(ANSWER_MESSAGE,raidName);
+		String returnMessage = "";
 		
 		for(int i = 0 ; i < possibleRankings.size() ; i++) {
 			

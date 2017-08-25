@@ -7,6 +7,7 @@ import java.util.Map;
 
 import de.btobastian.javacord.entities.User;
 import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.formats.CommandAnswer;
 
 public class RaidCommand implements JediStarBotCommand {
 
@@ -53,10 +54,10 @@ public class RaidCommand implements JediStarBotCommand {
 
 	}
 	
-	public String answer(List<String> params,User author) {
+	public CommandAnswer answer(List<String> params,User author) {
 
 		if(params.size() == 0) {
-			return HELP;
+			return new CommandAnswer(HELP,null);
 		}
 		String raidName = params.get(0);
 		
@@ -89,7 +90,7 @@ public class RaidCommand implements JediStarBotCommand {
 		
 	}
 
-	private String doPhaseWithOneParameter(String value, String raidName,Integer phaseNumber) {
+	private CommandAnswer doPhaseWithOneParameter(String value, String raidName,Integer phaseNumber) {
 		
 		Integer phaseHP1percent = phaseHPmap.get(raidName).get(phaseNumber);		
 		if(phaseHP1percent == null) {
@@ -129,8 +130,8 @@ public class RaidCommand implements JediStarBotCommand {
 				
 				String formattedValue = NumberFormat.getIntegerInstance().format(responseValue);
 
-				return String.format(MESSAGE_PERCENT, 
-						raidName,phaseNumber,value,formattedValue);
+				String message = String.format(MESSAGE_PERCENT, raidName,phaseNumber,value,formattedValue);
+				return new CommandAnswer(message, null);
 			}
 			else {
 				//Il s'agit d'une valeur en dégâts
@@ -138,8 +139,8 @@ public class RaidCommand implements JediStarBotCommand {
 				
 				String formattedValue = NumberFormat.getIntegerInstance().format(valueAsFloat.intValue());
 				
-				return String.format(MESSAGE_DAMAGES, 
-									raidName,phaseNumber,formattedValue,responseValue);
+				String message = String.format(MESSAGE_DAMAGES,raidName,phaseNumber,formattedValue,responseValue);
+				return new CommandAnswer(message,null);
 			}
 		}
 
@@ -149,7 +150,7 @@ public class RaidCommand implements JediStarBotCommand {
 	}
 
 
-	private String doPhaseWithTwoParameters(String value, String secondValue, String raidName,Integer phaseNumber) {
+	private CommandAnswer doPhaseWithTwoParameters(String value, String secondValue, String raidName,Integer phaseNumber) {
 
 		//Retirer le signe "%"
 		value = value.replace("%", "");
@@ -214,7 +215,7 @@ public class RaidCommand implements JediStarBotCommand {
 		}
 	}
 
-	private String doPhaseWithTwoPercentages(Float valueAsFloat, Float secondValueAsFloat, String raidName,
+	private CommandAnswer doPhaseWithTwoPercentages(Float valueAsFloat, Float secondValueAsFloat, String raidName,
 			Integer phaseNumber) {
 		
 		Integer phaseHP1percent = phaseHPmap.get(raidName).get(phaseNumber);		
@@ -239,27 +240,29 @@ public class RaidCommand implements JediStarBotCommand {
 			responseValue += (int) (100 - secondValueAsFloat) * nextPhaseHP1percent;
 			
 			String formattedValue = NumberFormat.getIntegerInstance().format(responseValue);
-			return String.format(MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE,
+			String message = String.format(MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE,
 					valueAsFloat,
 					secondValueAsFloat,
 					raidName,
 					phaseNumber,
 					formattedValue);
+			return new CommandAnswer(message,null);
 		}
 		else {
 			Integer responseValue = (int) (paramValue * phaseHP1percent);
 			String formattedValue = NumberFormat.getIntegerInstance().format(responseValue);
 
-			return String.format(MESSAGE_PERCENTS_DIFFERENCE,
+			String message = String.format(MESSAGE_PERCENTS_DIFFERENCE,
 					valueAsFloat,
 					secondValueAsFloat,
 					raidName,
 					phaseNumber,
 					formattedValue);
+			return new CommandAnswer(message,null);
 		}
 	}
 
-	private String doPhaseWithPercentageAndValue(Float initialPercentage, Float targetValue,String raidName, Integer phaseNumber) {
+	private CommandAnswer doPhaseWithPercentageAndValue(Float initialPercentage, Float targetValue,String raidName, Integer phaseNumber) {
 		
 		Map<Integer,Integer> phaseHPmapForCurrentRaid = phaseHPmap.get(raidName);
 		
@@ -276,7 +279,7 @@ public class RaidCommand implements JediStarBotCommand {
 			Integer HP1percent = phaseHPmapForCurrentRaid.get(phaseNumberCursor);
 			
 			if(HP1percent == null) {
-				return "Votre objectif dépasse la fin du raid";
+				return new CommandAnswer("Votre objectif dépasse la fin du raid",null);
 			}
 			
 			Float requiredPercentage = residualDamage / HP1percent;
@@ -293,11 +296,14 @@ public class RaidCommand implements JediStarBotCommand {
 		}
 		
 		String formattedValue = NumberFormat.getIntegerInstance().format(targetValue);
-		return String.format(MESSAGE_TARGET, raidName,phaseNumber,initialPercentage,
+		String message = String.format(MESSAGE_TARGET, raidName,phaseNumber,initialPercentage,
 								formattedValue,phaseNumberCursor,resultPercentage) ;
+		return new CommandAnswer(message,null);
 	}
 	
-	private String error(String message) {
-		return ERROR_MESSAGE +"**"+ message + "**\r\n\r\n"+ HELP;
+	private CommandAnswer error(String errorMessage) {
+		String message = ERROR_MESSAGE +"**"+ errorMessage + "**\r\n\r\n"+ HELP;
+		
+		return new CommandAnswer(message, null);
 	}
 }

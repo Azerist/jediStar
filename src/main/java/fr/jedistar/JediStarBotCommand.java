@@ -3,8 +3,9 @@ package fr.jedistar;
 import java.util.List;
 
 import de.btobastian.javacord.entities.User;
+import fr.jedistar.formats.CommandAnswer;
 
 public interface JediStarBotCommand {
 	
-	public String answer(List<String> params,User author);
+	public CommandAnswer answer(List<String> params,User author);
 }

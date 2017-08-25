@@ -1,9 +1,7 @@
 package fr.jedistar.commands;
 
+import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -23,18 +21,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.btobastian.javacord.entities.User;
+import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.usedapis.JaroWinklerDistance;
 
 
 public class ModsCommand implements JediStarBotCommand {
 
 	private static final int MAX_LENGTH = 1950;
+	private static final int MAX_ANSWERS = 4;
 
 	public final static String COMMAND = "mods";
 	
 	private final static String APPROX_MATCHES_MESSAGES = "\r\n**Voici des personnages qui ressemblent à votre recherche :**\r\n\r\n";
-	private final static String CHAR_MESSAGE = "Les mods conseillés pour **%s** sont :\r\n**set1** : %s\r\n**set2** : %s\r\n**set3** : %s\r\n**Carré** : %s\r\n**Flèche** : %s\r\n**Losange** : %s\r\n**Triangle** : %s\r\n**Cercle** : %s\r\n**Croix** : %s\r\n";
+	private final static String CHAR_MESSAGE = "**  set1** : %s\r\n  **set2** : %s\r\n  **set3** : %s\r\n\r\n  **Carré** : %s\r\n  **Flèche** : %s\r\n  **Losange** : %s\r\n  **Triangle** : %s\r\n  **Cercle** : %s\r\n  **Croix** : %s\r\n  ";
 
 	private final static String HELP = "Cette commande vous permet de connaître les mods recommandés pour un personnage.\r\n\r\n**Exemple d'appel**\r\n!mods anakin";
 	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
@@ -43,6 +44,8 @@ public class ModsCommand implements JediStarBotCommand {
 	private final static String JSON_ERROR = "L'API de mods a renvoyé une réponse mal formatée. Impossible d'utiliser cette fonction.";
 	private final static String MESSAGE_TOO_LONG = "**La réponse détaillée est trop longue pour être affichée sur Discord.\r\nVoici la liste des personnages correspondant à votre recherche :**\r\n";
 	
+	private final static String EMBED_TITLE = "Recherche de mods %s";
+	private final static Color EMBED_COLOR = Color.GREEN;
 	//Nom des éléments dans le JSON
 	private final static String JSON_DATA = "data";
 	private final static String JSON_NAME = "name";
@@ -64,7 +67,7 @@ public class ModsCommand implements JediStarBotCommand {
 	}
 
 	@Override
-	public String answer(List<String> params, User author) {
+	public CommandAnswer answer(List<String> params, User author) {
 
 		if(params.size() == 0) {
 			return error(HELP);
@@ -93,7 +96,7 @@ public class ModsCommand implements JediStarBotCommand {
 				Match match = new Match();
 				match.score = jaroWinkler;
 				match.value = formatMessageForChar(charData);
-				match.abbreviatedValue = match.score + " " + charData.getString(JSON_NAME) + "\r\n";
+				match.charName = charData.getString(JSON_NAME) + "\r\n";
 				
 				//Correspondances exactes
 				if(requestedCharacterName.length() > 2 && (charName.contains(requestedCharacterName) || requestedCharacterName.contains(charName))) {
@@ -108,27 +111,33 @@ public class ModsCommand implements JediStarBotCommand {
 				}
 			}
 			
-			String answer = "";
+			String message = "";
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.setTitle(String.format(EMBED_TITLE, requestedCharacterName));
+			embed.setColor(EMBED_COLOR);
+			
+			boolean embedEmpty = true;
 			
 			Collections.sort(exactMatches);
-			for(Match match : exactMatches) {
-				answer += match.value;
-				if(answer.length() > MAX_LENGTH) {
-					break;
+			
+			//Si trop de réponses, on renvoie simplement la liste de noms
+			if(exactMatches.size() > MAX_ANSWERS) {
+				message = MESSAGE_TOO_LONG;
+				for(Match match : exactMatches) {
+					message += match.charName;
+				}
+			}
+			else {
+				//sinon, on renvoi la réponse détaillée
+				for(Match match : exactMatches) {
+					embed.addField(match.charName, match.value, true);
 				}
 			}
 			
-			//Si la réponse détaillée est trop longue, on renvoie les noms à la place
-			if(answer.length() > MAX_LENGTH) {
-				answer = MESSAGE_TOO_LONG;
-				for(Match match : exactMatches) {
-					answer += match.abbreviatedValue;
-				}
-			}
 			
 			//Si pas de corresp. exactes, on renvoie les correspondances approx., en baissant progressivement le niveau de tolérance
-			if(answer == "" && !approxMatches.isEmpty()) {
-				answer += APPROX_MATCHES_MESSAGES;
+			if(exactMatches.isEmpty() && !approxMatches.isEmpty()) {
+				message += APPROX_MATCHES_MESSAGES;
 				
 				Collections.sort(approxMatches);
 					
@@ -137,7 +146,7 @@ public class ModsCommand implements JediStarBotCommand {
 				for(Double currentThreshold = 0.7 ; currentThreshold > 0 && nothingFound; currentThreshold -= 0.2) {
 					for(Match approx : approxMatches) {
 						
-						if(answer.length() + approx.abbreviatedValue.length() > MAX_LENGTH) {
+						if(message.length() + approx.charName.length() > MAX_LENGTH) {
 							break;
 						}
 						
@@ -145,7 +154,7 @@ public class ModsCommand implements JediStarBotCommand {
 							break;
 						}
 						
-						answer += approx.abbreviatedValue;			
+						message += approx.charName;			
 						nothingFound = false;
 						
 					}
@@ -153,7 +162,11 @@ public class ModsCommand implements JediStarBotCommand {
 				
 			}
 
-			return answer;
+			if(embedEmpty) {
+				embed = null;
+			}
+			
+			return new CommandAnswer(message,embed);
 		}
 		catch (MalformedURLException|UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -209,7 +222,6 @@ public class ModsCommand implements JediStarBotCommand {
 	 */
 	private String formatMessageForChar(JSONObject charData) {
 		return String.format(CHAR_MESSAGE,
-								charData.get(JSON_NAME),
 								charData.get(JSON_SET1),
 								charData.get(JSON_SET2),
 								charData.get(JSON_SET3),
@@ -222,14 +234,16 @@ public class ModsCommand implements JediStarBotCommand {
 							);
 	}
 
-	private String error(String message) {
-		return ERROR_MESSAGE +"**"+ message + "**\r\n\r\n"+ HELP;
+	private CommandAnswer error(String errorMessage) {
+		String message = ERROR_MESSAGE +"**"+ errorMessage + "**\r\n\r\n"+ HELP;
+		
+		return new CommandAnswer(message, null);
 	}
 	
 	private class Match implements Comparable<Match>{
 
 		public String value;
-		public String abbreviatedValue;
+		public String charName;
 		public Double score;
 		
 		@Override
