@@ -116,7 +116,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			if(raids.contains(param)) {
 				EmbedBuilder embed = new EmbedBuilder();
-				embed.setTitle(String.format(EMBED_TITLE, author.getMentionTag()));		
+				embed.setTitle(String.format(EMBED_TITLE, author.getName()));		
 				embed.setColor(EMBED_COLOR);
 
 				embed.addField(param, returnUserValues(param, author.getDiscriminator()), true);
