@@ -34,19 +34,19 @@ public class ModsCommand implements JediStarBotCommand {
 
 	public final static String COMMAND = "mods";
 	
-	private final static String APPROX_MATCHES_MESSAGES = "\r\n**Voici des personnages qui ressemblent ‡ votre recherche :**\r\n\r\n";
-	private final static String CHAR_MESSAGE = "**  set1** : %s\r\n  **set2** : %s\r\n  **set3** : %s\r\n\r\n  **CarrÈ** : %s\r\n  **FlËche** : %s\r\n  **Losange** : %s\r\n  **Triangle** : %s\r\n  **Cercle** : %s\r\n  **Croix** : %s\r\n  ";
+	private final static String APPROX_MATCHES_MESSAGES = "\r\n**Voici des personnages qui ressemblent √† votre recherche :**\r\n\r\n";
+	private final static String CHAR_MESSAGE = "**  set1** : %s\r\n  **set2** : %s\r\n  **set3** : %s\r\n\r\n  **‚òê** : %s\r\n  **‚ûö** : %s\r\n  **‚óÜ** : %s\r\n  **Œî** : %s\r\n  **O** : %s\r\n  **‚úô** : %s\r\n  ";
 
-	private final static String HELP = "Cette commande vous permet de connaÓtre les mods recommandÈs pour un personnage.\r\n\r\n**Exemple d'appel**\r\n!mods anakin";
-	private final static String ERROR_MESSAGE = "Merci de faire appel ‡ moi, mais je ne peux pas te rÈpondre pour la raison suivante :\r\n";
-	private final static String PARAMS_ERROR = "L'API de mods n'est pas correctement configurÈe. Impossible d'utiliser cette fonction.";
-	private final static String ACCESS_ERROR = "Impossible d'accÈder ‡ l'API de mods. Impossible d'utiliser cette fonction.";
-	private final static String JSON_ERROR = "L'API de mods a renvoyÈ une rÈponse mal formatÈe. Impossible d'utiliser cette fonction.";
-	private final static String MESSAGE_TOO_LONG = "**La rÈponse dÈtaillÈe est trop longue pour Ítre affichÈe sur Discord.\r\nVoici la liste des personnages correspondant ‡ votre recherche :**\r\n";
+	private final static String HELP = "Cette commande vous permet de conna√Ætre les mods recommand√©s pour un personnage.\r\n\r\n**Exemple d'appel**\r\n!mods anakin";
+	private final static String ERROR_MESSAGE = "Merci de faire appel √† moi, mais je ne peux pas te r√©pondre pour la raison suivante :\r\n";
+	private final static String PARAMS_ERROR = "L'API de mods n'est pas correctement configur√©e. Impossible d'utiliser cette fonction.";
+	private final static String ACCESS_ERROR = "Impossible d'acc√©der √† l'API de mods. Impossible d'utiliser cette fonction.";
+	private final static String JSON_ERROR = "L'API de mods a renvoy√© une r√©ponse mal format√©e. Impossible d'utiliser cette fonction.";
+	private final static String MESSAGE_TOO_LONG = "**La r√©ponse d√©taill√©e est trop longue pour √™tre affich√©e sur Discord.\r\nVoici la liste des personnages correspondant √† votre recherche :**\r\n";
 	
-	private final static String EMBED_TITLE = "Recherche de mods pour ´%sª";
+	private final static String EMBED_TITLE = "Recherche de mods pour ¬´%s¬ª";
 	private final static Color EMBED_COLOR = Color.GREEN;
-	//Nom des ÈlÈments dans le JSON
+	//Nom des √©l√©ments dans le JSON
 	private final static String JSON_DATA = "data";
 	private final static String JSON_NAME = "name";
 	private final static String JSON_SHORT = "short";
@@ -83,7 +83,7 @@ public class ModsCommand implements JediStarBotCommand {
 			List<Match> exactMatches = new ArrayList<Match>();
 			List<Match> approxMatches = new ArrayList<Match>();
 						
-			//ItÈrer sur les personnages prÈsents dans le json
+			//It√©rer sur les personnages pr√©sents dans le json
 			for(int i=0;i<dataArray.length();i++) {
 				
 				JSONObject charData = dataArray.getJSONObject(i);
@@ -120,7 +120,7 @@ public class ModsCommand implements JediStarBotCommand {
 			
 			Collections.sort(exactMatches);
 			
-			//Si trop de rÈponses, on renvoie simplement la liste de noms
+			//Si trop de r√©ponses, on renvoie simplement la liste de noms
 			if(exactMatches.size() > MAX_ANSWERS) {
 				message = MESSAGE_TOO_LONG;
 				for(Match match : exactMatches) {
@@ -128,7 +128,7 @@ public class ModsCommand implements JediStarBotCommand {
 				}
 			}
 			else {
-				//sinon, on renvoi la rÈponse dÈtaillÈe
+				//sinon, on renvoi la r√©ponse d√©taill√©e
 				for(Match match : exactMatches) {
 					embed.addField(match.charName, match.value, true);
 					embedEmpty = false;
@@ -136,7 +136,7 @@ public class ModsCommand implements JediStarBotCommand {
 			}
 			
 			
-			//Si pas de corresp. exactes, on renvoie les correspondances approx., en baissant progressivement le niveau de tolÈrance
+			//Si pas de corresp. exactes, on renvoie les correspondances approx., en baissant progressivement le niveau de tol√©rance
 			if(exactMatches.isEmpty() && !approxMatches.isEmpty()) {
 				message += APPROX_MATCHES_MESSAGES;
 				
@@ -217,9 +217,9 @@ public class ModsCommand implements JediStarBotCommand {
 	}
 	
 	/**
-	 * Remplit le message avec les donnÈes contenues dans le JsonObject
+	 * Remplit le message avec les donn√©es contenues dans le JsonObject
 	 * @param charData
-	 * @return le message formatÈ
+	 * @return le message format√©
 	 */
 	private String formatMessageForChar(JSONObject charData) {
 		return String.format(CHAR_MESSAGE,
