@@ -72,14 +72,14 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		tableSheetRangesPerRaid.put(TANK, "Tank Héroique!B61:G110");
 		
 		rulesPerRaid = new HashMap<String,String>();
-		rulesPerRaid.put(RANCOR, " \r\n"
+		rulesPerRaid.put(RANCOR, "@everyone \r\n"
 				+ ":round_pushpin: Raid **RANCOR** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à 1M pour se placer\r\n" + 
 				":white_small_square: Tranche 3-10 entre 500K et 800K\r\n" + 
 				":white_small_square: Tranche 11-30 entre 100K et 400K\r\n" + 
 				":white_small_square: Tranche 31+ à 0\r\n" + 
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
-		rulesPerRaid.put(TANK, " \r\n"
+		rulesPerRaid.put(TANK, "@everyone \r\n"
 				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à fond\r\n" + 
 				":white_small_square: Tranche 3-10 entre 1M et 1,2M\r\n" + 
