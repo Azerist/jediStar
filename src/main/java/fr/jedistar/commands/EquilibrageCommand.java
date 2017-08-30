@@ -72,14 +72,14 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		tableSheetRangesPerRaid.put(TANK, "Tank Héroique!B61:G110");
 		
 		rulesPerRaid = new HashMap<String,String>();
-		rulesPerRaid.put(RANCOR, "@everyone \r\n"
+		rulesPerRaid.put(RANCOR, " \r\n"
 				+ ":round_pushpin: Raid **RANCOR** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à 1M pour se placer\r\n" + 
 				":white_small_square: Tranche 3-10 entre 500K et 800K\r\n" + 
 				":white_small_square: Tranche 11-30 entre 100K et 400K\r\n" + 
 				":white_small_square: Tranche 31+ à 0\r\n" + 
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
-		rulesPerRaid.put(TANK, "@everyone \r\n"
+		rulesPerRaid.put(TANK, " \r\n"
 				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à fond\r\n" + 
 				":white_small_square: Tranche 3-10 entre 1M et 1,2M\r\n" + 
@@ -325,6 +325,9 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	
 			Ranking currentRanking = rankings.get(rankCur);
 			String returnTextForThisRank = new String();
+			
+			List<String> usersForThisRank = new ArrayList<String>();
+			
 			//Mettre le podium dans le retour
 			if(firstRank) {
 				returnTextForThisRank += PODIUM;
@@ -347,9 +350,14 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				UserScore user = usersList.get(0);
 				targetRankingPerUser.put(user.userId, currentRanking.name);
 				usersList.remove(0);
-				returnTextForThisRank += getUserName(user.userId,chan) + "\r\n";
+				usersForThisRank.add(getUserName(user.userId,chan));
 			}
 			
+			Collections.sort(usersForThisRank);
+			
+			for(String user : usersForThisRank) {
+				returnTextForThisRank += user + "\r\n";
+			}
 			embed.addField(currentRanking.name, returnTextForThisRank, true);
 		}
 		currentTargetRankingPerUserPerRaid.put(raidName, targetRankingPerUser);
@@ -403,15 +411,14 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		Double sum = 0.;
 		Integer divider = 0;
 		
-		for(int i=0;i<rankings.size();i++) {
-			
-			if(i == currentIndex) {
-				continue;
-			}
-			
+		for(int i=currentIndex +1;i<rankings.size();i++) {			
 			sum -= values.get(currentIndex) / rankings.get(currentIndex).weight;
 			sum += values.get(i) / rankings.get(i).weight;
 			divider ++;
+		}
+		
+		if(divider == 0) {
+			return 0.;
 		}
 		
 		return sum / divider;
