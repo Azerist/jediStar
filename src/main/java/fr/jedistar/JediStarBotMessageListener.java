@@ -64,7 +64,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		CommandAnswer answer = botCommand.answer(messageParts,messageRecu.getAuthor());
+		CommandAnswer answer = botCommand.answer(messageParts,messageRecu.getAuthor(),messageRecu.getChannelReceiver());
 		
 		if(answer == null) {
 			return;

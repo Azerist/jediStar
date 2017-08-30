@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.formats.CommandAnswer;
@@ -44,9 +45,9 @@ public class RaidCommand implements JediStarBotCommand {
 		
 		Map<Integer,Integer> tankPhaseHPmap = new HashMap<Integer,Integer>();
 		tankPhaseHPmap.put(1,43000);
-		tankPhaseHPmap.put(2,192000);
-		tankPhaseHPmap.put(3,120000);
-		tankPhaseHPmap.put(4,120000);
+		tankPhaseHPmap.put(2,191500);
+		tankPhaseHPmap.put(3,127000);
+		tankPhaseHPmap.put(4,124500);
 		
 		phaseHPmap = new HashMap<String, Map<Integer,Integer>>();
 		phaseHPmap.put(COMMANDE_RANCOR, rancorPhaseHPmap);
@@ -54,7 +55,7 @@ public class RaidCommand implements JediStarBotCommand {
 
 	}
 	
-	public CommandAnswer answer(List<String> params,User author) {
+	public CommandAnswer answer(List<String> params,User author,Channel chan) {
 
 		if(params.size() == 0) {
 			return new CommandAnswer(HELP,null);

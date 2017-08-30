@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
@@ -67,7 +68,7 @@ public class ModsCommand implements JediStarBotCommand {
 	}
 
 	@Override
-	public CommandAnswer answer(List<String> params, User author) {
+	public CommandAnswer answer(List<String> params, User author,Channel chan) {
 
 		if(params.size() == 0) {
 			return error(HELP);
