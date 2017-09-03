@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,7 +41,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String PODIUM = "**+-- Podium --+**\r\n";
 	private final String PODIUM_END = "**+--------------+**\r\n\r\n";
 		
-	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3";
+	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2";
 	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
 
 	private final String RANCOR = "rancor";
@@ -153,7 +154,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				return new CommandAnswer(error("Nom du raid non trouvé"),null);
 			}
 		}
-		else if(params.size() == 5 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
+		else if(params.size() > 5 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
 			
 			//Si les tableaux n'ont pas été chargés, les charger maintenant...
 			if(valuesPerUserPerRaid == null) {
@@ -166,12 +167,23 @@ public class EquilibrageCommand implements JediStarBotCommand {
 					|| !params.get(2).endsWith(">") || !params.get(3).endsWith(">") || !params.get(4).endsWith(">")) {
 				return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner le podium",null);
 			}
-			List<Integer> podium = new ArrayList<Integer>();
+			Set<Integer> podium = new HashSet<Integer>();
 			podium.add(getUserDiscriminator(chan, params.get(2)));
 			podium.add(getUserDiscriminator(chan, params.get(3)));
 			podium.add(getUserDiscriminator(chan, params.get(4)));
 			
-			return launchRaid(raidName,podium,chan);
+			Set<Integer> excludedFromFirstRank = new HashSet<Integer>();
+			for(int i = 5; i<params.size();i++) {
+				String excluded = params.get(i);
+				
+				if(!excluded.startsWith("<@") || ! excluded.endsWith(">")) {
+					return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner les joueurs exclus",null);
+				}
+
+				excludedFromFirstRank.add(getUserDiscriminator(chan, excluded));
+			}
+			
+			return launchRaid(raidName,podium,excludedFromFirstRank,chan);
 		}
 		
 		return new CommandAnswer(error("Commande incorrecte"),null);
@@ -295,7 +307,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		return "Mise à jour du tableau OK pour le raid "+raidName;
 	}
 	
-	private CommandAnswer launchRaid(String raidName, List<Integer> podium, Channel chan) {
+	private CommandAnswer launchRaid(String raidName, Set<Integer> podium, Set<Integer> excludedFromFirstRank, Channel chan) {
 		
 		List<Ranking> rankings = rankingsPerRaid.get(raidName);
 		Map<Integer,List<Integer>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
@@ -328,6 +340,21 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			List<String> usersForThisRank = new ArrayList<String>();
 			
+			
+			//Calculer tous les scores
+			for(UserScore user : usersList) {
+				//exclure les joueurs de la première tranche
+				if(firstRank && excludedFromFirstRank.contains(user.userId)) {
+					user.score = -100.;
+				}
+				else {
+					user.score = computeScore(rankings, valuesPerUser.get(user.userId), rankCur);
+				}
+			}
+			
+			//Trier la liste
+			Collections.sort(usersList);
+			
 			//Mettre le podium dans le retour
 			if(firstRank) {
 				returnTextForThisRank += PODIUM;
@@ -337,13 +364,6 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				returnTextForThisRank += PODIUM_END;
 				firstRank = false;
 			}
-			//Calculer tous les scores
-			for(UserScore user : usersList) {
-				user.score = computeScore(rankings, valuesPerUser.get(user.userId), rankCur);
-			}
-			
-			//Trier la liste
-			Collections.sort(usersList);
 			
 			//Prendre les n premiers de la liste
 			for(int userCur=0;userCur<currentRanking.width;userCur++) {
@@ -358,7 +378,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			for(String user : usersForThisRank) {
 				returnTextForThisRank += user + "\r\n";
 			}
-			embed.addField(currentRanking.name, returnTextForThisRank, true);
+			embed.addField("--- "+currentRanking.name+" ---", returnTextForThisRank, true);
 		}
 		currentTargetRankingPerUserPerRaid.put(raidName, targetRankingPerUser);
 		
