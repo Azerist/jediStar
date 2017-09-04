@@ -154,7 +154,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				return new CommandAnswer(error("Nom du raid non trouvé"),null);
 			}
 		}
-		else if(params.size() > 5 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
+		else if(params.size() >= 5 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
 			
 			//Si les tableaux n'ont pas été chargés, les charger maintenant...
 			if(valuesPerUserPerRaid == null) {
@@ -378,7 +378,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			for(String user : usersForThisRank) {
 				returnTextForThisRank += user + "\r\n";
 			}
-			embed.addField("--- "+currentRanking.name+" ---", returnTextForThisRank, true);
+			embed.addField("---- "+currentRanking.name+" ----", returnTextForThisRank, true);
 		}
 		currentTargetRankingPerUserPerRaid.put(raidName, targetRankingPerUser);
 		
