@@ -16,6 +16,7 @@ import java.util.Set;
 
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
+import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.formats.CommandAnswer;
@@ -43,7 +44,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2";
 	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
-
+	private final static String FORBIDDEN = "Vous n'avez pas le droit d'exécuter cette commande";
+	
 	private final String RANCOR = "rancor";
 	private final String TANK = "tank";
 	
@@ -98,8 +100,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	}
 	
 	@Override
-	public CommandAnswer answer(List<String> params,User author,Channel chan) {
+	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
 		
+		User author = messageRecu.getAuthor();
+		Channel chan = messageRecu.getChannelReceiver();
 
 		if(params == null || params.size() == 0) {
 			//Appel sans paramètres : retourner l'équilibrage sur tous les raids
@@ -126,7 +130,12 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			String param = params.get(0);
 			
 			if(COMMAND_UPDATE.equals(param)) {
-				return new CommandAnswer(updateTables(),null);
+				if(isAdmin) {
+					return new CommandAnswer(updateTables(),null);
+				}
+				else {
+					return new CommandAnswer(FORBIDDEN,null);
+				}
 			}
 			
 			//Si les tableaux n'ont pas été chargés, les charger maintenant...
@@ -155,6 +164,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			}
 		}
 		else if(params.size() >= 5 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
+			
+			if(!isAdmin) {
+				return new CommandAnswer(FORBIDDEN,null);
+			}
 			
 			//Si les tableaux n'ont pas été chargés, les charger maintenant...
 			if(valuesPerUserPerRaid == null) {

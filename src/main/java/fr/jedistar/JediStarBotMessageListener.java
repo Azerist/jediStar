@@ -3,11 +3,20 @@ package fr.jedistar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import de.btobastian.javacord.DiscordAPI;
+import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
+import de.btobastian.javacord.entities.permissions.Role;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
 import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.ModsCommand;
@@ -21,6 +30,14 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 	Map<String,JediStarBotCommand> commandsMap;
 	
 	private static String MESSAGE = "Bonjour %s,\r%s";
+	
+	//Noms des champs JSON
+	private static final String JSON_ADMINS = "botAdmins";
+	private static final String JSON_GROUPS = "groups";
+	private static final String JSON_USERS = "users";
+	
+	private Set<String> adminGroups;
+	private Set<Integer> adminUsers;
 		
 	public JediStarBotMessageListener() {
 		super();
@@ -31,6 +48,31 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		commandsMap.put(RaidCommand.COMMAND, new RaidCommand());
 		commandsMap.put(EquilibrageCommand.COMMAND,new EquilibrageCommand());
 		commandsMap.put(ModsCommand.COMMAND,new ModsCommand());
+		
+		//Lecture du Json
+		try {
+			JSONObject parameters = StaticVars.jsonSettings;
+
+			//admins
+			JSONObject jsonAdmins = parameters.getJSONObject(JSON_ADMINS);	
+			JSONArray jsonAdminGroups = jsonAdmins.getJSONArray(JSON_GROUPS);	
+			adminGroups = new HashSet<String>();
+
+			for(int i=0 ; i<jsonAdminGroups.length() ; i++) {
+				adminGroups.add(jsonAdminGroups.getString(i));
+			}
+
+			JSONArray jsonAdminUsers = jsonAdmins.getJSONArray(JSON_USERS);
+			adminUsers = new HashSet<Integer>();
+
+			for(int i=0 ; i<jsonAdminUsers.length() ; i++) {
+				adminUsers.add(jsonAdminUsers.getInt(i));
+			}
+		}
+		catch(JSONException e) {
+			System.out.println("Le fichier json de paramètres est mal formaté");
+			e.printStackTrace();
+		}
 	}
 	
 	public void onMessageCreate(DiscordAPI api, Message messageRecu) {
@@ -53,7 +95,13 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		ArrayList<String> messageParts = new ArrayList<String>(Arrays.asList(messagePartsArray));
+		ArrayList<String> messageParts = new ArrayList<String>();
+		for(String param : messagePartsArray) {
+			if(param != null && !"".equals(param)) {
+				messageParts.add(param.trim());
+			}
+		}
+		
 		messageParts.remove(0);
 		
 		String command = messagePartsArray[0];
@@ -64,7 +112,9 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		CommandAnswer answer = botCommand.answer(messageParts,messageRecu.getAuthor(),messageRecu.getChannelReceiver());
+		boolean isAdmin = isAdmin(messageRecu);
+		
+		CommandAnswer answer = botCommand.answer(messageParts,messageRecu,isAdmin);
 		
 		if(answer == null) {
 			return;
@@ -78,6 +128,23 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		EmbedBuilder embed = answer.getEmbed();
 				
 		messageRecu.reply(message, embed);
+	}
+
+	private boolean isAdmin(Message messageRecu) {
+		
+		User author = messageRecu.getAuthor();
+		
+		if(adminUsers.contains(Integer.parseInt(author.getDiscriminator()))){
+			return true;
+		}
+		
+		for(Role role : author.getRoles(messageRecu.getChannelReceiver().getServer())) {
+			if(adminGroups.contains(role.getName())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 }

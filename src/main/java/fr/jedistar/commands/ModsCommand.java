@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
+import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.formats.CommandAnswer;
@@ -68,7 +69,7 @@ public class ModsCommand implements JediStarBotCommand {
 	}
 
 	@Override
-	public CommandAnswer answer(List<String> params, User author,Channel chan) {
+	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
 
 		if(params.size() == 0) {
 			return error(HELP);

@@ -46,6 +46,8 @@ public class Main {
 			//Décodage du json
 			JSONObject parameters = new JSONObject(parametersJson);
 			
+			StaticVars.jsonSettings = parameters;
+			
 			//METTRE LA LECTURE DES PARAMETRES DU PLUS IMPORTANT AU MOINS IMPORTANT
 			//Lecture du token Discord
 			token = parameters.getString(PARAM_TOKEN);
