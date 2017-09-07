@@ -29,12 +29,13 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 
 	Map<String,JediStarBotCommand> commandsMap;
 	
-	private static String MESSAGE = "Bonjour %s,\r%s";
+	private static String MESSAGE;
 	
 	//Noms des champs JSON
 	private static final String JSON_ADMINS = "botAdmins";
 	private static final String JSON_GROUPS = "groups";
 	private static final String JSON_USERS = "users";
+	private static final String JSON_BASE_MESSAGE = "baseMessage";
 	
 	private Set<String> adminGroups;
 	private Set<Integer> adminUsers;
@@ -53,6 +54,9 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		try {
 			JSONObject parameters = StaticVars.jsonSettings;
 
+			//message de base
+			MESSAGE = parameters.getString(JSON_BASE_MESSAGE);
+			
 			//admins
 			JSONObject jsonAdmins = parameters.getJSONObject(JSON_ADMINS);	
 			JSONArray jsonAdminGroups = jsonAdmins.getJSONArray(JSON_GROUPS);	
@@ -70,7 +74,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			}
 		}
 		catch(JSONException e) {
-			System.out.println("Le fichier json de paramètres est mal formaté");
+			System.out.println("JSON parameters file is incorrectly formatted");
 			e.printStackTrace();
 		}
 	}
@@ -84,6 +88,8 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 				|| !messageAsString.startsWith(PREFIXE_COMMANDES)) {
 			return;
 		}
+		
+		messageRecu.getChannelReceiver().type();
 		
 		//On retire le !
 		messageAsString = messageAsString.substring(1);

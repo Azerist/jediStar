@@ -2,58 +2,109 @@ package fr.jedistar.commands;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
 
 public class RaidCommand implements JediStarBotCommand {
-
-	private static final String MESSAGE_PERCENTS_DIFFERENCE = "De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, votre équipe a fait **%s** dégâts.";
-	private static final String MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE = "De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, si mon interprétation est correcte, vous avez changé de phase.\r\nSi c'est bien cela, votre équipe a fait **%s** dégâts.";
-	private static final String MESSAGE_DAMAGES = "Sur le **%s** en *phase %d*, *%s* dégâts correspondent à **%.1f%%**";
-	private static final String MESSAGE_PERCENT = "Sur le **%s** en *phase %d*, *%s%%* correspondent à **%s** dégâts";
-	private static final String MESSAGE_TARGET = "Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour atteindre votre objectif de *%s* dégâts, vous devez vous arrêter en **phase %d à %.1f%%**";
+	
 	public final static String COMMAND = "raid";
 	
 	private final static String COMMANDE_RANCOR = "rancor";
 	private final static String COMMANDE_TANK = "tank";
+
+	private static String MESSAGE_PERCENTS_DIFFERENCE;
+	private static String MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE;
+	private static String MESSAGE_DAMAGES;
+	private static String MESSAGE_PERCENT;
+	private static String MESSAGE_TARGET;
+	
+	private static String ERROR_MESSAGE ;
+	private static String HELP;
 			
 	//Représente 1% de HP pour les différentes phases des différents raids
 	private Map<String,Map<Integer,Integer>> phaseHPmap;
 	
-	private final static String HELP = "Voici des exemples de commandes disponibles pour déterminer vos résultats de raid :\r\n\r\n" + 
-			"- **!raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n" + 
-			"- **!raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n" + 
-			"- **!raid aat p3 40000** ==> Donne le % correspondant à 40K de dégâts sur la p3 du tank\r\n" + 
-			"- **!raid tank p4 35% 100000** ==> Donne le % cible à atteindre pour réaliser 100K dégâts en commençant le combat à 35% sur la P4 du tank";
-	
-	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
+	//Variables JSON
+	private final static String JSON_ERROR_MESSAGE = "errorMessage";
+	private final static String JSON_RAID_COMMAND = "raidCommandParameters";
+	private final static String JSON_MESSAGES = "messages";
+	private final static String JSON_MESSAGE_PERCENTS_DIFFERENCE = "percentDifference";
+	private final static String JSON_MESSAGE_PERCENTS_DIFFERENCE_PHASE_CHANGE = "percentDifferencePhaseChange";
+	private final static String JSON_MESSAGE_DAMAGES = "damages";
+	private final static String JSON_MESSAGE_PERCENT = "percent";
+	private final static String JSON_MESSAGE_TARGET = "target";
+	private final static String JSON_MESSAGE_HELP = "help";
+	private final static String JSON_RAIDS = "raids";
+	private final static String JSON_RAID_NAME = "name";
+	private final static String JSON_RAID_PHASES = "phases";
+	private final static String JSON_RAID_PHASE_NUMBER = "number";
+	private final static String JSON_RAID_PHASE_DAMAGE = "damage1percent";
+
 	
 	public RaidCommand() {
 		super();
 		
-		//AJOUTER ICI DES NOUVEAUX RAIDS
-		Map<Integer,Integer> rancorPhaseHPmap = new HashMap<Integer,Integer>();
-		rancorPhaseHPmap.put(1,18730);
-		rancorPhaseHPmap.put(2,30550);
-		rancorPhaseHPmap.put(3,33000);
-		rancorPhaseHPmap.put(4,21080);
-		
-		Map<Integer,Integer> tankPhaseHPmap = new HashMap<Integer,Integer>();
-		tankPhaseHPmap.put(1,43000);
-		tankPhaseHPmap.put(2,191500);
-		tankPhaseHPmap.put(3,127000);
-		tankPhaseHPmap.put(4,124500);
-		
-		phaseHPmap = new HashMap<String, Map<Integer,Integer>>();
-		phaseHPmap.put(COMMANDE_RANCOR, rancorPhaseHPmap);
-		phaseHPmap.put(COMMANDE_TANK, tankPhaseHPmap);
+		//Lecture du Json
+		try {
+			JSONObject parameters = StaticVars.jsonSettings;
 
+			//messages de base
+			ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
+
+			//Paramètres propres à l'équilibrage
+			JSONObject raidParams = parameters.getJSONObject(JSON_RAID_COMMAND);
+			
+			//Messages
+			JSONObject messages = raidParams.getJSONObject(JSON_MESSAGES);
+			MESSAGE_PERCENTS_DIFFERENCE = messages.getString(JSON_MESSAGE_PERCENTS_DIFFERENCE);
+			MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE = messages.getString(JSON_MESSAGE_PERCENTS_DIFFERENCE_PHASE_CHANGE);
+			MESSAGE_DAMAGES = messages.getString(JSON_MESSAGE_DAMAGES);
+			MESSAGE_PERCENT = messages.getString(JSON_MESSAGE_PERCENT);
+			MESSAGE_TARGET = messages.getString(JSON_MESSAGE_TARGET);
+			HELP = messages.getString(JSON_MESSAGE_HELP);
+			
+			//gestion des raids
+			JSONArray raids = raidParams.getJSONArray(JSON_RAIDS);
+			phaseHPmap = new HashMap<String, Map<Integer,Integer>>();
+
+			for(int r=0 ; r<raids.length() ; r++) {
+				Map<Integer,Integer> phasesHPmapForThisRaid = new HashMap<Integer,Integer>();
+				
+				JSONObject raid = raids.getJSONObject(r);
+				
+				String raidName = raid.getString(JSON_RAID_NAME);
+				JSONArray phases = raid.getJSONArray(JSON_RAID_PHASES);
+				
+				for(int p=0 ; p<phases.length() ; p++) {
+					JSONObject phase = phases.getJSONObject(p);
+					
+					Integer phaseNumber = phase.getInt(JSON_RAID_PHASE_NUMBER);
+					Integer phaseDamage = phase.getInt(JSON_RAID_PHASE_DAMAGE);
+					
+					phasesHPmapForThisRaid.put(phaseNumber, phaseDamage);
+				}
+				
+				phaseHPmap.put(raidName, phasesHPmapForThisRaid);
+			}
+		}
+		catch(JSONException e) {
+			System.out.println("JSON parameters file is incorrectly formatted");
+			e.printStackTrace();
+		}
+		
+		boolean truc = false;
 	}
 	
 	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
@@ -67,8 +118,8 @@ public class RaidCommand implements JediStarBotCommand {
 		raidName = raidName.replaceAll("haat", "tank");
 		raidName = raidName.replaceAll("aat", "tank");
 		
-		if(!COMMANDE_RANCOR.equals(raidName) && !COMMANDE_TANK.equals(raidName)) {
-			return error("Nom du raid non reconnu");
+		if(phaseHPmap.get(raidName) == null) {
+			return error("raid non trouvé");
 		}
 		
 		try {		

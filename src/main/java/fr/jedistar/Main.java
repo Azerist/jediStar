@@ -67,16 +67,16 @@ public class Main {
 			
 		}
 		catch(IOException e) {
-			System.out.println("Erreur lors de la lecture du fichier de paramètres "+parametersFilePath);
+			System.out.println("Cannot read the parameters file "+parametersFilePath);
 			e.printStackTrace();
 			return;
 		}
 		catch(JSONException e) {
-			System.out.println("Le fichier json de paramètres est mal formaté");
+			System.out.println("JSON parameters file is incorrectly formatted");
 			e.printStackTrace();
 		}
 		
-		System.out.println("Lancement du bot avec le token -"+token+"-");
+		System.out.println("Launching bot with token -"+token+"-");
 		JediStarBot bot = new JediStarBot(token);
 		bot.connect();
 		
