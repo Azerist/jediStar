@@ -20,13 +20,11 @@ import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.formats.CommandAnswer;
-import fr.jedistar.usedapis.SheetsAPIBuilder;
 
 public class EquilibrageCommand implements JediStarBotCommand {
 
 	private static final String ERROR_GOOGLE_SHEETS = "La connexion à Google Sheets n'est pas bien configurée. Impossible d'utiliser cette fonction";
 
-	private SheetsAPIBuilder sheetsAPI;
 	
 	public static final String COMMAND = "equilibrage";
 	private final String COMMAND_UPDATE = "maj";
@@ -244,82 +242,11 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 	private String updateTables() {
 		
-		if(SHEET_ID == null) {
-			return ERROR_GOOGLE_SHEETS;
-		}
-		String returnMessage = "";
-		
-		try {
-			
-			//Connexion à Google API
-			sheetsAPI = new SheetsAPIBuilder(SHEET_ID,true);	
-			
-			valuesPerUserPerRaid = new HashMap<String,Map<Integer,List<Integer>>>();
-			//Mise à jour des tables pour chaque raid
-			for(Entry<String,String> raid : tableSheetRangesPerRaid.entrySet()) {
-				List<List<Object>> readTable = sheetsAPI.getRange(raid.getValue());
-				
-				String updateMessage = updateTable(raid.getKey(),readTable);
-				
-				returnMessage += updateMessage + "\r\n";
-			}
-			
-			
-		} catch (GeneralSecurityException|IOException e) {
-			e.printStackTrace();
-			return GOOGLE_API_ERROR;
-		}
-		
-		return returnMessage;
+		//TODO : passer au JSON
+		return null;
 	}
 
 
-	private String updateTable(String raidName, List<List<Object>> readTable) {
-
-		if(readTable == null || readTable.isEmpty()) {
-			return "Erreur lors de la màj pour le raid" + raidName + " : Impossible de lire le tableau sur Google Drive";
-		}
-		
-		//Initialisation de la Map pour stocker les valeurs lues...
-		Map<Integer,List<Integer>> valuesPerUser = new HashMap<Integer,List<Integer>>();
-		
-		//le nombre de tranches pour ce raid
-		Integer numberOfRangesForThisRaid = rankingsPerRaid.get(raidName).size();
-		
-		//On itère sur les lignes du tableau lues...
-		for(List<Object> tableLine : readTable) {
-			
-			//Si ligne vide, passer à la suivante...
-			if(tableLine == null || tableLine.isEmpty()) {
-				continue;
-			}
-			
-			try {
-				//Récupération du userID...
-				Integer userID = sheetsAPI.readInteger(tableLine.get(0));
-				
-				//Initialisation de la List contenant les valeurs...
-				List<Integer> values = new ArrayList<Integer>();
-				
-				//Ajout des valeurs à la liste
-				for(int i=2;i-1<=numberOfRangesForThisRaid;i++) {
-					values.add(sheetsAPI.readInteger(tableLine.get(i)));
-				}
-				
-				//Ajout de la liste de valeurs dans la Map
-				valuesPerUser.put(userID, values);
-			}
-			catch(Throwable e) {
-				//Il y a un problème avec cette ligne du tableau, on passe à la suivante
-				continue;
-			}
-		}
-		
-		//On ajoute la Map que l'on vient de remplir à la Map globale
-		valuesPerUserPerRaid.put(raidName, valuesPerUser);
-		return "Mise à jour du tableau OK pour le raid "+raidName;
-	}
-	
 	private CommandAnswer launchRaid(String raidName, Set<Integer> podium, Set<Integer> excludedFromFirstRank, Channel chan) {
 		
 		List<Ranking> rankings = rankingsPerRaid.get(raidName);
