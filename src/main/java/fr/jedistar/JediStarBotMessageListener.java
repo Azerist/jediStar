@@ -89,7 +89,6 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		messageRecu.getChannelReceiver().type();
 		
 		//On retire le !
 		messageAsString = messageAsString.substring(1);
@@ -118,6 +117,8 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
+		messageRecu.getChannelReceiver().type();
+
 		boolean isAdmin = isAdmin(messageRecu);
 		
 		CommandAnswer answer = botCommand.answer(messageParts,messageRecu,isAdmin);
