@@ -313,7 +313,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				usersForThisRank.add(getUserName(user.userId,chan));
 			}
 			
-			Collections.sort(usersForThisRank);
+			usersForThisRank.sort(String::compareToIgnoreCase);
 			
 			for(String user : usersForThisRank) {
 				returnTextForThisRank += user + "\r\n";

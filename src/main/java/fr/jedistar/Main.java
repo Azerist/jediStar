@@ -6,11 +6,16 @@ import java.nio.file.Paths;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import fr.jedistar.commands.EquilibrageCommand;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.util.StatusPrinter;
 import fr.jedistar.commands.ModsCommand;
 
 public class Main {
+	
+	final static Logger logger = LoggerFactory.getLogger(Main.class);
 	
 	//Noms des éléments dans le fichier de paramètres
 	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
@@ -22,7 +27,7 @@ public class Main {
 	private static final String DEFAULT_PARAMETERS_FILE = "settings.json";
 	
 	public static void main(String ... args) {
-		
+
 		String parametersFilePath = "";
 			
 		//Si un argument, on l'utilise comme chemin au fichier de paramètres
@@ -57,16 +62,18 @@ public class Main {
 			
 		}
 		catch(IOException e) {
-			System.out.println("Cannot read the parameters file "+parametersFilePath);
+			logger.error("Cannot read the parameters file "+parametersFilePath);
 			e.printStackTrace();
 			return;
 		}
 		catch(JSONException e) {
-			System.out.println("JSON parameters file is incorrectly formatted");
+			logger.error("JSON parameters file is incorrectly formatted");
 			e.printStackTrace();
 		}
 		
-		System.out.println("Launching bot with token -"+token+"-");
+		
+		logger.info("Launching bot with token -"+token+"-");
+
 		JediStarBot bot = new JediStarBot(token);
 		bot.connect();
 		

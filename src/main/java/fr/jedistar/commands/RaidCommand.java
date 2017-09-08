@@ -1,28 +1,32 @@
 package fr.jedistar.commands;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.Main;
 import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
 
 public class RaidCommand implements JediStarBotCommand {
 	
-	public final static String COMMAND = "raid";
-	
-	private final static String COMMANDE_RANCOR = "rancor";
-	private final static String COMMANDE_TANK = "tank";
+	final static Logger logger = LoggerFactory.getLogger(JediStarBotCommand.class);
+
+	public static String COMMAND;
 
 	private static String MESSAGE_PERCENTS_DIFFERENCE;
 	private static String MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE;
@@ -32,13 +36,22 @@ public class RaidCommand implements JediStarBotCommand {
 	
 	private static String ERROR_MESSAGE ;
 	private static String HELP;
+	
+	private static String OBJECTIVE_OVER_RAID_END;
+	private static String INCOHERENT_PARAMETERS;
+	private static String INCORRECT_NUMBER;
+	private static String PHASE_NOT_FOUND;
+	private static String INCORRECT_PARAMS_NUMBER;
+	private static String RAID_NOT_FOUND;
 			
 	//Représente 1% de HP pour les différentes phases des différents raids
 	private Map<String,Map<Integer,Integer>> phaseHPmap;
+	private Map<String,List<String>> aliasesMap;
 	
 	//Variables JSON
 	private final static String JSON_ERROR_MESSAGE = "errorMessage";
 	private final static String JSON_RAID_COMMAND = "raidCommandParameters";
+	private final static String JSON_RAID_COMMAND_COMMAND = "command";
 	private final static String JSON_MESSAGES = "messages";
 	private final static String JSON_MESSAGE_PERCENTS_DIFFERENCE = "percentDifference";
 	private final static String JSON_MESSAGE_PERCENTS_DIFFERENCE_PHASE_CHANGE = "percentDifferencePhaseChange";
@@ -46,8 +59,18 @@ public class RaidCommand implements JediStarBotCommand {
 	private final static String JSON_MESSAGE_PERCENT = "percent";
 	private final static String JSON_MESSAGE_TARGET = "target";
 	private final static String JSON_MESSAGE_HELP = "help";
+	
+	private final static String JSON_ERROR_MESSAGES = "errorMessages";
+	private final static String JSON_ERROR_MESSAGE_OVER_RAID_END = "overRaidEnd";
+	private final static String JSON_ERROR_MESSAGE_INCOHERENT_PARAMS = "incoherentParams";
+	private final static String JSON_ERROR_MESSAGE_INCORRECT_NUMBER = "incorrectNumber";
+	private final static String JSON_ERROR_MESSAGE_PHASE_NOT_FOUND = "phaseNotFound";
+	private final static String JSON_ERROR_MESSAGE_INCORRECT_PARAMS_NUMBER = "incorrectParamsNumber";
+	private final static String JSON_ERROR_MESSAGE_RAID_NOT_FOUND = "raidNotFound";
+
 	private final static String JSON_RAIDS = "raids";
 	private final static String JSON_RAID_NAME = "name";
+	private final static String JSON_RAID_ALIASES = "aliases";
 	private final static String JSON_RAID_PHASES = "phases";
 	private final static String JSON_RAID_PHASE_NUMBER = "number";
 	private final static String JSON_RAID_PHASE_DAMAGE = "damage1percent";
@@ -66,6 +89,8 @@ public class RaidCommand implements JediStarBotCommand {
 			//Paramètres propres à l'équilibrage
 			JSONObject raidParams = parameters.getJSONObject(JSON_RAID_COMMAND);
 			
+			COMMAND = raidParams.getString(JSON_RAID_COMMAND_COMMAND);
+			
 			//Messages
 			JSONObject messages = raidParams.getJSONObject(JSON_MESSAGES);
 			MESSAGE_PERCENTS_DIFFERENCE = messages.getString(JSON_MESSAGE_PERCENTS_DIFFERENCE);
@@ -75,9 +100,19 @@ public class RaidCommand implements JediStarBotCommand {
 			MESSAGE_TARGET = messages.getString(JSON_MESSAGE_TARGET);
 			HELP = messages.getString(JSON_MESSAGE_HELP);
 			
+			//Messages d'erreur
+			JSONObject errorMessages = raidParams.getJSONObject(JSON_ERROR_MESSAGES);
+			OBJECTIVE_OVER_RAID_END = errorMessages.getString(JSON_ERROR_MESSAGE_OVER_RAID_END);
+			INCOHERENT_PARAMETERS = errorMessages.getString(JSON_ERROR_MESSAGE_INCOHERENT_PARAMS);
+			INCORRECT_NUMBER = errorMessages.getString(JSON_ERROR_MESSAGE_INCORRECT_NUMBER);
+			PHASE_NOT_FOUND = errorMessages.getString(JSON_ERROR_MESSAGE_PHASE_NOT_FOUND);
+			INCORRECT_PARAMS_NUMBER = errorMessages.getString(JSON_ERROR_MESSAGE_INCORRECT_PARAMS_NUMBER);
+			RAID_NOT_FOUND = errorMessages.getString(JSON_ERROR_MESSAGE_RAID_NOT_FOUND);
+
 			//gestion des raids
 			JSONArray raids = raidParams.getJSONArray(JSON_RAIDS);
 			phaseHPmap = new HashMap<String, Map<Integer,Integer>>();
+			aliasesMap = new HashMap<String,List<String>>();
 
 			for(int r=0 ; r<raids.length() ; r++) {
 				Map<Integer,Integer> phasesHPmapForThisRaid = new HashMap<Integer,Integer>();
@@ -97,14 +132,22 @@ public class RaidCommand implements JediStarBotCommand {
 				}
 				
 				phaseHPmap.put(raidName, phasesHPmapForThisRaid);
+				
+				JSONArray aliases = raid.getJSONArray(JSON_RAID_ALIASES);
+				List<String> aliasesForThisRaid = new ArrayList<String>();
+				
+				for(int a=0 ; a<aliases.length() ; a++) {
+					aliasesForThisRaid.add(aliases.getString(a));
+				}
+				
+				aliasesMap.put(raidName, aliasesForThisRaid);
 			}
 		}
 		catch(JSONException e) {
-			System.out.println("JSON parameters file is incorrectly formatted");
+			logger.error("JSON parameters file is incorrectly formatted");
 			e.printStackTrace();
 		}
 		
-		boolean truc = false;
 	}
 	
 	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
@@ -115,11 +158,15 @@ public class RaidCommand implements JediStarBotCommand {
 		String raidName = params.get(0);
 		
 		//Accepter des noms alternatifs
-		raidName = raidName.replaceAll("haat", "tank");
-		raidName = raidName.replaceAll("aat", "tank");
+		for(Entry<String, List<String>> raidAliases : aliasesMap.entrySet()) {
+			String currentRaidName = raidAliases.getKey();
+			for(String alias : raidAliases.getValue()) {
+				raidName = raidName.replaceAll(alias, currentRaidName);
+			}
+		}
 		
 		if(phaseHPmap.get(raidName) == null) {
-			return error("raid non trouvé");
+			return error(RAID_NOT_FOUND);
 		}
 		
 		try {		
@@ -133,11 +180,11 @@ public class RaidCommand implements JediStarBotCommand {
 				return doPhaseWithTwoParameters(params.get(2),params.get(3), raidName, phaseNumber);		
 			}
 			else {
-				return error("Nombre de paramètres incorrect");
+				return error(INCORRECT_PARAMS_NUMBER);
 			}
 		}
 		catch(NumberFormatException | IndexOutOfBoundsException e) {
-			return error("Nom de la phase non reconnu");
+			return error(PHASE_NOT_FOUND);
 		}
 		
 		
@@ -147,7 +194,7 @@ public class RaidCommand implements JediStarBotCommand {
 		
 		Integer phaseHP1percent = phaseHPmap.get(raidName).get(phaseNumber);		
 		if(phaseHP1percent == null) {
-			return error("Numéro de phase non trouvé pour ce raid");
+			return error(PHASE_NOT_FOUND);
 		}
 		
 		//Retirer le signe "%"
@@ -198,7 +245,7 @@ public class RaidCommand implements JediStarBotCommand {
 		}
 
 		catch(NumberFormatException e) {
-			return error("Un nombre entré n'a pas été reconnu correctement");
+			return error(INCORRECT_NUMBER);
 		}
 	}
 
@@ -261,10 +308,10 @@ public class RaidCommand implements JediStarBotCommand {
 				return doPhaseWithPercentageAndValue(secondValueAsFloat,valueAsFloat,raidName,phaseNumber);
 			}
 			
-			return error("Les deux derniers paramètres entrés ne sont pas cohérents");
+			return error(INCOHERENT_PARAMETERS);
 		}
 		catch(NumberFormatException e) {
-			return error("Un nombre entré n'a pas été reconnu correctement");
+			return error(INCORRECT_NUMBER);
 		}
 	}
 
@@ -273,7 +320,7 @@ public class RaidCommand implements JediStarBotCommand {
 		
 		Integer phaseHP1percent = phaseHPmap.get(raidName).get(phaseNumber);		
 		if(phaseHP1percent == null) {
-			return error("Numéro de phase non trouvé pour ce raid");
+			return error(PHASE_NOT_FOUND);
 		}
 		
 		Float paramValue = valueAsFloat - secondValueAsFloat;
@@ -283,7 +330,7 @@ public class RaidCommand implements JediStarBotCommand {
 			
 			Integer nextPhaseHP1percent = phaseHPmap.get(raidName).get(phaseNumber);		
 			if(nextPhaseHP1percent == null) {
-				return error("Vous êtes à la dernière phase, mais le second pourcentage est plus grand que le premier ?");
+				return error(INCOHERENT_PARAMETERS);
 			}
 			
 			//Dégâts faits à la fin de la phase annoncée
@@ -332,7 +379,7 @@ public class RaidCommand implements JediStarBotCommand {
 			Integer HP1percent = phaseHPmapForCurrentRaid.get(phaseNumberCursor);
 			
 			if(HP1percent == null) {
-				return new CommandAnswer("Votre objectif dépasse la fin du raid",null);
+				return new CommandAnswer(OBJECTIVE_OVER_RAID_END,null);
 			}
 			
 			Float requiredPercentage = residualDamage / HP1percent;

@@ -1,8 +1,0 @@
-{
-	"discordToken": "token du bot Discord",
-	"googleAPI": {
-		"authFile": "Chemin du fichier json du client_secret d'un utilisateur Google'",
-		"equilibrageSheetID": "id de la sheet pour la commande équilibrage"
-	},
-	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json"
-}

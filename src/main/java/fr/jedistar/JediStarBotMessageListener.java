@@ -39,6 +39,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 	
 	private Set<String> adminGroups;
 	private Set<Integer> adminUsers;
+	
 		
 	public JediStarBotMessageListener() {
 		super();
@@ -46,8 +47,11 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		commandsMap = new HashMap<String,JediStarBotCommand>();
 		
 		//AJOUTER ICI DE NOUVELLES COMMANDES
-		commandsMap.put(RaidCommand.COMMAND, new RaidCommand());
-		commandsMap.put(ModsCommand.COMMAND,new ModsCommand());
+		RaidCommand raid = new RaidCommand();
+		ModsCommand mods = new ModsCommand();
+		
+		commandsMap.put(RaidCommand.COMMAND, raid);
+		commandsMap.put(ModsCommand.COMMAND, mods);
 		
 		//Lecture du Json
 		try {
@@ -132,6 +136,10 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		}
 		
 		EmbedBuilder embed = answer.getEmbed();
+		
+		if(embed != null) {
+			embed.addField("-","Bot designed by [JediStar](https://jedistar.jimdo.com)", false);
+		}
 				
 		messageRecu.reply(message, embed);
 	}

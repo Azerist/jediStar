@@ -14,43 +14,61 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.Main;
+import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.usedapis.JaroWinklerDistance;
 
 
 public class ModsCommand implements JediStarBotCommand {
 
+	final static Logger logger = LoggerFactory.getLogger(JediStarBotCommand.class);
+
 	private static final int MAX_LENGTH = 1950;
-	private static final int MAX_ANSWERS = 4;
+	private static final int MAX_ANSWERS = 3;
 
-	public final static String COMMAND = "mods";
+	public static String COMMAND;
 	
-	private final static String APPROX_MATCHES_MESSAGES = "\r\n**Voici des personnages qui ressemblent à votre recherche :**\r\n\r\n";
-	private final static String CHAR_MESSAGE = "**  set1** : %s\r\n  **set2** : %s\r\n  **set3** : %s\r\n\r\n  **☐** : %s\r\n  **➚** : %s\r\n  **◆** : %s\r\n  **Δ** : %s\r\n  **O** : %s\r\n  **✙** : %s\r\n  ";
+	private static String APPROX_MATCHES_MESSAGE;
 
-	private final static String HELP = "Cette commande vous permet de connaître les mods recommandés pour un personnage.\r\n\r\n**Exemple d'appel**\r\n!mods anakin";
-	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
-	private final static String PARAMS_ERROR = "L'API de mods n'est pas correctement configurée. Impossible d'utiliser cette fonction.";
-	private final static String ACCESS_ERROR = "Impossible d'accéder à l'API de mods. Impossible d'utiliser cette fonction.";
-	private final static String JSON_ERROR = "L'API de mods a renvoyé une réponse mal formatée. Impossible d'utiliser cette fonction.";
-	private final static String MESSAGE_TOO_LONG = "**La réponse détaillée est trop longue pour être affichée sur Discord.\r\nVoici la liste des personnages correspondant à votre recherche :**\r\n";
+	private static String CHAR_MESSAGE;
+
+	private static String HELP;
+	private static String ERROR_MESSAGE;
+	private static String PARAMS_ERROR;
+	private static String ACCESS_ERROR;
+	private static String JSON_ERROR;
+	private static String MESSAGE_TOO_LONG;
 	
-	private final static String EMBED_TITLE = "Recherche de mods pour «%s»";
 	private final static Color EMBED_COLOR = Color.GREEN;
-	//Nom des éléments dans le JSON
+	
+	private static String CHARACTERS_URL="http://swgoh.gg/characters/%s/";
+	private static String CHARACTERS_SEPARATOR="-";
+
+	private static String CHARACTERS_PORTRAIT_URL = "http://jeremiebellionjourdan.fr/swgoh/portraits/%s.png";
+	private static String CHARACTERS_PORTRAIT_SEPARATOR = "-";
+
+	//Nom des éléments dans le JSON de mods
 	private final static String JSON_DATA = "data";
 	private final static String JSON_NAME = "name";
+	private final static String JSON_CHAR_NAME = "cname";
 	private final static String JSON_SHORT = "short";
 	private final static String JSON_SET1 = "set1";
 	private final static String JSON_SET2 = "set2";
@@ -63,11 +81,54 @@ public class ModsCommand implements JediStarBotCommand {
 	private final static String JSON_CROSS = "cross";
 
 	private static String JSON_URI = null;
+	
+	//Variables JSON de paramètres
+	private final static String JSON_ERROR_MESSAGE = "errorMessage";
+	private final static String JSON_MODS_COMMAND = "modsCommandParameters";
+	private final static String JSON_MODS_COMMAND_COMMAND = "command";
+	
+	private final static String JSON_MODS_MESSAGES = "messages";
+	private final static String JSON_MODS_MESSAGES_APPROX_MATCHES = "approxMatches";
+	private final static String JSON_MODS_MESSAGES_CHAR_MODS = "characterMods";
+	private final static String JSON_MODS_MESSAGES_HELP = "help";
+	
+	private final static String JSON_MODS_ERROR_MESSAGES = "errorMessages";
+	private final static String JSON_MODS_ERROR_MESSAGES_PARAMS = "paramsError";
+	private final static String JSON_MODS_ERROR_MESSAGES_ACCESS = "accessError";
+	private final static String JSON_MODS_ERROR_MESSAGES_JSON = "jsonError";
+	private final static String JSON_MODS_ERROR_MESSAGES_TOO_LONG = "tooLong";
 
 	public static void setJsonUri(String uri) {
 		JSON_URI = uri;
 	}
 
+	public ModsCommand() {
+		super();
+		
+		JSONObject parameters = StaticVars.jsonSettings;
+
+		//messages de base
+		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
+
+		//Paramètres propres à l'équilibrage
+		JSONObject modsParams = parameters.getJSONObject(JSON_MODS_COMMAND);
+		
+		COMMAND = modsParams.getString(JSON_MODS_COMMAND_COMMAND);
+
+		//Messages
+		JSONObject messages = modsParams.getJSONObject(JSON_MODS_MESSAGES);
+		APPROX_MATCHES_MESSAGE = messages.getString(JSON_MODS_MESSAGES_APPROX_MATCHES);
+		CHAR_MESSAGE = messages.getString(JSON_MODS_MESSAGES_CHAR_MODS);
+		HELP = messages.getString(JSON_MODS_MESSAGES_HELP);
+		
+		//Messages d'erreur
+		JSONObject errorMessages = modsParams.getJSONObject(JSON_MODS_ERROR_MESSAGES);
+		PARAMS_ERROR = errorMessages.getString(JSON_MODS_ERROR_MESSAGES_PARAMS);
+		ACCESS_ERROR = errorMessages.getString(JSON_MODS_ERROR_MESSAGES_ACCESS);
+		JSON_ERROR = errorMessages.getString(JSON_MODS_ERROR_MESSAGES_JSON);
+		MESSAGE_TOO_LONG = errorMessages.getString(JSON_MODS_ERROR_MESSAGES_TOO_LONG);
+	}
+	
 	@Override
 	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
 
@@ -84,63 +145,114 @@ public class ModsCommand implements JediStarBotCommand {
 			
 			List<Match> exactMatches = new ArrayList<Match>();
 			List<Match> approxMatches = new ArrayList<Match>();
-						
+				
+			String currentMatchCharName = null;
+			boolean singleMatch = true;
+			
 			//Itérer sur les personnages présents dans le json
 			for(int i=0;i<dataArray.length();i++) {
-				
 				JSONObject charData = dataArray.getJSONObject(i);
 				
-				//Comparer le nom du personnage avec la recherche
-				String charName = charData.getString(JSON_NAME).toLowerCase();			
-				String charShortName = charData.getString(JSON_SHORT);
-				Double jaroWinkler = new JaroWinklerDistance().apply(requestedCharacterName, charName);			
-				
-				Match match = new Match();
-				match.score = jaroWinkler;
-				match.value = formatMessageForChar(charData);
-				match.charName = charData.getString(JSON_NAME) + "\r\n";
-				
-				//Correspondances exactes
-				if(requestedCharacterName.length() > 2 && (charName.contains(requestedCharacterName) || requestedCharacterName.contains(charName))) {
-					exactMatches.add(match);
+				try {
+					//Comparer le nom du personnage avec la recherche
+					String charName = charData.getString(JSON_CHAR_NAME).toLowerCase();			
+					String charShortName = charData.getString(JSON_SHORT);
+					Double jaroWinkler = new JaroWinklerDistance().apply(requestedCharacterName, charName);			
+
+					Match match = new Match();
+					match.score = jaroWinkler;
+					match.value = formatMessageForChar(charData);
+					match.charName = charData.getString(JSON_CHAR_NAME);
+					match.variantName = charData.getString(JSON_NAME);		
+
+					//Correspondances exactes
+					if(requestedCharacterName.length() > 2 && (charName.contains(requestedCharacterName) || requestedCharacterName.contains(charName))) {
+						exactMatches.add(match);
+
+						singleMatch = singleMatch && (currentMatchCharName == null || currentMatchCharName.equals(match.charName));
+						currentMatchCharName = match.charName;
+					}
+					else if(charShortName.contains(requestedCharacterName)) {
+						exactMatches.add(match);
+
+						singleMatch = singleMatch && currentMatchCharName != null && currentMatchCharName.equals(match.charName);
+						currentMatchCharName = match.charName;
+					}
+					//Correspondance approximative				
+					else if(jaroWinkler > 0) {
+						approxMatches.add(match);
+					}
 				}
-				else if(charShortName.contains(requestedCharacterName)) {
-					exactMatches.add(match);
-				}
-				//Correspondance approximative				
-				else if(jaroWinkler > 0) {
-					approxMatches.add(match);
+				catch(JSONException e) {
+					logger.warn("Error in mods JSON for character :");
+					logger.warn(charData.toString());
 				}
 			}
 			
 			String message = "";
-			EmbedBuilder embed = new EmbedBuilder();
-			embed.setTitle(String.format(EMBED_TITLE, requestedCharacterName));
-			embed.setColor(EMBED_COLOR);
-			
-			boolean embedEmpty = true;
-			
+						
 			Collections.sort(exactMatches);
 			
+			List<String> chars = new ArrayList<String>();
+			for(Match match : exactMatches) {
+				if(!chars.contains(match.charName)) {
+					chars.add(match.charName);
+				}
+			}
+			
+			chars.sort(String::compareToIgnoreCase);
+			
 			//Si trop de réponses, on renvoie simplement la liste de noms
-			if(exactMatches.size() > MAX_ANSWERS) {
+			if(!singleMatch && chars.size() > MAX_ANSWERS) {
 				message = MESSAGE_TOO_LONG;
-				for(Match match : exactMatches) {
-					message += match.charName;
+				
+				
+				for(String charName : chars) {
+					message += charName+"\r\n";
 				}
 			}
 			else {
 				//sinon, on renvoi la réponse détaillée
-				for(Match match : exactMatches) {
-					embed.addField(match.charName, match.value, true);
-					embedEmpty = false;
+				if(!exactMatches.isEmpty()) {
+					
+					Map<String,List<Match>> variantsPerChar = new HashMap<String,List<Match>>();
+					for(Match match : exactMatches) {
+						
+						if(variantsPerChar.get(match.charName) == null) {
+							variantsPerChar.put(match.charName,new ArrayList<Match>());		
+						}
+						
+						variantsPerChar.get(match.charName).add(match);
+						
+					}
+					
+					for(String charName : variantsPerChar.keySet()) {
+						List<Match> variantsForThisChar = variantsPerChar.get(charName);
+						String url = getCharacterURL(charName);
+						String portraitUrl = getCharacterPortraitURL(charName);
+						EmbedBuilder embed = new EmbedBuilder();
+						embed.setColor(EMBED_COLOR);
+						embed.setAuthor(charName, url, portraitUrl);
+						embed.setThumbnail(portraitUrl);
+
+						for(Match match : variantsForThisChar) {
+							String title = variantsForThisChar.size() == 1 ? "-" : match.variantName;
+							embed.addField(title, match.value, true);
+						}
+						
+						embed.addField("-","Mods advised by [Crouching Rancor](http://apps.crouchingrancor.com)\r\nBot designed by [JediStar](https://jedistar.jimdo.com)", false);
+						//On contourne le chemin de réponse habituel pour pouvoir retourner plusieurs embeds d'un coup
+						messageRecu.reply(null, embed);
+					}
+					
 				}
+				
 			}
 			
 			
 			//Si pas de corresp. exactes, on renvoie les correspondances approx., en baissant progressivement le niveau de tolérance
 			if(exactMatches.isEmpty() && !approxMatches.isEmpty()) {
-				message += APPROX_MATCHES_MESSAGES;
+				message += APPROX_MATCHES_MESSAGE;
 				
 				Collections.sort(approxMatches);
 					
@@ -157,29 +269,28 @@ public class ModsCommand implements JediStarBotCommand {
 							break;
 						}
 						
-						message += approx.charName;			
+						message += approx.charName+"\r\n";			
 						nothingFound = false;
 						
 					}
 				}
 				
 			}
-
-			if(embedEmpty) {
-				embed = null;
-			}
-			
-			return new CommandAnswer(message,embed);
+	
+			return new CommandAnswer(message,null);
 		}
 		catch (MalformedURLException|UnsupportedEncodingException e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			return error(PARAMS_ERROR);
 		} 
 		catch (IOException e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			return error(ACCESS_ERROR);
 		}
 		catch (JSONException e) {
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			return error(JSON_ERROR);
 		}
@@ -207,8 +318,6 @@ public class ModsCommand implements JediStarBotCommand {
 
 			String json = in.readLine();
 			
-			String timeMillis = ((Long)(new Date().getTime() - now.getTime())).toString() + "\r\n";
-			Files.write(Paths.get("httpLatencyMonitor"), timeMillis.getBytes(), StandardOpenOption.APPEND);
 			return new JSONObject(json);
 		}
 		finally {
@@ -236,6 +345,14 @@ public class ModsCommand implements JediStarBotCommand {
 								charData.get(JSON_CROSS)
 							);
 	}
+	
+	private String getCharacterURL(String charName) {
+		return String.format(CHARACTERS_URL, charName.replace(" ", CHARACTERS_SEPARATOR).toLowerCase());
+	}
+	
+	private String getCharacterPortraitURL(String charName) {
+		return String.format(CHARACTERS_PORTRAIT_URL, charName.replace(" ", CHARACTERS_PORTRAIT_SEPARATOR).toLowerCase());
+	}
 
 	private CommandAnswer error(String errorMessage) {
 		String message = ERROR_MESSAGE +"**"+ errorMessage + "**\r\n\r\n"+ HELP;
@@ -248,6 +365,7 @@ public class ModsCommand implements JediStarBotCommand {
 		public String value;
 		public String charName;
 		public Double score;
+		public String variantName;
 		
 		@Override
 		public int compareTo(Match other) {			
