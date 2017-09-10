@@ -17,7 +17,8 @@ You can also rent a small server, for example i was able to rent one for less th
 4. Follow [this quick tutorial](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token) to create a Discord bot and get a "token". This token is what helps the application connecting to your Discord server.
 5. Open the settings.json file you downloaded at step 3. In the first field, put the token you got from Discord at step 4 like in the following example : 	`"discordToken": "MzQyNTk4ODE5MjQzODg0NTU1.DGR9iA.rBI0QHIdCavRVi_fdZoFrh59vK4",`
 6. Inside this same file, you should customize the "bot Admins" section. This defines who will be allowed to run administrator commands from Discord. You may use group names (as they are defined inside Discord) or individual user IDs (the 4-digits ID you can see in Discord).
-7. You may customize anything else you like in this settings.json file, like the keywords used by the commands, the raid names, etc... But be careful not to change its structure, or the bot would fail to work correctly. Please note that i would be really interested if you gave me translated versions in your own language !
+7. You may customize anything else you like in this settings.json file, like the keywords used by the commands, the raid names, etc... But be careful not to change its structure, or the bot would fail to work correctly. 
+**Please note that i would be really interested if you gave me translated versions in your own language !**
 8. Launch the bot following the next section.
 
 ## Launching the application
