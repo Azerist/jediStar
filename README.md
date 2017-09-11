@@ -40,4 +40,4 @@ Right now, the available commands are (unless you customized them in the setting
 Enjoy !
 
 ## Contact
-If you have any question, problem or suggestion, please feel free to join this Discord Server : https://discord.gg/ZqBCnft
+If you have any question, problem or suggestion, please feel free to join this Discord Server : https://discord.gg/nyWgbU3
