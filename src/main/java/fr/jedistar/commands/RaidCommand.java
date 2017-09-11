@@ -33,11 +33,13 @@ public class RaidCommand implements JediStarBotCommand {
 	private static String MESSAGE_DAMAGES;
 	private static String MESSAGE_PERCENT;
 	private static String MESSAGE_TARGET;
+	private static String MESSAGE_TARGET_RANGE;
 	
 	private static String ERROR_MESSAGE ;
 	private static String HELP;
 	
 	private static String OBJECTIVE_OVER_RAID_END;
+	private static String OBJECTIVE_OVER_RAID_END_SECOND;
 	private static String INCOHERENT_PARAMETERS;
 	private static String INCORRECT_NUMBER;
 	private static String PHASE_NOT_FOUND;
@@ -59,9 +61,11 @@ public class RaidCommand implements JediStarBotCommand {
 	private final static String JSON_MESSAGE_PERCENT = "percent";
 	private final static String JSON_MESSAGE_TARGET = "target";
 	private final static String JSON_MESSAGE_HELP = "help";
+	private final static String JSON_MESSAGE_TARGET_RANGE = "targetRange";
 	
 	private final static String JSON_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_ERROR_MESSAGE_OVER_RAID_END = "overRaidEnd";
+	private final static String JSON_ERROR_MESSAGE_OVER_RAID_END_SECOND = "overRaidEndSecond";
 	private final static String JSON_ERROR_MESSAGE_INCOHERENT_PARAMS = "incoherentParams";
 	private final static String JSON_ERROR_MESSAGE_INCORRECT_NUMBER = "incorrectNumber";
 	private final static String JSON_ERROR_MESSAGE_PHASE_NOT_FOUND = "phaseNotFound";
@@ -75,6 +79,17 @@ public class RaidCommand implements JediStarBotCommand {
 	private final static String JSON_RAID_PHASE_NUMBER = "number";
 	private final static String JSON_RAID_PHASE_DAMAGE = "damage1percent";
 
+	private class RaidHealth {
+
+		public int phase;
+		public float healthPercentage;
+		
+		public RaidHealth(int p,float h) 
+		{
+			phase = p;
+			healthPercentage = h;
+		}
+	}
 	
 	public RaidCommand() {
 		super();
@@ -98,11 +113,13 @@ public class RaidCommand implements JediStarBotCommand {
 			MESSAGE_DAMAGES = messages.getString(JSON_MESSAGE_DAMAGES);
 			MESSAGE_PERCENT = messages.getString(JSON_MESSAGE_PERCENT);
 			MESSAGE_TARGET = messages.getString(JSON_MESSAGE_TARGET);
+			MESSAGE_TARGET_RANGE = messages.getString(JSON_MESSAGE_TARGET_RANGE);
 			HELP = messages.getString(JSON_MESSAGE_HELP);
 			
 			//Messages d'erreur
 			JSONObject errorMessages = raidParams.getJSONObject(JSON_ERROR_MESSAGES);
 			OBJECTIVE_OVER_RAID_END = errorMessages.getString(JSON_ERROR_MESSAGE_OVER_RAID_END);
+			OBJECTIVE_OVER_RAID_END_SECOND = errorMessages.getString(JSON_ERROR_MESSAGE_OVER_RAID_END_SECOND);
 			INCOHERENT_PARAMETERS = errorMessages.getString(JSON_ERROR_MESSAGE_INCOHERENT_PARAMS);
 			INCORRECT_NUMBER = errorMessages.getString(JSON_ERROR_MESSAGE_INCORRECT_NUMBER);
 			PHASE_NOT_FOUND = errorMessages.getString(JSON_ERROR_MESSAGE_PHASE_NOT_FOUND);
@@ -179,6 +196,9 @@ public class RaidCommand implements JediStarBotCommand {
 			else if(params.size() == 4) {
 				return doPhaseWithTwoParameters(params.get(2),params.get(3), raidName, phaseNumber);		
 			}
+			else if(params.size() == 5) {
+				return doPhaseWithThreeParameters(params.get(2),params.get(3),params.get(4), raidName, phaseNumber);		
+			}
 			else {
 				return error(INCORRECT_PARAMS_NUMBER);
 			}
@@ -189,6 +209,29 @@ public class RaidCommand implements JediStarBotCommand {
 		
 		
 	}
+	
+	private Float formatNumberParameters(String value)
+	{
+		value = value.replace("%", "");
+		value = value.replace(",", ".");
+		Integer multiplier = 1;
+		if(value.endsWith("k")) {
+			value = value.replace("k","");
+			multiplier = 1000;
+		}
+		if(value.endsWith("m")) {
+			value = value.replace("m","");
+			multiplier = 1000000;
+		}
+		
+		Float valueAsFloat = Float.valueOf(value) * multiplier;
+		if(valueAsFloat < 0) {
+			valueAsFloat = -1 * valueAsFloat;
+		}
+		return valueAsFloat;
+		
+		
+	}
 
 	private CommandAnswer doPhaseWithOneParameter(String value, String raidName,Integer phaseNumber) {
 		
@@ -196,33 +239,10 @@ public class RaidCommand implements JediStarBotCommand {
 		if(phaseHP1percent == null) {
 			return error(PHASE_NOT_FOUND);
 		}
-		
-		//Retirer le signe "%"
-		value = value.replace("%", "");
-		
-		//Accepter , ou .
-		value = value.replace(",", ".");
-		
-		Integer multiplier = 1;
-		//Accepter "k" à la fin d'un nombre
-		if(value.endsWith("k")) {
-			value = value.replace("k","");
-			multiplier = 1000;
-		}		
-		
-		//Accepter "M" à la fin d'un nombre
-		if(value.endsWith("m")) {
-			value = value.replace("m","");
-			multiplier = 1000000;
-		}
 
 		try {
 			
-			Float valueAsFloat = Float.parseFloat(value) * multiplier;
-			
-			if(valueAsFloat < 0) {
-				valueAsFloat = -1 * valueAsFloat;
-			}
+			Float valueAsFloat = formatNumberParameters(value);
 			
 			if(valueAsFloat <= 100) {
 				//Il s'agit d'un pourcentage
@@ -251,48 +271,10 @@ public class RaidCommand implements JediStarBotCommand {
 
 
 	private CommandAnswer doPhaseWithTwoParameters(String value, String secondValue, String raidName,Integer phaseNumber) {
-
-		//Retirer le signe "%"
-		value = value.replace("%", "");
-		secondValue = secondValue.replace("%", "");
-
-		//Accepter , ou .
-		value = value.replace(",", ".");
-		secondValue = secondValue.replace(",", ".");
-
-		Integer multiplier = 1;
-		Integer secondMultiplier = 1;
-		//Accepter "k" à la fin d'un nombre
-		if(value.endsWith("k")) {
-			value = value.replace("k","");
-			multiplier = 1000;
-		}
-		if(secondValue.endsWith("k")) {
-			secondValue = secondValue.replace("k","");
-			secondMultiplier = 1000;
-		}	
-		
-		//Accepter "M" à la fin d'un nombre
-		if(value.endsWith("m")) {
-			value = value.replace("m","");
-			multiplier = 1000000;
-		}
-		if(secondValue.endsWith("m")) {
-			secondValue = secondValue.replace("m","");
-			secondMultiplier = 1000000;
-		}
 		
 		try {
-			Float valueAsFloat = Float.valueOf(value) * multiplier;
-			Float secondValueAsFloat = Float.valueOf(secondValue) * secondMultiplier;
-
-			//Si valeurs négatives, on les repasse en positif…
-			if(valueAsFloat < 0) {
-				valueAsFloat = -1 * valueAsFloat;
-			}
-			if(secondValueAsFloat < 0) {
-				secondValueAsFloat = -1 * secondValueAsFloat;
-			}
+			Float valueAsFloat = formatNumberParameters(value);
+			Float secondValueAsFloat = formatNumberParameters(secondValue);
 			
 			if(valueAsFloat <= 100 && secondValueAsFloat < 100) {
 				//Il s'agit de deux pourcentages…
@@ -306,6 +288,28 @@ public class RaidCommand implements JediStarBotCommand {
 			if(secondValueAsFloat <= 100 && valueAsFloat > 100) {
 				//Il s'agit d'un pourcentage et d'une valeur
 				return doPhaseWithPercentageAndValue(secondValueAsFloat,valueAsFloat,raidName,phaseNumber);
+			}
+			
+			return error(INCOHERENT_PARAMETERS);
+		}
+		catch(NumberFormatException e) {
+			return error(INCORRECT_NUMBER);
+		}
+	}
+	
+	
+	
+	private CommandAnswer doPhaseWithThreeParameters(String value, String secondValue, String thirdValue, String raidName,Integer phaseNumber)
+	{
+
+		try {
+			Float valueAsFloat = formatNumberParameters(value);
+			Float secondValueAsFloat = formatNumberParameters(secondValue);
+			Float thirdValueAsFloat = formatNumberParameters(thirdValue);
+			
+			if(valueAsFloat <= 100 && secondValueAsFloat > 100 && thirdValueAsFloat > 100 && thirdValueAsFloat > secondValueAsFloat) {
+				//Il s'agit d'un pourcentage et d'une valeur
+				return doPhaseWithRange(valueAsFloat,secondValueAsFloat,thirdValueAsFloat,raidName,phaseNumber);
 			}
 			
 			return error(INCOHERENT_PARAMETERS);
@@ -364,6 +368,21 @@ public class RaidCommand implements JediStarBotCommand {
 
 	private CommandAnswer doPhaseWithPercentageAndValue(Float initialPercentage, Float targetValue,String raidName, Integer phaseNumber) {
 		
+		RaidHealth ValueResult = calculateTargetPhaseAndHealth(initialPercentage, targetValue,raidName, phaseNumber);
+		
+		if(ValueResult.phase == -1)
+		{
+			return new CommandAnswer(OBJECTIVE_OVER_RAID_END,null);
+		}
+		
+		String formattedValue = NumberFormat.getIntegerInstance().format(targetValue);
+		String message = String.format(MESSAGE_TARGET, raidName,phaseNumber,initialPercentage,
+								formattedValue,ValueResult.phase,ValueResult.healthPercentage) ;
+		return new CommandAnswer(message,null);
+	}
+	
+	private RaidHealth calculateTargetPhaseAndHealth(Float initialPercentage, Float targetValue,String raidName, Integer phaseNumber) {
+		
 		Map<Integer,Integer> phaseHPmapForCurrentRaid = phaseHPmap.get(raidName);
 		
 		Float resultPercentage = (float)0;
@@ -379,7 +398,7 @@ public class RaidCommand implements JediStarBotCommand {
 			Integer HP1percent = phaseHPmapForCurrentRaid.get(phaseNumberCursor);
 			
 			if(HP1percent == null) {
-				return new CommandAnswer(OBJECTIVE_OVER_RAID_END,null);
+				return new RaidHealth(-1,0);
 			}
 			
 			Float requiredPercentage = residualDamage / HP1percent;
@@ -395,9 +414,32 @@ public class RaidCommand implements JediStarBotCommand {
 			}
 		}
 		
-		String formattedValue = NumberFormat.getIntegerInstance().format(targetValue);
-		String message = String.format(MESSAGE_TARGET, raidName,phaseNumber,initialPercentage,
-								formattedValue,phaseNumberCursor,resultPercentage) ;
+		return new RaidHealth(phaseNumberCursor,resultPercentage);
+	}
+	
+	
+	private CommandAnswer doPhaseWithRange(Float initialPercentage, Float targetValueMin, Float targetValueMax,String raidName, Integer phaseNumber) {
+		
+		RaidHealth minValueResult = calculateTargetPhaseAndHealth(initialPercentage, targetValueMin,raidName, phaseNumber);
+		RaidHealth maxValueResult = calculateTargetPhaseAndHealth(initialPercentage, targetValueMax,raidName, phaseNumber);
+		
+		String formattedValueMin = NumberFormat.getIntegerInstance().format(targetValueMin);
+		String formattedValueMax = NumberFormat.getIntegerInstance().format(targetValueMax);
+		
+		if(minValueResult.phase == -1)
+		{
+			return new CommandAnswer(OBJECTIVE_OVER_RAID_END,null);
+		}
+		else if (maxValueResult.phase == -1)
+		{
+			String message = String.format(MESSAGE_TARGET, raidName,phaseNumber,initialPercentage,
+					formattedValueMin,minValueResult.phase,minValueResult.healthPercentage) + OBJECTIVE_OVER_RAID_END_SECOND;
+				return new CommandAnswer(message,null);
+		}
+		
+		String message = String.format(MESSAGE_TARGET_RANGE, raidName,phaseNumber,initialPercentage,
+				formattedValueMin,formattedValueMax,minValueResult.phase,minValueResult.healthPercentage,maxValueResult.phase,maxValueResult.healthPercentage);
+		
 		return new CommandAnswer(message,null);
 	}
 	
