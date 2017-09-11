@@ -1,7 +1,14 @@
 package fr.jedistar.commands;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
@@ -30,9 +41,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String COMMAND_UPDATE = "maj";
 	private final String LAUNCH_RAID_COMMAND = "lancer";
 	
-	private static String SHEET_ID = null;
-	
-	private final String GOOGLE_API_ERROR = "Une erreur s'est produite lors de la connexion à Google Drive";
+
 	
 	private final String EMBED_TITLE = "Équilibrage de %s";
 	private final Color EMBED_COLOR = Color.BLUE;
@@ -43,6 +52,12 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2";
 	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
 	private final static String FORBIDDEN = "Vous n'avez pas le droit d'exécuter cette commande";
+
+	private static final String WRITE_ERROR = "Erreur lors de l'écriture du fichier JSON";
+
+	private static final String DB_FILE = "balancingMembersDB.json";
+
+	private static final String READ_ERROR = "Erreur lors de la lecture du fichier JSON";
 	
 	private final String RANCOR = "rancor";
 	private final String TANK = "tank";
@@ -51,7 +66,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	
 	//Des Map pour représenter les tableaux...
 	private Map<String,List<Ranking>> rankingsPerRaid;
-	private Map<String,Map<Integer,List<Integer>>> valuesPerUserPerRaid;
+	private HashMap<String,HashMap<Integer,List<Integer>>> valuesPerUserPerRaid = null ;
 	
 	private Map<String,Map<Integer,String>> currentTargetRankingPerUserPerRaid = new HashMap<String,Map<Integer,String>>();
 	
@@ -75,27 +90,21 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		rulesPerRaid = new HashMap<String,String>();
 		rulesPerRaid.put(RANCOR, "@everyone \r\n"
 				+ ":round_pushpin: Raid **RANCOR** Lancé :round_pushpin: \r\n" + 
-				":white_small_square: Podium à 1M pour se placer\r\n" + 
-				":white_small_square: Tranche 3-10 entre 500K et 800K\r\n" + 
-				":white_small_square: Tranche 11-30 entre 100K et 400K\r\n" + 
+				":white_small_square: Podium à 800k pour se placer\r\n" + 
+				":white_small_square: Tranche 4-10 entre 400K et 600K\r\n" + 
+				":white_small_square: Tranche 11-30 entre 100K et 300K\r\n" + 
 				":white_small_square: Tranche 31+ à 0\r\n" + 
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
 		rulesPerRaid.put(TANK, "@everyone \r\n"
 				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à fond\r\n" + 
-				":white_small_square: Tranche 3-10 entre 1M et 1,2M\r\n" + 
+				":white_small_square: Tranche 4-10 entre 1,1M et 1,3M\r\n" + 
 				":white_small_square: Tranche 11-30 entre 800K et 1M\r\n" + 
-				":white_small_square: Tranche 31+ entre 600K et 800K\r\n" + 
+				":white_small_square: Tranche 31+ entre 600K et 700K\r\n" + 
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts :warning:");
 	}
 	
-	/**
-	 * Sert à renseigner la variable statique SHEET_ID qui représente l'identifiant de la feuille Google Sheets à utiliser.
-	 * @param sheetId
-	 */
-	public static void setSheetId(String sheetId) {
-		SHEET_ID = sheetId;
-	}
+
 	
 	@Override
 	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
@@ -108,7 +117,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 			//Si les tableaux n'ont pas été chargés, les charger maintenant...
 			if(valuesPerUserPerRaid == null) {
-				updateTables();
+				String readReturn = readFromJson();
+				if(readReturn != null) {
+					return new CommandAnswer(readReturn,null);
+				}
 			}
 			
 			Set<String> raids = rankingsPerRaid.keySet();
@@ -129,7 +141,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			if(COMMAND_UPDATE.equals(param)) {
 				if(isAdmin) {
-					return new CommandAnswer(updateTables(),null);
+					return new CommandAnswer(readFromJson(),null);
 				}
 				else {
 					return new CommandAnswer(FORBIDDEN,null);
@@ -138,7 +150,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			//Si les tableaux n'ont pas été chargés, les charger maintenant...
 			if(valuesPerUserPerRaid == null) {
-				updateTables();
+				String readReturn = readFromJson();
+				if(readReturn != null) {
+					return new CommandAnswer(readReturn,null);
+				}
 			}
 			
 			//Accepter des noms alternatifs
@@ -169,7 +184,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			//Si les tableaux n'ont pas été chargés, les charger maintenant...
 			if(valuesPerUserPerRaid == null) {
-				updateTables();
+				String readReturn = readFromJson();
+				if(readReturn != null) {
+					return new CommandAnswer(readReturn,null);
+				}
 			}
 			
 			String raidName = params.get(1);
@@ -239,14 +257,42 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		return returnMessage;
 	}
 
-
-	private String updateTables() {
+	private String readFromJson() {
+		try {
+			byte[] encoded = Files.readAllBytes(Paths.get(DB_FILE));
+			String json = new String(encoded, "utf-8");
+			
+			Gson gson = new GsonBuilder().create();
+			
+			Type ValuesMap = new TypeToken<HashMap<String,HashMap<Integer,List<Integer>>>>() {}.getType();
+			
+			valuesPerUserPerRaid = gson.fromJson(json, ValuesMap);
+			
+			return null;
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return READ_ERROR;
+		}
+	}
+	
+	private String writeToJson() throws IOException {
 		
-		//TODO : passer au JSON
+		try {
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			
+			String json = gson.toJson(valuesPerUserPerRaid);
+			
+			Files.newBufferedWriter(Paths.get(DB_FILE),StandardCharsets.UTF_8,StandardOpenOption.CREATE).write(json);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return WRITE_ERROR;
+		}
+		
 		return null;
 	}
-
-
+	
 	private CommandAnswer launchRaid(String raidName, Set<Integer> podium, Set<Integer> excludedFromFirstRank, Channel chan) {
 		
 		List<Ranking> rankings = rankingsPerRaid.get(raidName);
@@ -313,7 +359,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				usersForThisRank.add(getUserName(user.userId,chan));
 			}
 			
-			usersForThisRank.sort(String::compareToIgnoreCase);
+			Collections.sort(usersForThisRank);
 			
 			for(String user : usersForThisRank) {
 				returnTextForThisRank += user + "\r\n";

@@ -53,6 +53,10 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		commandsMap.put(RaidCommand.COMMAND, raid);
 		commandsMap.put(ModsCommand.COMMAND, mods);
 		
+		//TODO
+		commandsMap.put(EquilibrageCommand.COMMAND,new EquilibrageCommand());
+
+		
 		//Lecture du Json
 		try {
 			JSONObject parameters = StaticVars.jsonSettings;
@@ -120,7 +124,9 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		messageRecu.getChannelReceiver().type();
+		if(messageRecu.getChannelReceiver() != null) {
+			messageRecu.getChannelReceiver().type();
+		}
 
 		boolean isAdmin = isAdmin(messageRecu);
 		

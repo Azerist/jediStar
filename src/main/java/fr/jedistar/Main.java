@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.ModsCommand;
 
 public class Main {
@@ -59,6 +60,8 @@ public class Main {
 			//URI et encodage du JSON des mods conseillés
 			String modsJsonUri = parameters.getString(PARAM_MODS_JSON_URI);
 			ModsCommand.setJsonUri(modsJsonUri);
+			
+			
 			
 		}
 		catch(IOException e) {

@@ -62,7 +62,7 @@
 			},
 			{
 				"name":"tank",
-				"aliases":["aat","haat"],
+				"aliases":["haat","aat"],
 				"phases":[
 					{
 						"number":1,
