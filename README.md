@@ -38,3 +38,6 @@ Right now, the available commands are (unless you customized them in the setting
 * !mods
 
 Enjoy !
+
+## Contact
+If you have any question, problem or suggestion, please join this Discord Server : https://discord.gg/GmQSAn
