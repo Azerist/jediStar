@@ -56,7 +56,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String PODIUM = "**+-- Podium --+**\r\n";
 	private final String PODIUM_END = "**+--------------+**\r\n\r\n";
 		
-	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2";
+	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX";
 	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
 	private final static String FORBIDDEN = "Vous n'avez pas le droit d'exécuter cette commande";
 
@@ -552,8 +552,12 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			}
 		}
 
+		
 		for(String raidName : valuesPerUserPerRaid.keySet()) {			
 
+			if(valuesPerUserPerRaid.get(raidName).get(userId) != null) {
+				return "L'utilisateur existe déjà !";
+			}
 			List<Integer> newValuesList = new ArrayList<Integer>();
 
 			for(Ranking rank:rankingsPerRaid.get(raidName)) {
