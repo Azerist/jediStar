@@ -1,4 +1,4 @@
-package fr.jedistar;
+package fr.jedistar.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +22,8 @@ import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import de.btobastian.javacord.entities.permissions.Role;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
+import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.StaticVars;
 import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.commands.RaidCommand;
@@ -161,14 +163,17 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 				e.printStackTrace();
 				return;
 			}
-			
-			Future<Void> futere = sentMessage.addUnicodeReaction("❌");
-			
-			/*
+							
 			for(String reaction : answer.getReactions()) {
-				sentMessage.addUnicodeReaction(reaction);
+				try {
+					sentMessage.addUnicodeReaction(reaction).get(1, TimeUnit.MINUTES);
+					Thread.sleep(250);
+				} catch (InterruptedException | ExecutionException | TimeoutException e) {
+					e.printStackTrace();
+					return;
+				}
 			}
-			*/
+			
 		}
 
 	}

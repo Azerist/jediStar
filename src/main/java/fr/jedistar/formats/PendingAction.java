@@ -58,29 +58,36 @@ public class PendingAction {
 	}
 	
 	
-	public String doAction(Reaction reaction) {
+	public void doAction(Reaction reaction) {
 		try {
 			ArrayList<Class<?>> paramsTypes = new ArrayList<Class<?>>();
 			
-			paramsTypes.add(Reaction.class);
+			Object[] params = new Object[args.length+1];
 			
-			for(Object arg : args) {
-				paramsTypes.add(arg.getClass());
+			params[0] = reaction;
+			
+			for(int i=1;i<args.length+1;i++) {
+				params[i] = args[i-1];
 			}
 			
-			Class<?>[] classesArray = (Class<?>[]) paramsTypes.toArray();
+			Class<?>[] classesArray = new Class<?>[params.length]; 
+			
+			
+			for(int i=0;i<params.length;i++) {
+				classesArray[i] = params[i].getClass();
+			}
 			
 			Method method = object.getClass().getMethod(methodName, classesArray);
 			
 			if(method == null) {
-				return "A problem happened while executing this action";
+				message.reply("A problem happened while executing this action");
 			}
 			
-			return (String) method.invoke(object, reaction, args);
+			message.reply((String) method.invoke(object, params));
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-			return "A problem happened while executing this action";
+			message.reply("A problem happened while executing this action");
 		}
 	}
 
