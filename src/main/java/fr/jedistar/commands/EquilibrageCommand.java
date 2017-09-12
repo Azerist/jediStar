@@ -3,6 +3,7 @@ package fr.jedistar.commands;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -28,9 +29,11 @@ import com.google.gson.reflect.TypeToken;
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
+import de.btobastian.javacord.entities.message.Reaction;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.formats.CommandAnswer;
+import fr.jedistar.formats.PendingAction;
 
 public class EquilibrageCommand implements JediStarBotCommand {
 
@@ -58,6 +61,15 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private static final String DB_FILE = "balancingMembersDB.json";
 
 	private static final String READ_ERROR = "Erreur lors de la lecture du fichier JSON";
+
+
+	private static final String CONFIRM_DELETE = "Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?";
+
+
+	private static final Object COMMAND_DELETE = "supprimer";
+
+
+	private static final String NUMBER_PROBLEM = "Un nombre entré n'a pas été reconnu";
 	
 	private final String RANCOR = "rancor";
 	private final String TANK = "tank";
@@ -174,6 +186,32 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			else {
 				return new CommandAnswer(error("Nom du raid non trouvé"),null);
+			}
+		}
+		else if(params.size() == 2) {
+			String command = params.get(0);
+			String param = params.get(1);
+
+			if(COMMAND_DELETE.equals(command)) {
+				if(isAdmin) {
+					Integer userId = new Integer(0);
+					if(param.startsWith("<@") && param.endsWith(">")) {
+						userId = getUserDiscriminator(chan, param);
+					}
+					else {
+						try {
+							userId = Integer.valueOf(param);
+						}
+						catch(NumberFormatException e) {
+							return new CommandAnswer(NUMBER_PROBLEM,null);
+						}
+					}
+					
+					return beforeDeleteUser(messageRecu, userId);
+				}
+				else {
+					return new CommandAnswer(FORBIDDEN,null);
+				}
 			}
 		}
 		else if(params.size() >= 5 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
@@ -391,6 +429,20 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		return "Utilisateur non trouvé sur Discord";
 
 	}
+	
+	private User getUser(Integer userId, Channel chan) {
+		
+		Collection<User> usersList = chan.getServer().getMembers();
+		
+		for(User user : usersList) {
+			Integer discriminator = Integer.valueOf(user.getDiscriminator());
+			if(discriminator.equals(userId)) {
+				return user;			
+			}
+		}
+		return null;
+
+	}
 
 	private Integer getUserDiscriminator(Channel chan,String discordUserId) {
 		
@@ -428,6 +480,17 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		}
 		
 		return sum / divider;
+	}
+	
+	private CommandAnswer beforeDeleteUser(Message message,Integer userToDelete) {
+				
+		new PendingAction(message.getAuthor(),"deleteUser",this, message,1,userToDelete);
+		
+		return new CommandAnswer(String.format(CONFIRM_DELETE,userToDelete),null,":white_check_mark:",":x:");
+	}
+	
+	public String deleteUser(Reaction reaction, Integer userToDelete) {
+		return null;
 	}
 	
 	private String error(String message) {
