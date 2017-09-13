@@ -3,15 +3,19 @@ package fr.jedistar;
 import com.google.common.util.concurrent.FutureCallback;
 
 import de.btobastian.javacord.DiscordAPI;
+import fr.jedistar.listener.JediStarBotMessageListener;
+import fr.jedistar.listener.JediStarBotReactionAddListener;
 
 public class JediStarBotCallback implements FutureCallback<DiscordAPI> {
 
-	JediStarBotMessageListener listener;
+	JediStarBotMessageListener messageListener;
+	JediStarBotReactionAddListener reactionListener;
 	
 	public JediStarBotCallback() {
 		super();
 		
-		listener = new JediStarBotMessageListener();
+		messageListener = new JediStarBotMessageListener();
+		reactionListener = new JediStarBotReactionAddListener();
 	}
 	
 	public void onFailure(Throwable t) {
@@ -21,8 +25,8 @@ public class JediStarBotCallback implements FutureCallback<DiscordAPI> {
 
 	public void onSuccess(DiscordAPI api) {
 
-		api.registerListener(listener);
-		
+		api.registerListener(messageListener);
+		api.registerListener(reactionListener);
 	}
 
 }

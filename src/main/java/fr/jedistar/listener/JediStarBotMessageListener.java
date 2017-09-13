@@ -1,4 +1,4 @@
-package fr.jedistar;
+package fr.jedistar.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +22,8 @@ import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import de.btobastian.javacord.entities.permissions.Role;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
+import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.StaticVars;
 import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.commands.RaidCommand;
@@ -86,9 +92,9 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		}
 	}
 	
-	public void onMessageCreate(DiscordAPI api, Message messageRecu) {
+	public void onMessageCreate(DiscordAPI api, Message receivedMessage) {
 		
-		String messageAsString = messageRecu.getContent().toLowerCase();
+		String messageAsString = receivedMessage.getContent().toLowerCase();
 		
 		//Si le message est vide ou ne commence pas par ! : Ne rien faire.
 		if(messageAsString == null
@@ -100,7 +106,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		//On retire le !
 		messageAsString = messageAsString.substring(1);
 		
-		//On éclate les différentes parties du message
+		//On Ã©clate les diffÃ©rentes parties du message
 		String[] messagePartsArray = messageAsString.split(" ");	
 		
 		if(messagePartsArray.length == 0) {
@@ -124,13 +130,13 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
-		if(messageRecu.getChannelReceiver() != null) {
-			messageRecu.getChannelReceiver().type();
+		if(receivedMessage.getChannelReceiver() != null) {
+			receivedMessage.getChannelReceiver().type();
 		}
 
-		boolean isAdmin = isAdmin(messageRecu);
+		boolean isAdmin = isAdmin(receivedMessage);
 		
-		CommandAnswer answer = botCommand.answer(messageParts,messageRecu,isAdmin);
+		CommandAnswer answer = botCommand.answer(messageParts,receivedMessage,isAdmin);
 		
 		if(answer == null) {
 			return;
@@ -138,7 +144,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		
 		String message ="";		
 		if(!"".equals(answer.getMessage())) {
-			message = String.format(MESSAGE, messageRecu.getAuthor().getMentionTag(),answer.getMessage());
+			message = String.format(MESSAGE, receivedMessage.getAuthor().getMentionTag(),answer.getMessage());
 		}
 		
 		EmbedBuilder embed = answer.getEmbed();
@@ -146,8 +152,30 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		if(embed != null) {
 			embed.addField("-","Bot designed by [JediStar](https://jedistar.jimdo.com)", false);
 		}
-				
-		messageRecu.reply(message, embed);
+		
+		Future<Message> future = receivedMessage.reply(message, embed);
+		
+		if(answer.getReactions() != null && !answer.getReactions().isEmpty()) {
+			Message sentMessage = null;
+			try {
+				sentMessage = future.get(1, TimeUnit.MINUTES);
+			} catch (InterruptedException | ExecutionException | TimeoutException e) {
+				e.printStackTrace();
+				return;
+			}
+							
+			for(String reaction : answer.getReactions()) {
+				try {
+					sentMessage.addUnicodeReaction(reaction).get(1, TimeUnit.MINUTES);
+					Thread.sleep(250);
+				} catch (InterruptedException | ExecutionException | TimeoutException e) {
+					e.printStackTrace();
+					return;
+				}
+			}
+			
+		}
+
 	}
 
 	private boolean isAdmin(Message messageRecu) {

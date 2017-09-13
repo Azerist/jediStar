@@ -3,10 +3,12 @@ package fr.jedistar.commands;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
@@ -24,13 +26,18 @@ import java.util.Set;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.vdurmont.emoji.EmojiManager;
 
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
+import de.btobastian.javacord.entities.message.Reaction;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
+import de.btobastian.javacord.entities.message.impl.ImplReaction;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.formats.CommandAnswer;
+import fr.jedistar.formats.PendingAction;
+import fr.jedistar.listener.JediStarBotReactionAddListener;
 
 public class EquilibrageCommand implements JediStarBotCommand {
 
@@ -49,7 +56,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String PODIUM = "**+-- Podium --+**\r\n";
 	private final String PODIUM_END = "**+--------------+**\r\n\r\n";
 		
-	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2";
+	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX";
 	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
 	private final static String FORBIDDEN = "Vous n'avez pas le droit d'exécuter cette commande";
 
@@ -58,12 +65,22 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private static final String DB_FILE = "balancingMembersDB.json";
 
 	private static final String READ_ERROR = "Erreur lors de la lecture du fichier JSON";
+
+
+	private static final String CONFIRM_DELETE = "Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible !";
+
+
+	private static final Object COMMAND_DELETE = "supprimer";
+
+
+	private static final String NUMBER_PROBLEM = "Un nombre entré n'a pas été reconnu";
+
+
+	private static final Object COMMAND_ADD = "ajouter";
 	
 	private final String RANCOR = "rancor";
 	private final String TANK = "tank";
-	
-	private Map<String,String> tableSheetRangesPerRaid;
-	
+		
 	//Des Map pour représenter les tableaux...
 	private Map<String,List<Ranking>> rankingsPerRaid;
 	private HashMap<String,HashMap<Integer,List<Integer>>> valuesPerUserPerRaid = null ;
@@ -82,10 +99,6 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		rankingsPerRaid = new HashMap<String,List<Ranking>>();
 		rankingsPerRaid.put(RANCOR,Arrays.asList(new Ranking("1-10",1,7),new Ranking("11-30",2,20),new Ranking("31+",2,20)));
 		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7),new Ranking("11-30",2,20),new Ranking("31+",2,20)));
-		
-		tableSheetRangesPerRaid = new HashMap<String,String>();
-		tableSheetRangesPerRaid.put(RANCOR, "Rancor Héroique!B61:G110");
-		tableSheetRangesPerRaid.put(TANK, "Tank Héroique!B61:G110");
 		
 		rulesPerRaid = new HashMap<String,String>();
 		rulesPerRaid.put(RANCOR, "@everyone \r\n"
@@ -174,6 +187,43 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			else {
 				return new CommandAnswer(error("Nom du raid non trouvé"),null);
+			}
+		}
+		else if(params.size() == 2) {
+			String command = params.get(0);
+			String param = params.get(1);
+
+			if(COMMAND_DELETE.equals(command)) {
+				if(!isAdmin) {
+					return new CommandAnswer(FORBIDDEN,null);				
+				}
+				else {
+					Integer userId = new Integer(0);
+					if(param.startsWith("<@") && param.endsWith(">")) {
+						userId = getUserDiscriminator(chan, param);
+					}
+					else {
+						try {
+							userId = Integer.valueOf(param);
+						}
+						catch(NumberFormatException e) {
+							return new CommandAnswer(NUMBER_PROBLEM,null);
+						}
+					}
+					
+					return beforeDeleteUser(messageRecu, userId);
+				}
+			}
+			else if(COMMAND_ADD.equals(command)) {
+				if(!isAdmin) {
+					return new CommandAnswer(FORBIDDEN,null);				
+				}
+				else {
+					if(!param.startsWith("<@") || !param.endsWith(">")) {
+						return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner l'utilisateur",null);
+					}
+					return new CommandAnswer(addUser(getUserDiscriminator(chan, param)),null);
+				}
 			}
 		}
 		else if(params.size() >= 5 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
@@ -276,14 +326,14 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		}
 	}
 	
-	private String writeToJson() throws IOException {
+	private String writeToJson() {
 		
 		try {
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			
 			String json = gson.toJson(valuesPerUserPerRaid);
 			
-			Files.newBufferedWriter(Paths.get(DB_FILE),StandardCharsets.UTF_8,StandardOpenOption.CREATE).write(json);
+			Files.write(Paths.get(DB_FILE), json.getBytes());
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -359,7 +409,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				usersForThisRank.add(getUserName(user.userId,chan));
 			}
 			
-			Collections.sort(usersForThisRank);
+			usersForThisRank.sort(String::compareToIgnoreCase);
 			
 			for(String user : usersForThisRank) {
 				returnTextForThisRank += user + "\r\n";
@@ -389,6 +439,20 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			}
 		}
 		return "Utilisateur non trouvé sur Discord";
+
+	}
+	
+	private User getUser(Integer userId, Channel chan) {
+		
+		Collection<User> usersList = chan.getServer().getMembers();
+		
+		for(User user : usersList) {
+			Integer discriminator = Integer.valueOf(user.getDiscriminator());
+			if(discriminator.equals(userId)) {
+				return user;			
+			}
+		}
+		return null;
 
 	}
 
@@ -428,6 +492,88 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		}
 		
 		return sum / divider;
+	}
+	
+	private CommandAnswer beforeDeleteUser(Message message,Integer userToDelete) {
+				
+		JediStarBotReactionAddListener.addPendingAction(new PendingAction(message.getAuthor(),"deleteUser",this, message,1,userToDelete));
+		
+		String emojiX = EmojiManager.getForAlias("x").getUnicode();
+		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
+
+		return new CommandAnswer(String.format(CONFIRM_DELETE,userToDelete),null,emojiV,emojiX);
+	}
+	
+	public String deleteUser(ImplReaction reaction, Integer userToDelete) {
+		String emojiX = EmojiManager.getForAlias("x").getUnicode();
+		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
+		
+		if(emojiX.equals(reaction.getUnicodeEmoji())) {
+			return "Ok, j'annule la demande.";
+		}
+		
+		//Si les tableaux n'ont pas été chargés, les charger maintenant...
+		if(valuesPerUserPerRaid == null) {
+			String readReturn = readFromJson();
+			if(readReturn != null) {
+				return readReturn;
+			}
+		}
+		
+		if(emojiV.equals(reaction.getUnicodeEmoji())) {
+			
+			for(String raidName : valuesPerUserPerRaid.keySet()) {			
+				Object remove = valuesPerUserPerRaid.get(raidName).remove(userToDelete);
+				
+				if(remove == null) {
+					return "Utilisateur non trouvé";
+				}
+			}
+			String write = writeToJson();
+
+			if(write == null) {
+				return "Supression OK !";
+			}
+			else {
+				return write;
+			}
+		}
+		
+		return null;
+	}
+	
+	private String addUser(Integer userId) {
+
+		//Si les tableaux n'ont pas été chargés, les charger maintenant...
+		if(valuesPerUserPerRaid == null) {
+			String readReturn = readFromJson();
+			if(readReturn != null) {
+				return readReturn;
+			}
+		}
+
+		
+		for(String raidName : valuesPerUserPerRaid.keySet()) {			
+
+			if(valuesPerUserPerRaid.get(raidName).get(userId) != null) {
+				return "L'utilisateur existe déjà !";
+			}
+			List<Integer> newValuesList = new ArrayList<Integer>();
+
+			for(Ranking rank:rankingsPerRaid.get(raidName)) {
+				newValuesList.add(0);
+			}
+
+			valuesPerUserPerRaid.get(raidName).put(userId, newValuesList);	
+		}
+		
+		String write = writeToJson();
+
+		if(write != null) {
+			return WRITE_ERROR;
+		}
+		
+		return "Ajout réussi";
 	}
 	
 	private String error(String message) {
