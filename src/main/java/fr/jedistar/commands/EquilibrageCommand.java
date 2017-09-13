@@ -40,20 +40,18 @@ import fr.jedistar.formats.PendingAction;
 import fr.jedistar.listener.JediStarBotReactionAddListener;
 
 public class EquilibrageCommand implements JediStarBotCommand {
-
-	private static final String ERROR_GOOGLE_SHEETS = "La connexion à Google Sheets n'est pas bien configurée. Impossible d'utiliser cette fonction";
-
 	
 	public static final String COMMAND = "equilibrage";
 	private final String COMMAND_UPDATE = "maj";
 	private final String LAUNCH_RAID_COMMAND = "lancer";
-	
-
+	private final String END_RAID_COMMAND = "terminer";
+		
+	private final String PODIUM = "podium";
 	
 	private final String EMBED_TITLE = "Équilibrage de %s";
 	private final Color EMBED_COLOR = Color.BLUE;
 	private final String MESSAGE_LINE = "**Tranche %s** : %d\r\n";
-	private final String PODIUM = "**+-- Podium --+**\r\n";
+	private final String PODIUM_TEXT = "**+--- Podium ---+**\r\n";
 	private final String PODIUM_END = "**+--------------+**\r\n\r\n";
 		
 	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX";
@@ -83,9 +81,11 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 	//Des Map pour représenter les tableaux...
 	private Map<String,List<Ranking>> rankingsPerRaid;
-	private HashMap<String,HashMap<Integer,List<Integer>>> valuesPerUserPerRaid = null ;
+	private HashMap<String,HashMap<Integer,HashMap<String,List<Integer>>>> valuesPerUserPerRaid = null ;
 	
-	private Map<String,Map<Integer,String>> currentTargetRankingPerUserPerRaid = new HashMap<String,Map<Integer,String>>();
+	
+	private final static String KEY_VALUES = "values";
+	private final static String KEY_TARGET_RANK = "targetRank";
 	
 	private Map<String,String> rulesPerRaid;
 	
@@ -94,21 +94,21 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	 */
 	public EquilibrageCommand() {
 		super();
-		
+				
 		//AJOUTER DE NOUVEAUX RAIDS ICI
 		rankingsPerRaid = new HashMap<String,List<Ranking>>();
 		rankingsPerRaid.put(RANCOR,Arrays.asList(new Ranking("1-10",1,7),new Ranking("11-30",2,20),new Ranking("31+",2,20)));
 		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7),new Ranking("11-30",2,20),new Ranking("31+",2,20)));
 		
 		rulesPerRaid = new HashMap<String,String>();
-		rulesPerRaid.put(RANCOR, "@everyone \r\n"
+		rulesPerRaid.put(RANCOR, "everyone \r\n"
 				+ ":round_pushpin: Raid **RANCOR** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à 800k pour se placer\r\n" + 
 				":white_small_square: Tranche 4-10 entre 400K et 600K\r\n" + 
 				":white_small_square: Tranche 11-30 entre 100K et 300K\r\n" + 
 				":white_small_square: Tranche 31+ à 0\r\n" + 
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
-		rulesPerRaid.put(TANK, "@everyone \r\n"
+		rulesPerRaid.put(TANK, "everyone \r\n"
 				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à fond\r\n" + 
 				":white_small_square: Tranche 4-10 entre 1,1M et 1,3M\r\n" + 
@@ -122,20 +122,19 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	@Override
 	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
 		
+		//Si les tableaux n'ont pas été chargés, les charger maintenant...
+		if(valuesPerUserPerRaid == null) {
+			String readReturn = readFromJson();
+			if(readReturn != null) {
+				return new CommandAnswer(readReturn,null);
+			}
+		}
+		
 		User author = messageRecu.getAuthor();
 		Channel chan = messageRecu.getChannelReceiver();
 
 		if(params == null || params.size() == 0) {
-			//Appel sans paramètres : retourner l'équilibrage sur tous les raids
-
-			//Si les tableaux n'ont pas été chargés, les charger maintenant...
-			if(valuesPerUserPerRaid == null) {
-				String readReturn = readFromJson();
-				if(readReturn != null) {
-					return new CommandAnswer(readReturn,null);
-				}
-			}
-			
+			//Appel sans paramètres : retourner l'équilibrage sur tous les raids			
 			Set<String> raids = rankingsPerRaid.keySet();
 			
 			EmbedBuilder embed = new EmbedBuilder();
@@ -161,14 +160,6 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				}
 			}
 			
-			//Si les tableaux n'ont pas été chargés, les charger maintenant...
-			if(valuesPerUserPerRaid == null) {
-				String readReturn = readFromJson();
-				if(readReturn != null) {
-					return new CommandAnswer(readReturn,null);
-				}
-			}
-			
 			//Accepter des noms alternatifs
 			param = param.replaceAll("haat", "tank");
 			param = param.replaceAll("aat", "tank");
@@ -188,6 +179,53 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			else {
 				return new CommandAnswer(error("Nom du raid non trouvé"),null);
 			}
+		}
+		else if(params.size() >= 2 && END_RAID_COMMAND.equals(params.get(0))) {
+			if(!isAdmin) {
+				return new CommandAnswer(FORBIDDEN,null);
+			}
+			
+			String raidName = params.get(1);
+			
+			Map<Integer,Integer> punished = new HashMap<Integer,Integer>();
+			Set<Integer> notParticipated = new HashSet<Integer>();
+			
+			for(int i=2;i<params.size();i++) {
+				String[] param = params.get(i).split("-");
+				
+				if(param.length != 2) {
+					return new CommandAnswer("Merci d'utiliser la forme @user-X pour désigner les membres dans cette commande",null);
+				}
+				
+				String userId = param[0];
+				String rank = param[1];
+				
+				if(!userId.startsWith("<@") || ! userId.endsWith(">")) {
+					return new CommandAnswer("Merci d'utiliser la forme @user-X pour désigner les membres dans cette commande",null);
+				}
+				
+				Integer userDiscriminator = getUserDiscriminator(chan, userId);
+				
+				if("0".equals(rank)) {
+					notParticipated.add(userDiscriminator);
+				}
+				
+				if(PODIUM.equals(rank)) {
+					punished.put(userDiscriminator, -1);
+				}
+				else {
+					try {
+						Integer rankInt = Integer.valueOf(rank);
+						
+						punished.put(userDiscriminator, rankInt);
+					}
+					catch(NumberFormatException e) {
+						return new CommandAnswer("Merci d'utiliser la forme @user-X pour désigner les membres dans cette commande",null);
+					}
+				}		
+			}
+			return finishRaid(raidName,punished,notParticipated);
+
 		}
 		else if(params.size() == 2) {
 			String command = params.get(0);
@@ -232,14 +270,6 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				return new CommandAnswer(FORBIDDEN,null);
 			}
 			
-			//Si les tableaux n'ont pas été chargés, les charger maintenant...
-			if(valuesPerUserPerRaid == null) {
-				String readReturn = readFromJson();
-				if(readReturn != null) {
-					return new CommandAnswer(readReturn,null);
-				}
-			}
-			
 			String raidName = params.get(1);
 			
 			if(!params.get(2).startsWith("<@") || !params.get(3).startsWith("<@") || !params.get(4).startsWith("<@")
@@ -271,18 +301,86 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 	
 
+	private CommandAnswer finishRaid(String raidName, Map<Integer, Integer> punished, Set<Integer> notParticipated) {
+
+		HashMap<Integer, HashMap<String, List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
+		
+		if(valuesPerUser == null) {
+			return new CommandAnswer("Raid non trouvé",null);
+		}
+		
+		for(Map.Entry<Integer, HashMap<String, List<Integer>>> user : valuesPerUser.entrySet()) {
+			
+
+			if(notParticipated.contains(user.getKey())) {
+				user.getValue().put(KEY_TARGET_RANK, null);
+				continue;
+			}
+			
+			if(user.getValue().get(KEY_TARGET_RANK) == null) {
+				return new CommandAnswer("Ce raid n'est pas en cours, ou il y a eu un problème avec le fichier stockant les données",null);
+			}
+			
+			//On prend le numéro de rang stocké dans la grosse Map
+			Integer rankCursor = user.getValue().get(KEY_TARGET_RANK).get(0) - 1;
+			
+			//Si l'utilisateur était puni, on remplace son rang par celui de sa punition
+			if(punished.get(user.getKey()) != null) {
+				rankCursor = punished.get(user.getKey()) - 1;
+			}
+			
+			//Si l'utilisateur est sur le podium…
+			if(rankCursor == -1) {
+				rankCursor = 0;
+				//TODO : Gérer podium
+			}
+			
+			//On récupère la liste de valeurs de l'utilisateur
+			List<Integer> valuesForThisUser = user.getValue().get(KEY_VALUES);
+
+			//On incrémente le classement dans la tranche correspondante.	
+			List<Integer> newValues = new ArrayList<Integer>();
+			
+			for(int i=0;i<valuesForThisUser.size();i++) {
+				if(i == rankCursor) {
+					newValues.add(valuesForThisUser.get(i) + 1);
+				}
+				else {
+					newValues.add(valuesForThisUser.get(i));
+				}
+			}
+			user.getValue().put(KEY_VALUES, newValues);
+			user.getValue().put(KEY_TARGET_RANK, null);
+		}
+		
+		String write = writeToJson();
+		
+		if(write == null) {
+			return new CommandAnswer("Raid terminé avec succès",null);
+		}
+		else {
+			return new CommandAnswer(write,null);
+		}
+	}
+
+
+
 	private String returnUserValues(String raidName,String userId) {
 		Integer userID = Integer.parseInt(userId);
 		
 		List<Ranking> possibleRankings = rankingsPerRaid.get(raidName);
 		
-		Map<Integer,List<Integer>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
+		Map<Integer, HashMap<String, List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
 		
 		if(possibleRankings == null || valuesPerUser == null) {
 			return error("Nom du raid non trouvé");
 		}
 		
-		List<Integer> values = valuesPerUser.get(userID);
+		if(valuesPerUser.get(userID) == null) {
+			return error("Problème dans le fichier json, l'avez-vous modifié à la main ?");
+		}
+		
+		List<Integer> values = valuesPerUser.get(userID).get(KEY_VALUES);
 		
 		if(values == null) {
 			return error("Votre numéro d'utilisateur n'a pas été trouvé dans le tableau d'équilibrage");
@@ -314,7 +412,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			Gson gson = new GsonBuilder().create();
 			
-			Type ValuesMap = new TypeToken<HashMap<String,HashMap<Integer,List<Integer>>>>() {}.getType();
+			Type ValuesMap = new TypeToken<HashMap<String,HashMap<Integer,HashMap<String,List<Integer>>>>>() {}.getType();
 			
 			valuesPerUserPerRaid = gson.fromJson(json, ValuesMap);
 			
@@ -346,14 +444,11 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private CommandAnswer launchRaid(String raidName, Set<Integer> podium, Set<Integer> excludedFromFirstRank, Channel chan) {
 		
 		List<Ranking> rankings = rankingsPerRaid.get(raidName);
-		Map<Integer,List<Integer>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
+		Map<Integer,HashMap<String,List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
 		
 		if(rankings == null || valuesPerUser == null) {
 			return new CommandAnswer(error("Nom du raid non trouvé"), null);
 		}
-		
-		//Initialiser une Map pour stocker les valeurs calculées ici
-		Map<Integer,String> targetRankingPerUser = new HashMap<Integer,String>();
 		
 		//créer une liste d'utilisateurs
 		List<UserScore> usersList = new ArrayList<UserScore>();
@@ -381,10 +476,13 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			for(UserScore user : usersList) {
 				//exclure les joueurs de la première tranche
 				if(firstRank && excludedFromFirstRank.contains(user.userId)) {
-					user.score = -100.;
+					user.score = -10000.;
 				}
 				else {
-					user.score = computeScore(rankings, valuesPerUser.get(user.userId), rankCur);
+					if(valuesPerUser.get(user.userId) == null) {
+						return new CommandAnswer(error("Problème dans le fichier json, l'avez-vous modifié à la main ?"),null);
+					}
+					user.score = computeScore(rankings, valuesPerUser.get(user.userId).get(KEY_VALUES), rankCur);
 				}
 			}
 			
@@ -393,9 +491,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			//Mettre le podium dans le retour
 			if(firstRank) {
-				returnTextForThisRank += PODIUM;
+				returnTextForThisRank += PODIUM_TEXT;
 				for(Integer userId : podium) {
 					returnTextForThisRank += getUserName(userId,chan) + "\r\n";
+					valuesPerUser.get(userId).put(KEY_TARGET_RANK, Arrays.asList(0));
 				}
 				returnTextForThisRank += PODIUM_END;
 				firstRank = false;
@@ -404,7 +503,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			//Prendre les n premiers de la liste
 			for(int userCur=0;userCur<currentRanking.width;userCur++) {
 				UserScore user = usersList.get(0);
-				targetRankingPerUser.put(user.userId, currentRanking.name);
+				valuesPerUser.get(user.userId).put(KEY_TARGET_RANK, Arrays.asList(rankCur+1));
 				usersList.remove(0);
 				usersForThisRank.add(getUserName(user.userId,chan));
 			}
@@ -416,9 +515,16 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			}
 			embed.addField("---- "+currentRanking.name+" ----", returnTextForThisRank, true);
 		}
-		currentTargetRankingPerUserPerRaid.put(raidName, targetRankingPerUser);
 		
-		return new CommandAnswer(rulesPerRaid.get(raidName), embed);
+		String write = writeToJson();
+
+		if(write == null) {
+			return new CommandAnswer(rulesPerRaid.get(raidName), embed);
+		}
+		else {
+			return new CommandAnswer(write,null);
+		}
+		
 	}
 	
 	private String getUserName(Integer userId, Channel chan) {
@@ -564,7 +670,11 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				newValuesList.add(0);
 			}
 
-			valuesPerUserPerRaid.get(raidName).put(userId, newValuesList);	
+			HashMap<String,List<Integer>> newValuesMap = new HashMap<String,List<Integer>>();
+			
+			newValuesMap.put(KEY_VALUES, newValuesList);
+			
+			valuesPerUserPerRaid.get(raidName).put(userId, newValuesMap);	
 		}
 		
 		String write = writeToJson();

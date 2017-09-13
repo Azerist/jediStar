@@ -23,7 +23,7 @@
 			"percentDifference":"De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, votre équipe a fait **%s** dégâts.",
 			"percentDifferencePhaseChange":"De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, si mon interprétation est correcte, vous avez changé de phase.\r\nSi c'est bien cela, votre équipe a fait **%s** dégâts.",
 			"damages":"Sur le **%s** en *phase %d*, *%s* dégâts correspondent à **%.1f%%**",
-			"percent":"Sur le **%s** en *phase %d*, *%s%%* correspondent à **%s** dégâts",
+			"percent":"Sur le **%s** en *phase %d*, *%s* correspondent à **%s** dégâts",
 			"target":"Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour atteindre votre objectif de *%s* dégâts, vous devez vous arrêter en **phase %d à %.1f%%**",
 			"help":"Voici des exemples de commandes disponibles pour déterminer vos résultats de raid :\r\n\r\n- **!raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **!raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** !raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** !raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** !raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
 			"targetRange":"Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour être dans la tranche *%s-%s* dégâts, vous devez vous arrêter entre \n **phase %d à %.1f%%** \n et \n **phase %d à %.1f%%**"
