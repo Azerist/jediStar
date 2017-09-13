@@ -47,6 +47,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String END_RAID_COMMAND = "terminer";
 		
 	private final String PODIUM = "podium";
+	private final Integer PODIUM_VALUE = -100;
 	
 	private final String EMBED_TITLE = "Équilibrage de %s";
 	private final Color EMBED_COLOR = Color.BLUE;
@@ -211,7 +212,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				}
 				
 				if(PODIUM.equals(rank)) {
-					punished.put(userDiscriminator, -1);
+					punished.put(userDiscriminator, PODIUM_VALUE);
 				}
 				else {
 					try {
@@ -330,7 +331,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			}
 			
 			//Si l'utilisateur est sur le podium…
-			if(rankCursor == -1) {
+			if(rankCursor == PODIUM_VALUE -1) {
 				rankCursor = 0;
 				//TODO : Gérer podium
 			}
