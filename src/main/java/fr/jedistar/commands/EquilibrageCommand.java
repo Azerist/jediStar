@@ -8,14 +8,18 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,8 +64,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final static String FORBIDDEN = "Vous n'avez pas le droit d'exécuter cette commande";
 
 	private static final String WRITE_ERROR = "Erreur lors de l'écriture du fichier JSON";
+	private static final String WRITE_HISTORY_ERROR = "Erreur lors de l'archivage du fichier JSON";
 
 	private static final String DB_FILE = "balancingMembersDB.json";
+	private static final String HISTORY_DIRECTORY = "History";
 
 	private static final String READ_ERROR = "Erreur lors de la lecture du fichier JSON";
 
@@ -450,9 +456,34 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		}
 	}
 	
+	private String archivePreviousDatabase() {
+		
+		try {
+			Path archiveDirectory =Paths.get(HISTORY_DIRECTORY);
+			Path fileToArchive = Paths.get(DB_FILE);
+			if(Files.notExists(archiveDirectory))
+			{
+				Files.createDirectory(archiveDirectory);
+			}
+			if(Files.exists(fileToArchive))
+			{
+				String archiveFilename=new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss'.json'").format(new Date());
+				Files.move(fileToArchive, archiveDirectory.resolve(archiveFilename));
+			}
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return WRITE_HISTORY_ERROR;
+		}
+		
+		return null;
+	}
+	
 	private String writeToJson() {
 		
 		try {
+			archivePreviousDatabase();
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			
 			String json = gson.toJson(valuesPerUserPerRaid);
