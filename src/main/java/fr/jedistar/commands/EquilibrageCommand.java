@@ -102,14 +102,14 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7),new Ranking("11-30",2,20),new Ranking("31+",2,20)));
 		
 		rulesPerRaid = new HashMap<String,String>();
-		rulesPerRaid.put(RANCOR, "everyone \r\n"
+		rulesPerRaid.put(RANCOR, "@everyone \r\n"
 				+ ":round_pushpin: Raid **RANCOR** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à 800k pour se placer\r\n" + 
 				":white_small_square: Tranche 4-10 entre 400K et 600K\r\n" + 
 				":white_small_square: Tranche 11-30 entre 100K et 300K\r\n" + 
 				":white_small_square: Tranche 31+ à 0\r\n" + 
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
-		rulesPerRaid.put(TANK, "everyone \r\n"
+		rulesPerRaid.put(TANK, "@everyone \r\n"
 				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à fond\r\n" + 
 				":white_small_square: Tranche 4-10 entre 1,1M et 1,3M\r\n" + 
@@ -310,6 +310,36 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			return new CommandAnswer("Raid non trouvé",null);
 		}
 		
+		//Gestion des membres punis
+		for(Map.Entry<Integer, Integer> punishedUser : punished.entrySet()) {
+			
+			Integer userId = punishedUser.getKey();
+			Integer rankCursor = punishedUser.getValue() - 1;
+			
+			//Si la punition est un podium…
+			if(rankCursor == PODIUM_VALUE -1) {
+				rankCursor = 0;
+				//TODO : Gérer podium
+			}
+			
+			//On récupère la liste de valeurs de l'utilisateur
+			List<Integer> valuesForThisUser = valuesPerUser.get(userId).get(KEY_VALUES);
+
+			//On incrémente le classement dans la tranche correspondante.	
+			List<Integer> newValues = new ArrayList<Integer>();
+			
+			for(int i=0;i<valuesForThisUser.size();i++) {
+				if(i == rankCursor) {
+					newValues.add(valuesForThisUser.get(i) + 1);
+				}
+				else {
+					newValues.add(valuesForThisUser.get(i));
+				}
+			}
+			valuesPerUser.get(userId).put(KEY_VALUES, newValues);
+		}
+		
+		//Gestion des membres non punis
 		for(Map.Entry<Integer, HashMap<String, List<Integer>>> user : valuesPerUser.entrySet()) {
 			
 
@@ -324,11 +354,6 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			//On prend le numéro de rang stocké dans la grosse Map
 			Integer rankCursor = user.getValue().get(KEY_TARGET_RANK).get(0) - 1;
-			
-			//Si l'utilisateur était puni, on remplace son rang par celui de sa punition
-			if(punished.get(user.getKey()) != null) {
-				rankCursor = punished.get(user.getKey()) - 1;
-			}
 			
 			//Si l'utilisateur est sur le podium…
 			if(rankCursor == PODIUM_VALUE -1) {
@@ -495,7 +520,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				returnTextForThisRank += PODIUM_TEXT;
 				for(Integer userId : podium) {
 					returnTextForThisRank += getUserName(userId,chan) + "\r\n";
-					valuesPerUser.get(userId).put(KEY_TARGET_RANK, Arrays.asList(0));
+					valuesPerUser.get(userId).put(KEY_TARGET_RANK, Arrays.asList(PODIUM_VALUE));
 				}
 				returnTextForThisRank += PODIUM_END;
 				firstRank = false;
