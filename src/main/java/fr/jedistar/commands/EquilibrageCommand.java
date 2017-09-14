@@ -1,19 +1,10 @@
 package fr.jedistar.commands;
 
 import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -35,7 +25,6 @@ import com.vdurmont.emoji.EmojiManager;
 import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
-import de.btobastian.javacord.entities.message.Reaction;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import de.btobastian.javacord.entities.message.impl.ImplReaction;
 import fr.jedistar.JediStarBotCommand;
@@ -67,7 +56,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private static final String WRITE_HISTORY_ERROR = "Erreur lors de l'archivage du fichier JSON";
 
 	private static final String DB_FILE = "balancingMembersDB.json";
-	private static final String HISTORY_DIRECTORY = "History";
+	private static final String HISTORY_DIRECTORY = "History/balancingMembersDB";
 
 	private static final String READ_ERROR = "Erreur lors de la lecture du fichier JSON";
 
@@ -459,25 +448,22 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private String archivePreviousDatabase() {
 		
 		try {
-			Path archiveDirectory =Paths.get(HISTORY_DIRECTORY);
 			Path fileToArchive = Paths.get(DB_FILE);
-			if(Files.notExists(archiveDirectory))
-			{
-				Files.createDirectory(archiveDirectory);
-			}
-			if(Files.exists(fileToArchive))
-			{
-				String archiveFilename=new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss'.json'").format(new Date());
-				Files.move(fileToArchive, archiveDirectory.resolve(archiveFilename));
-			}
-			
+
+			String archiveFilename= new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date()) + ".json";
+			Path archiveDirectory = Paths.get(HISTORY_DIRECTORY);
+
+			Files.createDirectories(archiveDirectory);
+
+			Files.move(fileToArchive, archiveDirectory.resolve(archiveFilename));
+
+			return null;
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 			return WRITE_HISTORY_ERROR;
 		}
 		
-		return null;
 	}
 	
 	private String writeToJson() {
