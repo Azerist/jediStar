@@ -1,6 +1,7 @@
 package fr.jedistar.commands;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,6 +83,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	
 	private final static String KEY_VALUES = "values";
 	private final static String KEY_TARGET_RANK = "targetRank";
+	private final static String KEY_PODIUMS = "podiums";
+	private final static String KEY_WITHOUT_PODIUM = "withoutPodium";
 	
 	private Map<String,String> rulesPerRaid;
 	
@@ -90,6 +93,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	 */
 	public EquilibrageCommand() {
 		super();
+
 				
 		//AJOUTER DE NOUVEAUX RAIDS ICI
 		rankingsPerRaid = new HashMap<String,List<Ranking>>();
@@ -311,14 +315,18 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			Integer userId = punishedUser.getKey();
 			Integer rankCursor = punishedUser.getValue() - 1;
 			
+			HashMap<String, List<Integer>> valuesMapForThisUser = valuesPerUser.get(userId);
+
 			//Si la punition est un podium…
 			if(rankCursor == PODIUM_VALUE -1) {
 				rankCursor = 0;
-				//TODO : Gérer podium
+				Integer nbPodiums = valuesMapForThisUser.get(KEY_PODIUMS).get(0);
+				valuesMapForThisUser.put(KEY_PODIUMS, Arrays.asList(nbPodiums +1));
+				valuesMapForThisUser.put(KEY_PODIUMS, Arrays.asList(0));
 			}
 			
 			//On récupère la liste de valeurs de l'utilisateur
-			List<Integer> valuesForThisUser = valuesPerUser.get(userId).get(KEY_VALUES);
+			List<Integer> valuesForThisUser = valuesMapForThisUser.get(KEY_VALUES);
 
 			//On incrémente le classement dans la tranche correspondante.	
 			List<Integer> newValues = new ArrayList<Integer>();
@@ -331,33 +339,36 @@ public class EquilibrageCommand implements JediStarBotCommand {
 					newValues.add(valuesForThisUser.get(i));
 				}
 			}
-			valuesPerUser.get(userId).put(KEY_VALUES, newValues);
+			valuesMapForThisUser.put(KEY_VALUES, newValues);
 		}
 		
 		//Gestion des membres non punis
 		for(Map.Entry<Integer, HashMap<String, List<Integer>>> user : valuesPerUser.entrySet()) {
 			
 
+			HashMap<String, List<Integer>> valuesMapForThisUser = user.getValue();
 			if(notParticipated.contains(user.getKey())) {
-				user.getValue().put(KEY_TARGET_RANK, null);
+				valuesMapForThisUser.put(KEY_TARGET_RANK, null);
 				continue;
 			}
 			
-			if(user.getValue().get(KEY_TARGET_RANK) == null) {
+			if(valuesMapForThisUser.get(KEY_TARGET_RANK) == null) {
 				return new CommandAnswer("Ce raid n'est pas en cours, ou il y a eu un problème avec le fichier stockant les données",null);
 			}
 			
 			//On prend le numéro de rang stocké dans la grosse Map
-			Integer rankCursor = user.getValue().get(KEY_TARGET_RANK).get(0) - 1;
+			Integer rankCursor = valuesMapForThisUser.get(KEY_TARGET_RANK).get(0) - 1;
 			
 			//Si l'utilisateur est sur le podium…
 			if(rankCursor == PODIUM_VALUE -1) {
 				rankCursor = 0;
-				//TODO : Gérer podium
+				Integer nbPodiums = valuesMapForThisUser.get(KEY_PODIUMS).get(0);
+				valuesMapForThisUser.put(KEY_PODIUMS, Arrays.asList(nbPodiums +1));
+				valuesMapForThisUser.put(KEY_PODIUMS, Arrays.asList(0));
 			}
 			
 			//On récupère la liste de valeurs de l'utilisateur
-			List<Integer> valuesForThisUser = user.getValue().get(KEY_VALUES);
+			List<Integer> valuesForThisUser = valuesMapForThisUser.get(KEY_VALUES);
 
 			//On incrémente le classement dans la tranche correspondante.	
 			List<Integer> newValues = new ArrayList<Integer>();
@@ -370,8 +381,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 					newValues.add(valuesForThisUser.get(i));
 				}
 			}
-			user.getValue().put(KEY_VALUES, newValues);
-			user.getValue().put(KEY_TARGET_RANK, null);
+			valuesMapForThisUser.put(KEY_VALUES, newValues);
+			valuesMapForThisUser.put(KEY_TARGET_RANK, null);
 		}
 		
 		String write = writeToJson();
