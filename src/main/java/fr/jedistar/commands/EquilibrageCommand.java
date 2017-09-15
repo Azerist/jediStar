@@ -148,34 +148,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				embed.addField(raidName, returnUserValues(raidName, author.getDiscriminator()), true);
 				
 			}
-			String currentRaidTarget = "";
-			for(String raidName : raids) {
-				
-				HashMap<Integer, HashMap<String, List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
-				if (valuesPerUser!=null)
-				{
-					HashMap<String, List<Integer>> userInfos =  valuesPerUser.get(Integer.parseInt(author.getDiscriminator()));
-					if(userInfos !=null)
-					{
-						List<Integer> userTargetRanks = userInfos.get(KEY_TARGET_RANK);
-						if(userTargetRanks != null)
-						{
-							Integer userTargetRank = userTargetRanks.get(0)-1;
-							List<Ranking> possibleRankings = rankingsPerRaid.get(raidName);
-							if(userTargetRank>=0 && userTargetRank<possibleRankings.size())
-							{
-								Ranking ranking = possibleRankings.get(userTargetRank);
-								
-								currentRaidTarget += String.format(MESSAGE_CURRENT_RAIDS_RANGE,raidName,ranking.name,ranking.getDamageRange());
-								
-							}
-							
-						}
-					}
-				}
-				
-				
-			}
+			String currentRaidTarget = findCurrentTargetRankings(author, raids);
 			
 			if(!currentRaidTarget.isEmpty())
 			{
@@ -333,6 +306,38 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		}
 		
 		return new CommandAnswer(error("Commande incorrecte"),null);
+	}
+
+
+
+	private String findCurrentTargetRankings(User author, Set<String> raids) {
+		String currentRaidTarget = "";
+		for(String raidName : raids) {
+			
+			HashMap<Integer, HashMap<String, List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
+			if (valuesPerUser!=null)
+			{
+				HashMap<String, List<Integer>> userInfos =  valuesPerUser.get(Integer.parseInt(author.getDiscriminator()));
+				if(userInfos !=null)
+				{
+					List<Integer> userTargetRanks = userInfos.get(KEY_TARGET_RANK);
+					if(userTargetRanks != null)
+					{
+						Integer userTargetRank = userTargetRanks.get(0)-1;
+						List<Ranking> possibleRankings = rankingsPerRaid.get(raidName);
+						if(userTargetRank>=0 && userTargetRank<possibleRankings.size())
+						{
+							Ranking ranking = possibleRankings.get(userTargetRank);
+							
+							currentRaidTarget += String.format(MESSAGE_CURRENT_RAIDS_RANGE,raidName,ranking.name,ranking.getDamageRange());
+							
+						}
+						
+					}
+				}
+			}	
+		}
+		return currentRaidTarget;
 	}
 
 
@@ -503,7 +508,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		try {
 			Path fileToArchive = Paths.get(DB_FILE);
 
-			String archiveFilename= new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date()) + ".json";
+			String archiveFilename= new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + ".json";
 			Path archiveDirectory = Paths.get(HISTORY_DIRECTORY);
 
 			Files.createDirectories(archiveDirectory);
