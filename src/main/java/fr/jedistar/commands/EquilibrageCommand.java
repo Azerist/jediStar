@@ -364,7 +364,12 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				rankCursor = 0;
 				Integer nbPodiums = valuesMapForThisUser.get(KEY_PODIUMS).get(0);
 				valuesMapForThisUser.put(KEY_PODIUMS, Arrays.asList(nbPodiums +1));
-				valuesMapForThisUser.put(KEY_PODIUMS, Arrays.asList(0));
+				valuesMapForThisUser.put(KEY_PODIUMS, Arrays.asList(0));			
+			}
+			else {
+				//S'il n'est pas sur le podium, incrémenter son nombre de raids sans podium
+				Integer nbRaidsSansPodium = valuesMapForThisUser.get(KEY_WITHOUT_PODIUM).get(0);
+				valuesMapForThisUser.put(KEY_WITHOUT_PODIUM, Arrays.asList(nbRaidsSansPodium +1));
 			}
 			
 			//On récupère la liste de valeurs de l'utilisateur
