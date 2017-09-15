@@ -46,6 +46,9 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String EMBED_TITLE = "Équilibrage de %s";
 	private final Color EMBED_COLOR = Color.BLUE;
 	private final String MESSAGE_LINE = "**Tranche %s** : %d\r\n";
+	private final String MESSAGE_CURRENT_RAIDS_TITLE = "Objectif pour les raids en cours :\r\n";
+	private final String MESSAGE_CURRENT_RAIDS_RANGE = "**%S **: Tranche %s %s dégâts\r\n";
+	
 	private final String PODIUM_TEXT = "**+--- Podium ---+**\r\n";
 	private final String PODIUM_END = "**+--------------+**\r\n\r\n";
 		
@@ -97,8 +100,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				
 		//AJOUTER DE NOUVEAUX RAIDS ICI
 		rankingsPerRaid = new HashMap<String,List<Ranking>>();
-		rankingsPerRaid.put(RANCOR,Arrays.asList(new Ranking("1-10",1,7),new Ranking("11-30",2,20),new Ranking("31+",2,20)));
-		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7),new Ranking("11-30",2,20),new Ranking("31+",2,20)));
+		rankingsPerRaid.put(RANCOR,Arrays.asList(new Ranking("1-10",1,7,400000,600000),new Ranking("11-30",2,20,100000,300000),new Ranking("31+",2,20,0,0)));
+		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7,1100000,1300000),new Ranking("11-30",2,20,800000,1000000),new Ranking("31+",2,20,600000,700000)));
 		
 		rulesPerRaid = new HashMap<String,String>();
 		rulesPerRaid.put(RANCOR, "@everyone \r\n"
@@ -143,6 +146,40 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			for(String raidName : raids) {
 				embed.addField(raidName, returnUserValues(raidName, author.getDiscriminator()), true);
+				
+			}
+			String currentRaidTarget = "";
+			for(String raidName : raids) {
+				
+				HashMap<Integer, HashMap<String, List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
+				if (valuesPerUser!=null)
+				{
+					HashMap<String, List<Integer>> userInfos =  valuesPerUser.get(Integer.parseInt(author.getDiscriminator()));
+					if(userInfos !=null)
+					{
+						List<Integer> userTargetRanks = userInfos.get(KEY_TARGET_RANK);
+						if(userTargetRanks != null)
+						{
+							Integer userTargetRank = userTargetRanks.get(0)-1;
+							List<Ranking> possibleRankings = rankingsPerRaid.get(raidName);
+							if(userTargetRank>=0 && userTargetRank<possibleRankings.size())
+							{
+								Ranking ranking = possibleRankings.get(userTargetRank);
+								
+								currentRaidTarget += String.format(MESSAGE_CURRENT_RAIDS_RANGE,raidName,ranking.name,ranking.getDamageRange());
+								
+							}
+							
+						}
+					}
+				}
+				
+				
+			}
+			
+			if(!currentRaidTarget.isEmpty())
+			{
+				embed.addField(MESSAGE_CURRENT_RAIDS_TITLE, currentRaidTarget, false);	
 			}
 			
 			return new CommandAnswer(null,embed);
@@ -766,16 +803,50 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 	}
 	
+	
+	
 	private class Ranking{
 		
 		public String name;
 		public Integer weight;
 		public Integer width;
+		public Integer lowDamage;
+		public Integer highDamage;
 		
-		public Ranking(String name, Integer weight, Integer width) {
+		public Ranking(String name, Integer weight, Integer width, Integer lowDamage, Integer highDamage) {
 			this.name = name;
 			this.weight = weight;
 			this.width = width;
+			this.lowDamage = lowDamage;
+			this.highDamage = highDamage;
+		}
+		
+		private String formatNumber(Integer value)
+		{
+			String result;
+			if(value>999999) {
+				 result = String.format("%dM", value/1000000);
+			}
+			else if(value>999) {
+				 result = String.format("%dK", value/1000);
+			}
+			else {
+				 result = String.format("%d", value);
+			}
+			return result;
+			
+			
+		}
+		public String getDamageRange()
+		{
+			if(lowDamage == highDamage)
+			{
+				return "à "+formatNumber(lowDamage);
+			}
+			else
+			{
+				return "entre "+formatNumber(lowDamage)+" et "+formatNumber(highDamage);
+			}
 		}
 	}
 }
