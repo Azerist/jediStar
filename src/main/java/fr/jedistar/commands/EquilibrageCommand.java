@@ -48,6 +48,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String MESSAGE_LINE = "**Tranche %s** : %d\r\n";
 	private final String MESSAGE_CURRENT_RAIDS_TITLE = "Objectif pour les raids en cours :\r\n";
 	private final String MESSAGE_CURRENT_RAIDS_RANGE = "**%S **: Tranche %s %s dégâts\r\n";
+	private final String MESSAGE_CURRENT_RAIDS_PODIUM = "**%S **: Podium\r\n";
+
 	
 	private final String PODIUM_TEXT = "**+--- Podium ---+**\r\n";
 	private final String PODIUM_END = "**+--------------+**\r\n\r\n";
@@ -325,6 +327,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 					{
 						Integer userTargetRank = userTargetRanks.get(0)-1;
 						List<Ranking> possibleRankings = rankingsPerRaid.get(raidName);
+						
+						if(userTargetRank == PODIUM_VALUE - 1) {
+							currentRaidTarget += String.format(MESSAGE_CURRENT_RAIDS_PODIUM, raidName);
+						}
 						if(userTargetRank>=0 && userTargetRank<possibleRankings.size())
 						{
 							Ranking ranking = possibleRankings.get(userTargetRank);
