@@ -54,7 +54,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String PODIUM_TEXT = "**+--- Podium ---+**\r\n";
 	private final String PODIUM_END = "**+--------------+**\r\n\r\n";
 		
-	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX";
+	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX\r\n!equilibrage terminer tank\r\n!equilibrage lancer tank podium-auto @exclusDuTop10\r\n!equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10";
 	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
 	private final static String FORBIDDEN = "Vous n'avez pas le droit d'exécuter cette commande";
 
@@ -90,6 +90,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final static String KEY_TARGET_RANK = "targetRank";
 	private final static String KEY_PODIUMS = "podiums";
 	private final static String KEY_WITHOUT_PODIUM = "withoutPodium";
+	private static final Object COMMAND_AUTO_PODIUM = "podium-auto";
+	private static final Integer MIN_RAIDS_FOR_PODIUM = 10;
 	
 	private Map<String,String> rulesPerRaid;
 	
@@ -146,16 +148,18 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			embed.setTitle(String.format(EMBED_TITLE, author.getName()));
 			embed.setColor(EMBED_COLOR);
 			
-			for(String raidName : raids) {
-				embed.addField(raidName, returnUserValues(raidName, author.getDiscriminator()), true);
-				
-			}
 			String currentRaidTarget = findCurrentTargetRankings(author, raids);
 			
 			if(!currentRaidTarget.isEmpty())
 			{
 				embed.addField(MESSAGE_CURRENT_RAIDS_TITLE, currentRaidTarget, false);	
 			}
+			
+			for(String raidName : raids) {
+				embed.addField(raidName, returnUserValues(raidName, author.getDiscriminator()), true);
+				
+			}
+			
 			
 			return new CommandAnswer(null,embed);
 		}
@@ -276,7 +280,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				}
 			}
 		}
-		else if(params.size() >= 5 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
+		else if(params.size() >= 3 && LAUNCH_RAID_COMMAND.equals(params.get(0))) {
 			
 			if(!isAdmin) {
 				return new CommandAnswer(FORBIDDEN,null);
@@ -284,17 +288,34 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			String raidName = params.get(1);
 			
-			if(!params.get(2).startsWith("<@") || !params.get(3).startsWith("<@") || !params.get(4).startsWith("<@")
-					|| !params.get(2).endsWith(">") || !params.get(3).endsWith(">") || !params.get(4).endsWith(">")) {
-				return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner le podium",null);
+			Set<Integer> podium;
+			int firstExcluded = 0;
+			
+			//Détecter la fonction podium auto
+			if(COMMAND_AUTO_PODIUM.equals(params.get(2))) {
+
+				podium = generatePodium(raidName);
+				
+				if(podium == null) {
+					return new CommandAnswer("Une erreur s'est produite lors de la génération du podium",null);
+				}
+				firstExcluded = 3;
 			}
-			Set<Integer> podium = new HashSet<Integer>();
-			podium.add(getUserDiscriminator(chan, params.get(2)));
-			podium.add(getUserDiscriminator(chan, params.get(3)));
-			podium.add(getUserDiscriminator(chan, params.get(4)));
+			else {
+				if(!params.get(2).startsWith("<@") || !params.get(3).startsWith("<@") || !params.get(4).startsWith("<@")
+						|| !params.get(2).endsWith(">") || !params.get(3).endsWith(">") || !params.get(4).endsWith(">")) {
+					return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner le podium",null);
+				}
+				podium = new HashSet<Integer>();
+				podium.add(getUserDiscriminator(chan, params.get(2)));
+				podium.add(getUserDiscriminator(chan, params.get(3)));
+				podium.add(getUserDiscriminator(chan, params.get(4)));
+
+				firstExcluded = 5;
+			}
 			
 			Set<Integer> excludedFromFirstRank = new HashSet<Integer>();
-			for(int i = 5; i<params.size();i++) {
+			for(int i = firstExcluded; i<params.size();i++) {
 				String excluded = params.get(i);
 				
 				if(!excluded.startsWith("<@") || ! excluded.endsWith(">")) {
@@ -308,6 +329,50 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		}
 		
 		return new CommandAnswer(error("Commande incorrecte"),null);
+	}
+
+
+
+	private Set<Integer> generatePodium(String raidName) {
+		
+		Map<Integer,HashMap<String,List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
+		
+		if(valuesPerUser == null) {
+			return null;
+		}
+		
+		Set<Integer> podium = new HashSet<Integer>();
+		
+		//Créer une liste de membres
+		List<PodiumUserScore> usersList = new ArrayList<PodiumUserScore>();
+		for(Integer userId : valuesPerUser.keySet()) {
+			HashMap<String,List<Integer>> valuesForThisUser = valuesPerUser.get(userId);
+			
+			//Récupérer les valeurs relatives aux podiums
+			Integer nbPodiums = valuesForThisUser.get(KEY_PODIUMS).get(0);
+			Integer nbRaidsWithoutPodium = valuesForThisUser.get(KEY_WITHOUT_PODIUM).get(0);
+			
+			//calculer le nombre total de participations
+			Integer totalNbRaids = 0;
+			for(Integer nbRaids : valuesForThisUser.get(KEY_VALUES)) {
+				totalNbRaids += nbRaids;
+			}
+			
+			//Les utilisateurs ayant moins du minimum de participation sont ignorés
+			if(totalNbRaids > MIN_RAIDS_FOR_PODIUM) {
+				PodiumUserScore userScore = new PodiumUserScore(userId,nbPodiums, totalNbRaids, nbRaidsWithoutPodium);
+				usersList.add(userScore);
+			}
+		}
+		
+		//Trier la liste, puis prendre les trois premiers
+		Collections.sort(usersList);
+		
+		for(int i=0;i<3;i++) {
+			podium.add(usersList.get(i).userId);
+		}
+		
+		return podium;
 	}
 
 
@@ -848,6 +913,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			
 		}
+		
 		public String getDamageRange()
 		{
 			if(lowDamage == highDamage)
@@ -858,6 +924,29 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			{
 				return "entre "+formatNumber(lowDamage)+" et "+formatNumber(highDamage);
 			}
+		}
+	}
+	
+	private class PodiumUserScore implements Comparable<PodiumUserScore>{
+		
+		public Integer userId;
+		private Double score;
+		private Integer nbRaidsWithoutPodium;
+		
+		public PodiumUserScore(Integer userId,Integer nbPodiums, Integer totalNbRaids, Integer nbRaidsWithoutPodium) {
+			this.userId = userId;
+			this.score = nbPodiums.doubleValue() / totalNbRaids;
+			this.nbRaidsWithoutPodium = nbRaidsWithoutPodium;
+		}
+
+		@Override
+		public int compareTo(PodiumUserScore o) {
+
+			if(this.score.equals(o.score)) {
+				return o.nbRaidsWithoutPodium - this.nbRaidsWithoutPodium;
+			}
+			
+			return (int) (10000 * (this.score - o.score));
 		}
 	}
 }
