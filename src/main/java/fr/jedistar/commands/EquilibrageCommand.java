@@ -901,7 +901,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		{
 			String result;
 			if(value>999999) {
-				 result = String.format("%dM", value/1000000);
+				 result = String.format("%dM", value/1000000.);
 			}
 			else if(value>999) {
 				 result = String.format("%dK", value/1000);
