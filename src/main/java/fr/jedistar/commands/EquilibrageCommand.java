@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
@@ -926,17 +927,19 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		}
 		
 		try {
-			Files.createDirectories(Paths.get("reports"));
 			
-			String filename = "reports/swgohGuildReport_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + ".xlsx";
+			String filename = "swgohGuildReport_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + ".xlsx";
 			FileOutputStream fileOut = new FileOutputStream(filename);
 			
 			wb.write(fileOut);
 			fileOut.close();
+			wb.close();
+
+			chan.sendFile(new File(filename)).get();
 			
-			chan.sendFile(new File(filename));
-			
-		} catch (IOException e) {
+			Files.delete(Paths.get(filename));
+				
+		} catch (IOException | InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 			return "Une erreur est survenue lors de la génération du rapport";
 		}
