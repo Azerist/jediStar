@@ -863,6 +863,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			HashMap<String,List<Integer>> newValuesMap = new HashMap<String,List<Integer>>();
 			
 			newValuesMap.put(KEY_VALUES, newValuesList);
+			newValuesMap.put(KEY_PODIUMS, Arrays.asList(0));
+			newValuesMap.put(KEY_WITHOUT_PODIUM, Arrays.asList(0));
 			
 			valuesPerUserPerRaid.get(raidName).put(userId, newValuesMap);	
 		}
