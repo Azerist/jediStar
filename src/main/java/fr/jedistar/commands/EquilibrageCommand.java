@@ -1,6 +1,8 @@
 package fr.jedistar.commands;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -17,6 +19,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,6 +46,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String COMMAND_UPDATE = "maj";
 	private final String LAUNCH_RAID_COMMAND = "lancer";
 	private final String END_RAID_COMMAND = "terminer";
+	private final String REPORT_COMMAND = "rapport";
 		
 	private final String PODIUM = "podium";
 	private final Integer PODIUM_VALUE = -100;
@@ -127,7 +135,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 	
 	@Override
-	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
+	public CommandAnswer answer(List<String> params,Message receivedMessage,boolean isAdmin) {
 		
 		//Si les tableaux n'ont pas été chargés, les charger maintenant...
 		if(valuesPerUserPerRaid == null) {
@@ -137,8 +145,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			}
 		}
 		
-		User author = messageRecu.getAuthor();
-		Channel chan = messageRecu.getChannelReceiver();
+		User author = receivedMessage.getAuthor();
+		Channel chan = receivedMessage.getChannelReceiver();
 
 		if(params == null || params.size() == 0) {
 			//Appel sans paramètres : retourner l'équilibrage sur tous les raids			
@@ -170,6 +178,15 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			if(COMMAND_UPDATE.equals(param)) {
 				if(isAdmin) {
 					return new CommandAnswer(readFromJson(),null);
+				}
+				else {
+					return new CommandAnswer(FORBIDDEN,null);
+				}
+			}
+			
+			if(REPORT_COMMAND.equals(param)) {
+				if(isAdmin) {
+					return new CommandAnswer(generateExcelReport(receivedMessage),null);
 				}
 				else {
 					return new CommandAnswer(FORBIDDEN,null);
@@ -265,7 +282,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 						}
 					}
 					
-					return beforeDeleteUser(messageRecu, userId);
+					return beforeDeleteUser(receivedMessage, userId);
 				}
 			}
 			else if(COMMAND_ADD.equals(command)) {
@@ -856,6 +873,75 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		}
 		
 		return "Ajout réussi";
+	}
+	
+	/**
+	 * Génère un rapport au format excel et l'envoie sur le chan Discord
+	 * @param receivedMessage
+	 */
+	private String generateExcelReport(Message receivedMessage) {
+		
+		Channel chan = receivedMessage.getChannelReceiver();
+		
+		XSSFWorkbook wb = new XSSFWorkbook();
+		
+		for(String raidName : valuesPerUserPerRaid.keySet()) {
+			Sheet sheet = wb.createSheet(raidName);
+			
+			short rowCursor = 0;
+			
+			Row header = sheet.createRow(rowCursor);
+			
+			header.createCell(0).setCellValue("Id Discord");
+			header.createCell(1).setCellValue("Nom");
+			header.createCell(2).setCellValue("Podiums");
+			header.createCell(3).setCellValue("Raids Sans Podium");
+			
+			short colCursor = 4;
+			for(Ranking rank : rankingsPerRaid.get(raidName)) {
+				header.createCell(colCursor).setCellValue(rank.name);
+				colCursor ++;
+			}
+			
+			rowCursor ++;
+			
+			HashMap<Integer,HashMap<String,List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
+			
+			for(Map.Entry<Integer, HashMap<String,List<Integer>>> userValues : valuesPerUser.entrySet()) {
+				Row curRow = sheet.createRow(rowCursor);
+				
+				curRow.createCell(0).setCellValue(userValues.getKey());
+				curRow.createCell(1).setCellValue(getUserName(userValues.getKey(),chan));
+				curRow.createCell(2).setCellValue(userValues.getValue().get(KEY_PODIUMS).get(0));
+				curRow.createCell(3).setCellValue(userValues.getValue().get(KEY_WITHOUT_PODIUM).get(0));
+
+				colCursor = 4;
+				
+				for(Integer nbTimesInThisRank : userValues.getValue().get(KEY_VALUES)) {
+					curRow.createCell(colCursor).setCellValue(nbTimesInThisRank);
+					colCursor ++;
+				}
+				rowCursor++;
+			}
+		}
+		
+		try {
+			Files.createDirectories(Paths.get("reports"));
+			
+			String filename = "reports/swgohGuildReport_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + ".xlsx";
+			FileOutputStream fileOut = new FileOutputStream(filename);
+			
+			wb.write(fileOut);
+			fileOut.close();
+			
+			chan.sendFile(new File(filename));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "Une erreur est survenue lors de la génération du rapport";
+		}
+		
+		return null;
 	}
 	
 	private String error(String message) {
