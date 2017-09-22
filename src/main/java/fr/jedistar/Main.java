@@ -9,9 +9,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.util.StatusPrinter;
-import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.ModsCommand;
 
 public class Main {
@@ -20,10 +17,7 @@ public class Main {
 	
 	//Noms des éléments dans le fichier de paramètres
 	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
-	private static final String PARAM_SHEET_ID = "equilibrageSheetID";
-	private static final String PARAM_AUTH_FILE = "authFile";
 	private static final String PARAM_TOKEN = "discordToken";
-	private static final String PARAM_GOOGLE_API = "googleAPI";
 
 	private static final String DEFAULT_PARAMETERS_FILE = "settings.json";
 	
