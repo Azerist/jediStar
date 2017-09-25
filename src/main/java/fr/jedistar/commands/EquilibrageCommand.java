@@ -123,6 +123,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				":white_small_square: Tranche 4-10 entre 400K et 600K\r\n" + 
 				":white_small_square: Tranche 11-30 entre 100K et 300K\r\n" + 
 				":white_small_square: Tranche 31+ à 0\r\n" + 
+				":clock2: Au bout de **24h**, le podium finit le raid" + 
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
 		rulesPerRaid.put(TANK, "@everyone \r\n"
 				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
@@ -130,6 +131,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				":white_small_square: Tranche 4-10 entre 1,1M et 1,3M\r\n" + 
 				":white_small_square: Tranche 11-30 entre 800K et 1M\r\n" + 
 				":white_small_square: Tranche 31+ entre 600K et 700K\r\n" + 
+				":clock2: Au bout de **34h**, le podium finit le raid" +
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts :warning:");
 	}
 	
