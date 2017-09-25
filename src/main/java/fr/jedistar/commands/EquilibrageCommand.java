@@ -756,8 +756,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 	private Integer getUserDiscriminator(Channel chan,String discordUserId) {
 		
-		discordUserId = discordUserId.replace("<@", "");
-		discordUserId = discordUserId.replace(">", "");
+		discordUserId = discordUserId.replaceAll("^[^0-9]+", "");
+		discordUserId = discordUserId.replaceAll("[^0-9]+$", "");
 
 		User user = chan.getServer().getMemberById(discordUserId);
 		
