@@ -1,5 +1,5 @@
 {
-	"discordToken": "Insérer ICI le token Discord de votre bot",
+	"discordToken": "InsÃ©rer ICI le token Discord de votre bot",
 
 	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json",
 
@@ -13,30 +13,30 @@
 	},
 
 	"baseMessage":"Bonjour %s,\r%s",
-	"errorMessage":"Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n",
+	"errorMessage":"Merci de faire appel Ã  moi, mais je ne peux pas te rÃ©pondre pour la raison suivante :\r\n",
 
 	"raidCommandParameters":{
 	
 		"command":"raid",
 		
 		"messages":{
-			"percentDifference":"De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, votre équipe a fait **%s** dégâts.",
-			"percentDifferencePhaseChange":"De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, si mon interprétation est correcte, vous avez changé de phase.\r\nSi c'est bien cela, votre équipe a fait **%s** dégâts.",
-			"damages":"Sur le **%s** en *phase %d*, *%s* dégâts correspondent à **%.1f%%**",
-			"percent":"Sur le **%s** en *phase %d*, *%s* correspondent à **%s** dégâts",
-			"target":"Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour atteindre votre objectif de *%s* dégâts, vous devez vous arrêter en **phase %d à %.1f%%**",
-			"help":"Voici des exemples de commandes disponibles pour déterminer vos résultats de raid :\r\n\r\n- **!raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **!raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** !raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** !raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** !raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
-			"targetRange":"Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour être dans la tranche *%s-%s* dégâts, vous devez vous arrêter entre \n **phase %d à %.1f%%** \n et \n **phase %d à %.1f%%**"
+			"percentDifference":"De *%.1f%%* Ã  *%.1f%%* sur le **%s** en *phase %d*, votre Ã©quipe a fait **%s** dÃ©gÃ¢ts.",
+			"percentDifferencePhaseChange":"De *%.1f%%* Ã  *%.1f%%* sur le **%s** en *phase %d*, si mon interprÃ©tation est correcte, vous avez changÃ© de phase.\r\nSi c'est bien cela, votre Ã©quipe a fait **%s** dÃ©gÃ¢ts.",
+			"damages":"Sur le **%s** en *phase %d*, *%s* dÃ©gÃ¢ts correspondent Ã  **%.1f%%**",
+			"percent":"Sur le **%s** en *phase %d*, *%s* correspondent Ã  **%s** dÃ©gÃ¢ts",
+			"target":"Sur le **%s**, en commenÃ§ant en *phase %d Ã  %.1f%%* :\r\nPour atteindre votre objectif de *%s* dÃ©gÃ¢ts, vous devez vous arrÃªter en **phase %d Ã  %.1f%%**",
+			"help":"Voici des exemples de commandes disponibles pour dÃ©terminer vos rÃ©sultats de raid :\r\n\r\n- **!raid rancor p1 5.5%** ==> Donne les dÃ©gÃ¢ts correspondant Ã  5.5% rÃ©alisÃ©s en P1 sur le rancor\r\n- **!raid rancor p2 10% 4%** ==> Donne les dÃ©gÃ¢ts correspondant Ã  6% rÃ©alisÃ©s sur la P2 du rancor\r\n - ** !raid aat p3 40000 ** == > Donne le % correspondant Ã  40 K de dÃ©gÃ¢ts sur la p3 du tank\r\n - ** !raid tank p4 35 % 100000 ** == > Donne le % cible Ã  atteindre pour rÃ©aliser 100 K dÃ©gÃ¢ts en commenÃ§ant le combat Ã  35 % sur la P4 du tank\r\n - ** !raid tank p4 35 % 100000 300000 ** == > Donne les % cibles Ã  atteindre pour rÃ©aliser 100 K et 300 k dÃ©gÃ¢ts en commenÃ§ant le combat Ã  35 % sur la P4 du tank",
+			"targetRange":"Sur le **%s**, en commenÃ§ant en *phase %d Ã  %.1f%%* :\r\nPour Ãªtre dans la tranche *%s-%s* dÃ©gÃ¢ts, vous devez vous arrÃªter entre \n **phase %d Ã  %.1f%%** \n et \n **phase %d Ã  %.1f%%**"
 		},
 		
 		"errorMessages":{
-			"overRaidEnd":"Votre objectif dépasse la fin du raid",
-			"overRaidEndSecond":"\nEt votre deuxième objectif dépasse la fin du raid",
-			"incoherentParams":"Les deux derniers paramètres entrés ne sont pas cohérents",
-			"incorrectNumber":"Un nombre entré n'a pas été reconnu correctement",
+			"overRaidEnd":"Votre objectif dÃ©passe la fin du raid",
+			"overRaidEndSecond":"\nEt votre deuxiÃ¨me objectif dÃ©passe la fin du raid",
+			"incoherentParams":"Les deux derniers paramÃ¨tres entrÃ©s ne sont pas cohÃ©rents",
+			"incorrectNumber":"Un nombre entrÃ© n'a pas Ã©tÃ© reconnu correctement",
 			"phaseNotFound":"Nom de la phase non reconnu",
-			"incorrectParamsNumber":"Nombre de paramètres incorrect",
-			"raidNotFound":"raid non trouvé"
+			"incorrectParamsNumber":"Nombre de paramÃ¨tres incorrect",
+			"raidNotFound":"raid non trouvÃ©"
 		},
 		
 		"raids":[
@@ -92,16 +92,29 @@
 		"command":"mods",
 		
 		"messages":{
-			"approxMatches":"\r\n**Voici des personnages qui ressemblent à votre recherche :**\r\n\r\n",
-			"characterMods":"**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **☐** : %s\r\n  **➚** : %s\r\n  **◆** : %s\r\n  **Δ** : %s\r\n  **O** : %s\r\n  **✙** : %s\r\n  ",
-			"help":"Cette commande vous permet de connaître les mods recommandés pour un personnage.\r\n\r\n**Exemple d'appel**\r\n!mods anakin"
+			"approxMatches":"\r\n**Voici des personnages qui ressemblent Ã  votre recherche :**\r\n\r\n",
+			"characterMods":"**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **â˜�** : %s\r\n  **âžš** : %s\r\n  **â—†** : %s\r\n  **Î”** : %s\r\n  **O** : %s\r\n  **âœ™** : %s\r\n  ",
+			"help":"Cette commande vous permet de connaÃ®tre les mods recommandÃ©s pour un personnage.\r\n\r\n**Exemple d'appel**\r\n!mods anakin"
 		},
 		
 		"errorMessages":{
-			"paramsError":"L'API de mods n'est pas correctement configurée. Impossible d'utiliser cette fonction.",
-			"accessError":"Impossible d'accéder à l'API de mods. Impossible d'utiliser cette fonction.",
-			"jsonError":"L'API de mods a renvoyé une réponse mal formatée. Impossible d'utiliser cette fonction.",
-			"tooLong":"**La réponse détaillée est trop longue pour être affichée sur Discord.\r\nVoici la liste des personnages correspondant à votre recherche :**\r\n"
+			"paramsError":"L'API de mods n'est pas correctement configurÃ©e. Impossible d'utiliser cette fonction.",
+			"accessError":"Impossible d'accÃ©der Ã  l'API de mods. Impossible d'utiliser cette fonction.",
+			"jsonError":"L'API de mods a renvoyÃ© une rÃ©ponse mal formatÃ©e. Impossible d'utiliser cette fonction.",
+			"tooLong":"**La rÃ©ponse dÃ©taillÃ©e est trop longue pour Ãªtre affichÃ©e sur Discord.\r\nVoici la liste des personnages correspondant Ã  votre recherche :**\r\n"
+		}
+	},
+	
+	"areneCommandParameters":{
+		
+		"messages":{
+			"fastestPath":"Le meilleur classement peut être atteint en suivant la progression : **%s** \r\n",
+			"help":"Cette commande donne le plus haut rang d'arène accessible en 5 combats.\r\n\r\n**Exemple d'appel**\r\n!arene 26"
+		},
+		
+		"errorMessages":{
+			"incoherentParams":"Un seul paramètre est nécessaire, le rang d'arène de départ",
+			"incorrectNumber":"Le nombre entrÃ© n'a pas Ã©tÃ© reconnu correctement"
 		}
 	}
 }
