@@ -50,6 +50,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String LAUNCH_RAID_COMMAND;
 	private final String END_RAID_COMMAND;
 	private final String REPORT_COMMAND;
+	private final Object COMMAND_DELETE;
+	private final Object COMMAND_ADD;
 		
 	private final String PODIUM = "podium";
 	private final Integer PODIUM_VALUE = -100;
@@ -60,35 +62,23 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String MESSAGE_CURRENT_RAIDS_TITLE;
 	private final String MESSAGE_CURRENT_RAIDS_RANGE;
 	private final String MESSAGE_CURRENT_RAIDS_PODIUM;
-
+	private final String CONFIRM_DELETE;
 	
 	private final String PODIUM_TEXT;
 	private final String PODIUM_END;
 		
 	private final String HELP;
-	private String ERROR_MESSAGE;
-	private final static String FORBIDDEN = "Vous n'avez pas le droit d'exécuter cette commande";
+	private final String ERROR_MESSAGE;
+	private final String FORBIDDEN;
+	private final String WRITE_ERROR;
+	private final String WRITE_HISTORY_ERROR;
+	private final String READ_ERROR;
+	private final String NUMBER_PROBLEM;
 
-	private static final String WRITE_ERROR = "Erreur lors de l'écriture du fichier JSON";
-	private static final String WRITE_HISTORY_ERROR = "Erreur lors de l'archivage du fichier JSON";
 
 	private static final String DB_FILE = "balancingMembersDB.json";
 	private static final String HISTORY_DIRECTORY = "History/balancingMembersDB";
 
-	private static final String READ_ERROR = "Erreur lors de la lecture du fichier JSON";
-
-
-	private static final String CONFIRM_DELETE = "Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible !";
-
-
-	private static final Object COMMAND_DELETE = "supprimer";
-
-
-	private static final String NUMBER_PROBLEM = "Un nombre entré n'a pas été reconnu";
-
-
-	private static final Object COMMAND_ADD = "ajouter";
-	
 	private final String RANCOR = "rancor";
 	private final String TANK = "tank";
 		
@@ -116,6 +106,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final static String JSON_BALANCING_COMMANDS_LAUNCH_RAID="launchRaid";
 	private final static String JSON_BALANCING_COMMANDS_END_RAID="endRaid";
 	private final static String JSON_BALANCING_COMMANDS_REPORT="report";
+	private final static String JSON_BALANCING_COMMANDS_DELETE="delete";
+	private final static String JSON_BALANCING_COMMANDS_ADD="add";
 	
 	private final static String JSON_BALANCING_HELP="help";
 	
@@ -127,7 +119,15 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final static String JSON_BALANCING_MESSAGES_CURRENT_RAID_PODIUM="currentRaidPodium";
 	private final static String JSON_BALANCING_MESSAGES_PODIUM_TEXT="podiumText";
 	private final static String JSON_BALANCING_MESSAGES_PODIUM_END="podiumEnd";
+	private final static String JSON_BALANCING_MESSAGES_CONFIRM_DELETE="confirmDelete";
 	
+	private final static String JSON_BALANCING_ERRORS="errorMessages";
+	private final static String JSON_BALANCING_ERRORS_FORBIDDEN="forbidden";
+	private final static String JSON_BALANCING_ERRORS_WRITE_JSON="writeJson";
+	private final static String JSON_BALANCING_ERRORS_ARCHIVE_JSON="archiveJson";
+	private final static String JSON_BALANCING_ERRORS_READ_JSON="readJson";
+	private final static String JSON_BALANCING_ERRORS_NUMBER="numberProblem";
+
 	/**
 	 * Constructeur
 	 */
@@ -171,6 +171,8 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		LAUNCH_RAID_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_LAUNCH_RAID);
 		END_RAID_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_END_RAID);
 		REPORT_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_REPORT);
+		COMMAND_DELETE = commands.get(JSON_BALANCING_COMMANDS_DELETE);
+		COMMAND_ADD = commands.get(JSON_BALANCING_COMMANDS_ADD);
 		
 		HELP = balancingParams.getString(JSON_BALANCING_HELP);
 		
@@ -182,10 +184,17 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		MESSAGE_CURRENT_RAIDS_PODIUM = messages.getString(JSON_BALANCING_MESSAGES_CURRENT_RAID_PODIUM);
 		PODIUM_TEXT = messages.getString(JSON_BALANCING_MESSAGES_PODIUM_TEXT);
 		PODIUM_END = messages.getString(JSON_BALANCING_MESSAGES_PODIUM_END);
+		CONFIRM_DELETE = messages.getString(JSON_BALANCING_MESSAGES_CONFIRM_DELETE);
 
+		JSONObject errorMessages = balancingParams.getJSONObject(JSON_BALANCING_ERRORS);
+		FORBIDDEN = errorMessages.getString(JSON_BALANCING_ERRORS_FORBIDDEN);
+		WRITE_ERROR = errorMessages.getString(JSON_BALANCING_ERRORS_WRITE_JSON);
+		WRITE_HISTORY_ERROR = errorMessages.getString(JSON_BALANCING_ERRORS_ARCHIVE_JSON);
+		READ_ERROR = errorMessages.getString(JSON_BALANCING_ERRORS_READ_JSON);
+		NUMBER_PROBLEM = errorMessages.getString(JSON_BALANCING_ERRORS_NUMBER);
 	}
 	
-
+	
 	
 	@Override
 	public CommandAnswer answer(List<String> params,Message receivedMessage,boolean isAdmin) {
