@@ -26,7 +26,7 @@ public class RaidCommand implements JediStarBotCommand {
 	
 	final static Logger logger = LoggerFactory.getLogger(JediStarBotCommand.class);
 
-	public static String COMMAND;
+	private final String COMMAND;
 
 	private static String MESSAGE_PERCENTS_DIFFERENCE;
 	private static String MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE;
@@ -93,79 +93,73 @@ public class RaidCommand implements JediStarBotCommand {
 	
 	public RaidCommand() {
 		super();
-		
-		//Lecture du Json
-		try {
-			JSONObject parameters = StaticVars.jsonSettings;
 
-			//messages de base
-			ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-			//Paramètres propres à l'équilibrage
-			JSONObject raidParams = parameters.getJSONObject(JSON_RAID_COMMAND);
-			
-			COMMAND = raidParams.getString(JSON_RAID_COMMAND_COMMAND);
-			
-			//Messages
-			JSONObject messages = raidParams.getJSONObject(JSON_MESSAGES);
-			MESSAGE_PERCENTS_DIFFERENCE = messages.getString(JSON_MESSAGE_PERCENTS_DIFFERENCE);
-			MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE = messages.getString(JSON_MESSAGE_PERCENTS_DIFFERENCE_PHASE_CHANGE);
-			MESSAGE_DAMAGES = messages.getString(JSON_MESSAGE_DAMAGES);
-			MESSAGE_PERCENT = messages.getString(JSON_MESSAGE_PERCENT);
-			MESSAGE_TARGET = messages.getString(JSON_MESSAGE_TARGET);
-			MESSAGE_TARGET_RANGE = messages.getString(JSON_MESSAGE_TARGET_RANGE);
-			HELP = messages.getString(JSON_MESSAGE_HELP);
-			
-			//Messages d'erreur
-			JSONObject errorMessages = raidParams.getJSONObject(JSON_ERROR_MESSAGES);
-			OBJECTIVE_OVER_RAID_END = errorMessages.getString(JSON_ERROR_MESSAGE_OVER_RAID_END);
-			OBJECTIVE_OVER_RAID_END_SECOND = errorMessages.getString(JSON_ERROR_MESSAGE_OVER_RAID_END_SECOND);
-			INCOHERENT_PARAMETERS = errorMessages.getString(JSON_ERROR_MESSAGE_INCOHERENT_PARAMS);
-			INCORRECT_NUMBER = errorMessages.getString(JSON_ERROR_MESSAGE_INCORRECT_NUMBER);
-			PHASE_NOT_FOUND = errorMessages.getString(JSON_ERROR_MESSAGE_PHASE_NOT_FOUND);
-			INCORRECT_PARAMS_NUMBER = errorMessages.getString(JSON_ERROR_MESSAGE_INCORRECT_PARAMS_NUMBER);
-			RAID_NOT_FOUND = errorMessages.getString(JSON_ERROR_MESSAGE_RAID_NOT_FOUND);
+		JSONObject parameters = StaticVars.jsonSettings;
 
-			//gestion des raids
-			JSONArray raids = raidParams.getJSONArray(JSON_RAIDS);
-			phaseHPmap = new HashMap<String, Map<Integer,Integer>>();
-			aliasesMap = new HashMap<String,List<String>>();
+		//messages de base
+		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-			for(int r=0 ; r<raids.length() ; r++) {
-				Map<Integer,Integer> phasesHPmapForThisRaid = new HashMap<Integer,Integer>();
-				
-				JSONObject raid = raids.getJSONObject(r);
-				
-				String raidName = raid.getString(JSON_RAID_NAME);
-				JSONArray phases = raid.getJSONArray(JSON_RAID_PHASES);
-				
-				for(int p=0 ; p<phases.length() ; p++) {
-					JSONObject phase = phases.getJSONObject(p);
-					
-					Integer phaseNumber = phase.getInt(JSON_RAID_PHASE_NUMBER);
-					Integer phaseDamage = phase.getInt(JSON_RAID_PHASE_DAMAGE);
-					
-					phasesHPmapForThisRaid.put(phaseNumber, phaseDamage);
-				}
-				
-				phaseHPmap.put(raidName, phasesHPmapForThisRaid);
-				
-				JSONArray aliases = raid.getJSONArray(JSON_RAID_ALIASES);
-				List<String> aliasesForThisRaid = new ArrayList<String>();
-				
-				for(int a=0 ; a<aliases.length() ; a++) {
-					aliasesForThisRaid.add(aliases.getString(a));
-				}
-				
-				aliasesMap.put(raidName, aliasesForThisRaid);
+		//Paramètres propres à l'équilibrage
+		JSONObject raidParams = parameters.getJSONObject(JSON_RAID_COMMAND);
+
+		COMMAND = raidParams.getString(JSON_RAID_COMMAND_COMMAND);
+
+		//Messages
+		JSONObject messages = raidParams.getJSONObject(JSON_MESSAGES);
+		MESSAGE_PERCENTS_DIFFERENCE = messages.getString(JSON_MESSAGE_PERCENTS_DIFFERENCE);
+		MESSAGE_PERCENTS_DIFFERENCE_PHASECHANGE = messages.getString(JSON_MESSAGE_PERCENTS_DIFFERENCE_PHASE_CHANGE);
+		MESSAGE_DAMAGES = messages.getString(JSON_MESSAGE_DAMAGES);
+		MESSAGE_PERCENT = messages.getString(JSON_MESSAGE_PERCENT);
+		MESSAGE_TARGET = messages.getString(JSON_MESSAGE_TARGET);
+		MESSAGE_TARGET_RANGE = messages.getString(JSON_MESSAGE_TARGET_RANGE);
+		HELP = messages.getString(JSON_MESSAGE_HELP);
+
+		//Messages d'erreur
+		JSONObject errorMessages = raidParams.getJSONObject(JSON_ERROR_MESSAGES);
+		OBJECTIVE_OVER_RAID_END = errorMessages.getString(JSON_ERROR_MESSAGE_OVER_RAID_END);
+		OBJECTIVE_OVER_RAID_END_SECOND = errorMessages.getString(JSON_ERROR_MESSAGE_OVER_RAID_END_SECOND);
+		INCOHERENT_PARAMETERS = errorMessages.getString(JSON_ERROR_MESSAGE_INCOHERENT_PARAMS);
+		INCORRECT_NUMBER = errorMessages.getString(JSON_ERROR_MESSAGE_INCORRECT_NUMBER);
+		PHASE_NOT_FOUND = errorMessages.getString(JSON_ERROR_MESSAGE_PHASE_NOT_FOUND);
+		INCORRECT_PARAMS_NUMBER = errorMessages.getString(JSON_ERROR_MESSAGE_INCORRECT_PARAMS_NUMBER);
+		RAID_NOT_FOUND = errorMessages.getString(JSON_ERROR_MESSAGE_RAID_NOT_FOUND);
+
+		//gestion des raids
+		JSONArray raids = raidParams.getJSONArray(JSON_RAIDS);
+		phaseHPmap = new HashMap<String, Map<Integer,Integer>>();
+		aliasesMap = new HashMap<String,List<String>>();
+
+		for(int r=0 ; r<raids.length() ; r++) {
+			Map<Integer,Integer> phasesHPmapForThisRaid = new HashMap<Integer,Integer>();
+
+			JSONObject raid = raids.getJSONObject(r);
+
+			String raidName = raid.getString(JSON_RAID_NAME);
+			JSONArray phases = raid.getJSONArray(JSON_RAID_PHASES);
+
+			for(int p=0 ; p<phases.length() ; p++) {
+				JSONObject phase = phases.getJSONObject(p);
+
+				Integer phaseNumber = phase.getInt(JSON_RAID_PHASE_NUMBER);
+				Integer phaseDamage = phase.getInt(JSON_RAID_PHASE_DAMAGE);
+
+				phasesHPmapForThisRaid.put(phaseNumber, phaseDamage);
 			}
+
+			phaseHPmap.put(raidName, phasesHPmapForThisRaid);
+
+			JSONArray aliases = raid.getJSONArray(JSON_RAID_ALIASES);
+			List<String> aliasesForThisRaid = new ArrayList<String>();
+
+			for(int a=0 ; a<aliases.length() ; a++) {
+				aliasesForThisRaid.add(aliases.getString(a));
+			}
+
+			aliasesMap.put(raidName, aliasesForThisRaid);
 		}
-		catch(JSONException e) {
-			logger.error("JSON parameters file is incorrectly formatted");
-			e.printStackTrace();
-		}
-		
 	}
+
 	
 	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin) {
 
@@ -447,5 +441,10 @@ public class RaidCommand implements JediStarBotCommand {
 		String message = ERROR_MESSAGE +"**"+ errorMessage + "**\r\n\r\n"+ HELP;
 		
 		return new CommandAnswer(message, null);
+	}
+
+	@Override
+	public String getCommand() {
+		return COMMAND;
 	}
 }

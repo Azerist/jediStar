@@ -55,13 +55,12 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		//AJOUTER ICI DE NOUVELLES COMMANDES
 		RaidCommand raid = new RaidCommand();
 		ModsCommand mods = new ModsCommand();
+		EquilibrageCommand balancing = new EquilibrageCommand();
 		
-		commandsMap.put(RaidCommand.COMMAND, raid);
-		commandsMap.put(ModsCommand.COMMAND, mods);
+		commandsMap.put(raid.getCommand(), raid);
+		commandsMap.put(mods.getCommand(), mods);
+		commandsMap.put(balancing.getCommand(), balancing);
 		
-		//TODO
-		commandsMap.put(EquilibrageCommand.COMMAND,new EquilibrageCommand());
-
 		
 		//Lecture du Json
 		try {

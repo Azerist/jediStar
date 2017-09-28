@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONObject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,34 +38,35 @@ import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import de.btobastian.javacord.entities.message.impl.ImplReaction;
 import fr.jedistar.JediStarBotCommand;
+import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.formats.PendingAction;
 import fr.jedistar.listener.JediStarBotReactionAddListener;
 
 public class EquilibrageCommand implements JediStarBotCommand {
 	
-	public static final String COMMAND = "equilibrage";
-	private final String COMMAND_UPDATE = "maj";
-	private final String LAUNCH_RAID_COMMAND = "lancer";
-	private final String END_RAID_COMMAND = "terminer";
-	private final String REPORT_COMMAND = "rapport";
+	private final String COMMAND;
+	private final String COMMAND_UPDATE;
+	private final String LAUNCH_RAID_COMMAND;
+	private final String END_RAID_COMMAND;
+	private final String REPORT_COMMAND;
 		
 	private final String PODIUM = "podium";
 	private final Integer PODIUM_VALUE = -100;
 	
-	private final String EMBED_TITLE = "Équilibrage de %s";
+	private final String EMBED_TITLE;
 	private final Color EMBED_COLOR = Color.BLUE;
-	private final String MESSAGE_LINE = "**Tranche %s** : %d\r\n";
-	private final String MESSAGE_CURRENT_RAIDS_TITLE = "Objectif pour les raids en cours :\r\n";
-	private final String MESSAGE_CURRENT_RAIDS_RANGE = "**%S **: Tranche %s %s dégâts\r\n";
-	private final String MESSAGE_CURRENT_RAIDS_PODIUM = "**%S **: Podium\r\n";
+	private final String MESSAGE_LINE;
+	private final String MESSAGE_CURRENT_RAIDS_TITLE;
+	private final String MESSAGE_CURRENT_RAIDS_RANGE;
+	private final String MESSAGE_CURRENT_RAIDS_PODIUM;
 
 	
-	private final String PODIUM_TEXT = "**+--- Podium ---+**\r\n";
-	private final String PODIUM_END = "**+--------------+**\r\n\r\n";
+	private final String PODIUM_TEXT;
+	private final String PODIUM_END;
 		
-	private final String HELP = "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX\r\n!equilibrage terminer tank\r\n!equilibrage lancer tank podium-auto @exclusDuTop10\r\n!equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10";
-	private final static String ERROR_MESSAGE = "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n";
+	private final String HELP;
+	private String ERROR_MESSAGE;
 	private final static String FORBIDDEN = "Vous n'avez pas le droit d'exécuter cette commande";
 
 	private static final String WRITE_ERROR = "Erreur lors de l'écriture du fichier JSON";
@@ -104,6 +106,28 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	
 	private Map<String,String> rulesPerRaid;
 	
+	//Nom des champs dans le json de paramètres
+	private final static String JSON_ERROR_MESSAGE = "errorMessage";
+	private final static String JSON_BALANCING="balancingCommandParameters";
+	
+	private final static String JSON_BALANCING_COMMANDS="commands";
+	private final static String JSON_BALANCING_COMMANDS_COMMAND="command";
+	private final static String JSON_BALANCING_COMMANDS_UPDATE="update";
+	private final static String JSON_BALANCING_COMMANDS_LAUNCH_RAID="launchRaid";
+	private final static String JSON_BALANCING_COMMANDS_END_RAID="endRaid";
+	private final static String JSON_BALANCING_COMMANDS_REPORT="report";
+	
+	private final static String JSON_BALANCING_HELP="help";
+	
+	private final static String JSON_BALANCING_MESSAGES="messages";
+	private final static String JSON_BALANCING_MESSAGES_EMBED_TITLE="embedTitle";
+	private final static String JSON_BALANCING_MESSAGES_EMBED_LINE="embedLine";
+	private final static String JSON_BALANCING_MESSAGES_CURRENT_RAIDS_TITLE="currentRaidsTitle";
+	private final static String JSON_BALANCING_MESSAGES_CURRENT_RAID_RANGE="currentRaidRange";
+	private final static String JSON_BALANCING_MESSAGES_CURRENT_RAID_PODIUM="currentRaidPodium";
+	private final static String JSON_BALANCING_MESSAGES_PODIUM_TEXT="podiumText";
+	private final static String JSON_BALANCING_MESSAGES_PODIUM_END="podiumEnd";
+	
 	/**
 	 * Constructeur
 	 */
@@ -133,6 +157,32 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				":white_small_square: Tranche 31+ entre 600K et 700K\r\n" + 
 				":clock2: Au bout de **34h**, le podium finit le raid\r\n" +
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts :warning:");
+		
+		//Lire le Json
+		JSONObject parameters = StaticVars.jsonSettings;
+
+		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
+
+		JSONObject balancingParams = parameters.getJSONObject(JSON_BALANCING);
+		
+		JSONObject commands = balancingParams.getJSONObject(JSON_BALANCING_COMMANDS);
+		COMMAND = commands.getString(JSON_BALANCING_COMMANDS_COMMAND);
+		COMMAND_UPDATE = commands.getString(JSON_BALANCING_COMMANDS_UPDATE);
+		LAUNCH_RAID_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_LAUNCH_RAID);
+		END_RAID_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_END_RAID);
+		REPORT_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_REPORT);
+		
+		HELP = balancingParams.getString(JSON_BALANCING_HELP);
+		
+		JSONObject messages = balancingParams.getJSONObject(JSON_BALANCING_MESSAGES);
+		EMBED_TITLE = messages.getString(JSON_BALANCING_MESSAGES_EMBED_TITLE);
+		MESSAGE_LINE = messages.getString(JSON_BALANCING_MESSAGES_EMBED_LINE);
+		MESSAGE_CURRENT_RAIDS_TITLE = messages.getString(JSON_BALANCING_MESSAGES_CURRENT_RAIDS_TITLE);
+		MESSAGE_CURRENT_RAIDS_RANGE = messages.getString(JSON_BALANCING_MESSAGES_CURRENT_RAID_RANGE);
+		MESSAGE_CURRENT_RAIDS_PODIUM = messages.getString(JSON_BALANCING_MESSAGES_CURRENT_RAID_PODIUM);
+		PODIUM_TEXT = messages.getString(JSON_BALANCING_MESSAGES_PODIUM_TEXT);
+		PODIUM_END = messages.getString(JSON_BALANCING_MESSAGES_PODIUM_END);
+
 	}
 	
 
@@ -1041,5 +1091,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			
 			return (int) (10000 * (this.score - o.score));
 		}
+	}
+
+	@Override
+	public String getCommand() {
+		return COMMAND;
 	}
 }
