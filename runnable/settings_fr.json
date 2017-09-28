@@ -1,5 +1,5 @@
 {
-	"discordToken": "Insérer ICI le token Discord de votre bot",
+	"discordToken": "InsÃ©rer ICI le token Discord de votre bot",
 
 	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json",
 
@@ -102,6 +102,21 @@
 			"accessError":"Impossible d'accéder à l'API de mods. Impossible d'utiliser cette fonction.",
 			"jsonError":"L'API de mods a renvoyé une réponse mal formatée. Impossible d'utiliser cette fonction.",
 			"tooLong":"**La réponse détaillée est trop longue pour être affichée sur Discord.\r\nVoici la liste des personnages correspondant à votre recherche :**\r\n"
+		}
+	},
+	
+	"arenaCommandParameters":{
+		
+		"command":"arene",
+		
+		"messages":{
+			"fastestPath":"Le meilleur classement peut être atteint en suivant la progression :\r\n **%s** \r\n",
+			"help":"Cette commande donne le plus haut rang d'arène accessible en 5 combats.\r\n\r\n**Exemple d'appel**\r\n!arene 26"
+		},
+		
+		"errorMessages":{
+			"incoherentParams":"Un seul paramètre est nécessaire, le rang d'arène de départ",
+			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement"
 		}
 	}
 }

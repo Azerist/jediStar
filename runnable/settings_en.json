@@ -94,7 +94,7 @@
 		
 		"messages":{
 			"approxMatches":"\r\n**Here's the characters that are close to your search :**\r\n\r\n",
-			"characterMods":"**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **Ã¢Ëœï¿½** : %s\r\n  **Ã¢Å¾Å¡** : %s\r\n  **Ã¢â€”â€ ** : %s\r\n  **ÃŽâ€�** : %s\r\n  **O** : %s\r\n  **Ã¢Å“â„¢** : %s\r\n  ",
+			"characterMods":"**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **ÃƒÂ¢Ã‹Å“Ã¯Â¿Â½** : %s\r\n  **ÃƒÂ¢Ã…Â¾Ã…Â¡** : %s\r\n  **ÃƒÂ¢Ã¢â‚¬â€�Ã¢â‚¬Â ** : %s\r\n  **ÃƒÅ½Ã¢â‚¬ï¿½** : %s\r\n  **O** : %s\r\n  **ÃƒÂ¢Ã…â€œÃ¢â€žÂ¢** : %s\r\n  ",
 			"help":"This command returns the mod setup advised for a given character.\r\n\r\n**Example**\r\n!mods anakin"
 		},
 		
@@ -103,6 +103,21 @@
 			"accessError":"I was not able to connect to the Mods API. Terminating.",
 			"jsonError":"Bad formatting on the Mods API. Terminating.",
 			"tooLong":"**There's too many matches to show the detailled results.\r\nHere's the list of characters I found :**\r\n"
+		}
+	},
+	
+	"arenaCommandParameters":{
+		
+		"command":"arena",
+		
+		"messages":{
+			"fastestPath":"You can reach the highest rank fighting : **%s** \r\n",
+			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n!arene 26"
+		},
+		
+		"errorMessages":{
+			"incoherentParams":"Only one parameter is expected, the starting arena rank",
+			"incorrectNumber":"I did not recognize a number"
 		}
 	}
 }

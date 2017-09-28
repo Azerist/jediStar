@@ -24,6 +24,7 @@ import de.btobastian.javacord.entities.permissions.Role;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
+import fr.jedistar.commands.AreneCommand;
 import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.commands.RaidCommand;
@@ -56,11 +57,12 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		RaidCommand raid = new RaidCommand();
 		ModsCommand mods = new ModsCommand();
 		EquilibrageCommand balancing = new EquilibrageCommand();
+		AreneCommand arene = new AreneCommand();
 		
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
 		commandsMap.put(balancing.getCommand(), balancing);
-		
+		commandsMap.put(arene.getCommand(), arene);
 		
 		//Lecture du Json
 		try {
