@@ -26,6 +26,7 @@ public class AreneCommand implements JediStarBotCommand {
 		        put(18, 5);
 		        put(24, 6);
 		        put(33, 7);
+		        put(56, 8);
 		    }});
 	
 	private final String COMMAND;
@@ -116,7 +117,7 @@ public class AreneCommand implements JediStarBotCommand {
 		SortedMap<Integer, Integer> reachableRank = attackRangeMap.tailMap(rank);
 		if(reachableRank.isEmpty())
 		{
-			newRank = rank-(attackRangeMap.get(attackRangeMap.lastKey())+1);
+			newRank = (int) Math.round(rank*0.85);
 		}
 		else
 		{
