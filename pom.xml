@@ -3,7 +3,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.jedistar</groupId>
 	<artifactId>JediStarBot</artifactId>
-	<version>5.0.4</version>
 
 	<repositories>
 		<repository>
@@ -40,6 +39,16 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.17</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -71,5 +80,6 @@
 			</plugin>
 		</plugins>
 	</build>
+	<version>6.0.0</version>
 </project>
 

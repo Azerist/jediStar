@@ -44,7 +44,7 @@ public class ModsCommand implements JediStarBotCommand {
 	private static final int MAX_LENGTH = 1950;
 	private static final int MAX_ANSWERS = 3;
 
-	public static String COMMAND;
+	private final String COMMAND;
 	
 	private static String APPROX_MATCHES_MESSAGE;
 
@@ -65,7 +65,7 @@ public class ModsCommand implements JediStarBotCommand {
 	private static String CHARACTERS_PORTRAIT_URL = "http://jeremiebellionjourdan.fr/swgoh/portraits/%s.png";
 	private static String CHARACTERS_PORTRAIT_SEPARATOR = "-";
 
-	//Nom des Ã©lÃ©ments dans le JSON de mods
+	//Nom des éléments dans le JSON de mods
 	private final static String JSON_DATA = "data";
 	private final static String JSON_NAME = "name";
 	private final static String JSON_CHAR_NAME = "cname";
@@ -82,7 +82,7 @@ public class ModsCommand implements JediStarBotCommand {
 
 	private static String JSON_URI = null;
 	
-	//Variables JSON de paramÃ¨tres
+	//Variables JSON de paramètres
 	private final static String JSON_ERROR_MESSAGE = "errorMessage";
 	private final static String JSON_MODS_COMMAND = "modsCommandParameters";
 	private final static String JSON_MODS_COMMAND_COMMAND = "command";
@@ -110,7 +110,7 @@ public class ModsCommand implements JediStarBotCommand {
 		//messages de base
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-		//ParamÃ¨tres propres Ã  l'Ã©quilibrage
+		//Paramètres propres aux mods
 		JSONObject modsParams = parameters.getJSONObject(JSON_MODS_COMMAND);
 		
 		COMMAND = modsParams.getString(JSON_MODS_COMMAND_COMMAND);
@@ -372,5 +372,10 @@ public class ModsCommand implements JediStarBotCommand {
 			return -1 * (int) ((this.score - other.score)*1000);
 		}
 		
+	}
+
+	@Override
+	public String getCommand() {
+		return COMMAND;
 	}
 }

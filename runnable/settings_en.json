@@ -104,5 +104,20 @@
 			"jsonError":"Bad formatting on the Mods API. Terminating.",
 			"tooLong":"**There's too many matches to show the detailled results.\r\nHere's the list of characters I found :**\r\n"
 		}
+	},
+	
+	"arenaCommandParameters":{
+		
+		"command":"arena",
+		
+		"messages":{
+			"fastestPath":"You can reach the highest rank fighting : **%s** \r\n",
+			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n!arene 26"
+		},
+		
+		"errorMessages":{
+			"incoherentParams":"Only one parameter is expected, the starting arena rank",
+			"incorrectNumber":"I did not recognize a number"
+		}
 	}
 }
