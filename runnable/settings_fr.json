@@ -105,6 +105,40 @@
 		}
 	},
 	
+	"balancingCommandParameters":{
+	
+		"commands":{
+			"command":"equilibrage",
+			"update":"maj",
+			"launchRaid":"lancer",
+			"endRaid":"terminer",
+			"report":"rapport",
+			"delete":"supprimer",
+			"add":"ajouter"
+		},
+		
+		"help":"Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX\r\n!equilibrage terminer tank\r\n!equilibrage lancer tank podium-auto @exclusDuTop10\r\n!equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10",
+		
+		"messages":{
+			"embedTitle":"Équilibrage de %s",
+			"embedLine":"**Tranche %s** : %d\r\n",
+			"currentRaidsTitle":"Objectif pour les raids en cours :\r\n",
+			"currentRaidRange":"**%S **: Tranche %s %s dégâts\r\n",
+			"currentRaidPodium":"**%S **: Podium\r\n",
+			"podiumText":"**+--- Podium ---+**\r\n",
+			"podiumEnd":"**+--------------+**\r\n\r\n",
+			"confirmDelete":"Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible !"
+		},
+		
+		"errorMessages":{
+			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande",
+			"writeJson":"Erreur lors de l'écriture du fichier JSON",
+			"archiveJson":"Erreur lors de l'archivage du fichier JSON",
+			"readJson":"Erreur lors de la lecture du fichier JSON",
+			"numberProblem":"Un nombre entré n'a pas été reconnu"
+		}
+	},
+	
 	"arenaCommandParameters":{
 		
 		"command":"arene",
