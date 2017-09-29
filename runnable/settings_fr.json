@@ -116,6 +116,7 @@
 		
 		"errorMessages":{
 			"incoherentParams":"Un seul paramètre est nécessaire, le rang d'arène de départ",
+			"invalidRank":"Ce rang d'arène n'est pas valide",
 			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement"
 		}
 	}

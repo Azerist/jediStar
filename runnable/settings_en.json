@@ -13,7 +13,7 @@
 	},
 
 	"baseMessage":"Hello %s,\r%s",
-	"errorMessage":"Thanks for using my sevices. Unfortunately I can't answer for the following reason :\r\n",
+	"errorMessage":"Thanks for using my services. Unfortunately I can't answer for the following reason :\r\n",
 
 	"raidCommandParameters":{
 	
@@ -112,11 +112,12 @@
 		
 		"messages":{
 			"fastestPath":"You can reach the highest rank fighting : **%s** \r\n",
-			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n!arene 26"
+			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n!arena 26"
 		},
 		
 		"errorMessages":{
 			"incoherentParams":"Only one parameter is expected, the starting arena rank",
+			"invalidRank":"This rank is not valid",
 			"incorrectNumber":"I did not recognize a number"
 		}
 	}
