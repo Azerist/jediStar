@@ -3,15 +3,17 @@ package fr.jedistar;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.util.StatusPrinter;
-import fr.jedistar.commands.EquilibrageCommand;
+
 import fr.jedistar.commands.ModsCommand;
 
 public class Main {
@@ -74,6 +76,17 @@ public class Main {
 			e.printStackTrace();
 		}
 		
+		//Initialisation bdd
+		String url = "jdbc:mysql://localhost/jedistar";
+		String user = "jedistar";
+		String passwd = "JeDiStArBoT";
+		
+		try {
+			StaticVars.jdbcConnection = DriverManager.getConnection(url, user, passwd);		
+		} catch (SQLException e) {
+			logger.error("Error connecting to mysql database");
+			e.printStackTrace();
+		}
 		
 		logger.info("Launching bot with token -"+token+"-");
 
