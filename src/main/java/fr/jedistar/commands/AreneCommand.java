@@ -35,8 +35,10 @@ public class AreneCommand implements JediStarBotCommand {
 	private static String HELP;
 	private static String ERROR_MESSAGE ;
 	private static String ERROR_MESSAGE_INCOHERENT_PARAM;
+	private static String ERROR_MESSAGE_INVALID_RANK;
 	private static String ERROR_MESSAGE_INCORRECT_NUMBER;
 	private static String MESSAGES_FASTEST_PATH;
+	
 	
 	
 	
@@ -48,6 +50,7 @@ public class AreneCommand implements JediStarBotCommand {
 	private final static String JSON_MESSAGES_FASTEST_PATH = "fastestPath";
 	private final static String JSON_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_ERROR_MESSAGE_INCOHERENT_PARAM = "incoherentParams";
+	private final static String JSON_ERROR_MESSAGE_INVALID_RANK = "invalidRank";
 	private final static String JSON_ERROR_MESSAGE_INCORRECT_NUMBER = "incorrectNumber";
 
 	
@@ -70,6 +73,7 @@ public class AreneCommand implements JediStarBotCommand {
 
 		JSONObject errorMessages = AreneParams.getJSONObject(JSON_ERROR_MESSAGES);
 		ERROR_MESSAGE_INCOHERENT_PARAM = errorMessages.getString(JSON_ERROR_MESSAGE_INCOHERENT_PARAM);
+		ERROR_MESSAGE_INVALID_RANK = errorMessages.getString(JSON_ERROR_MESSAGE_INVALID_RANK);
 		ERROR_MESSAGE_INCORRECT_NUMBER = errorMessages.getString(JSON_ERROR_MESSAGE_INCORRECT_NUMBER);
 
 	}
@@ -100,6 +104,8 @@ public class AreneCommand implements JediStarBotCommand {
 		Integer currentRank = rank;
 		Integer remainingFight = 5;
 		String path =currentRank.toString();
+		if(currentRank<1)
+			return error(ERROR_MESSAGE_INVALID_RANK);
 		while(currentRank > 1 && remainingFight >0)
 		{
 			

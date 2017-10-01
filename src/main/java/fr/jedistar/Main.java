@@ -3,11 +3,16 @@ package fr.jedistar;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import fr.jedistar.commands.ModsCommand;
 
@@ -18,8 +23,16 @@ public class Main {
 	//Noms des éléments dans le fichier de paramètres
 	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
 	private static final String PARAM_TOKEN = "discordToken";
+	private static final String PARAM_DB = "database";
+	private static final String PARAM_DB_URL = "url";
+	private static final String PARAM_DB_USER = "user";
+	private static final String PARAM_DB_PWD = "pwd";
 
 	private static final String DEFAULT_PARAMETERS_FILE = "settings.json";
+	
+	private static String url;
+	private static String user;
+	private static String passwd;
 	
 	public static void main(String ... args) {
 
@@ -55,7 +68,10 @@ public class Main {
 			String modsJsonUri = parameters.getString(PARAM_MODS_JSON_URI);
 			ModsCommand.setJsonUri(modsJsonUri);
 			
-			
+			JSONObject dbParams = parameters.getJSONObject(PARAM_DB);
+			url = dbParams.getString(PARAM_DB_URL);
+			user = dbParams.getString(PARAM_DB_USER);
+			passwd = dbParams.getString(PARAM_DB_PWD);
 			
 		}
 		catch(IOException e) {
@@ -68,6 +84,15 @@ public class Main {
 			e.printStackTrace();
 		}
 		
+		//Initialisation bdd		
+		try {
+			logger.info("Connecting to database : "+url+" with user/pw "+user+"/"+passwd);
+			StaticVars.jdbcConnection = DriverManager.getConnection(url, user, passwd);		
+			logger.info("Connecting to database successful");
+		} catch (SQLException e) {
+			logger.error("Error connecting to mysql database");
+			e.printStackTrace();
+		}
 		
 		logger.info("Launching bot with token -"+token+"-");
 

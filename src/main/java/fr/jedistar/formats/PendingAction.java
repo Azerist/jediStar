@@ -31,11 +31,11 @@ public class PendingAction {
 
 	/**
 	 * 
-	 * @param user
+	 * @param user : The Discord user that may perform the action
 	 * @param method : A method that should return a String and take a Reaction as first argument
-	 * @param object
-	 * @param args
-	 * @param message
+	 * @param object : The object on which <i>method</i> will be called
+	 * @param args : The arguments for the method call
+	 * @param message : The message that triggered this action
 	 * @param expiration : the time in minutes in which this action will expire
 	 */
 	public PendingAction(User user, String methodName, Object object, Message message, Integer expiration,Object... args) {

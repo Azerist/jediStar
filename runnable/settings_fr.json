@@ -1,5 +1,5 @@
 {
-	"discordToken": "InsÃ©rer ICI le token Discord de votre bot",
+	"discordToken": "Insérer ICI le token Discord de votre bot",
 
 	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json",
 
@@ -10,6 +10,12 @@
 		"users": [
 			8591
 		]
+	},
+	
+	"database":{
+		"url":"jdbc:mysql://localhost/jedistar",
+		"user":"jedistar",
+		"pwd":"JeDiStArBoT"
 	},
 
 	"baseMessage":"Bonjour %s,\r%s",
@@ -105,6 +111,40 @@
 		}
 	},
 	
+	"balancingCommandParameters":{
+	
+		"commands":{
+			"command":"equilibrage",
+			"update":"maj",
+			"launchRaid":"lancer",
+			"endRaid":"terminer",
+			"report":"rapport",
+			"delete":"supprimer",
+			"add":"ajouter"
+		},
+		
+		"help":"Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX\r\n!equilibrage terminer tank\r\n!equilibrage lancer tank podium-auto @exclusDuTop10\r\n!equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10",
+		
+		"messages":{
+			"embedTitle":"Équilibrage de %s",
+			"embedLine":"**Tranche %s** : %d\r\n",
+			"currentRaidsTitle":"Objectif pour les raids en cours :\r\n",
+			"currentRaidRange":"**%S **: Tranche %s %s dégâts\r\n",
+			"currentRaidPodium":"**%S **: Podium\r\n",
+			"podiumText":"**+--- Podium ---+**\r\n",
+			"podiumEnd":"**+--------------+**\r\n\r\n",
+			"confirmDelete":"Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible !"
+		},
+		
+		"errorMessages":{
+			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande",
+			"writeJson":"Erreur lors de l'écriture du fichier JSON",
+			"archiveJson":"Erreur lors de l'archivage du fichier JSON",
+			"readJson":"Erreur lors de la lecture du fichier JSON",
+			"numberProblem":"Un nombre entré n'a pas été reconnu"
+		}
+	},
+	
 	"arenaCommandParameters":{
 		
 		"command":"arene",
@@ -116,7 +156,33 @@
 		
 		"errorMessages":{
 			"incoherentParams":"Un seul paramètre est nécessaire, le rang d'arène de départ",
+			"invalidRank":"Ce rang d'arène n'est pas valide",
 			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement"
+		}
+	},
+	
+	"setUpCommandParameters":{
+		
+		"commands":{
+			"base":"parametrage",
+			"guildNumber":"numeroGuilde"
+		},
+		
+		"help":"Cette commande vous permet de paramétrer le bot.\r\nCommandes possibles :\r\n!parametrage numeroGuilde XXX",
+		
+		"messages":{
+			"confirmUpdateGuild":"Ce serveur Discord est déjà associé avec l'id de guilde %d, êtes-vous sûr de vouloir changer l'association ?",
+			"guildSetupOK":"Configuration du numéro de guilde réussie",
+			"cancelAction":"OK, j'annule la demande."
+		},
+		
+		"errorMessages":{
+			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande",
+			"paramsNummber":"Pas suffisamment de paramètres",
+			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement",
+			"noChannel":"Cette commande doit être appelée depuis un serveur (pas de MP)",
+			"sqlError":"Une erreur est survenue lors de l'accès à la base de données",
+			"noCommandFound":"Commande non reconnue"
 		}
 	}
 }
