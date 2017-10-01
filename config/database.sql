@@ -8,6 +8,6 @@ USE jedistar;
 
 CREATE TABLE IF NOT EXISTS guild
 (
-	serverID BIGINT PRIMARY KEY,
+	serverID VARCHAR(50),
 	guildID INT
 );	

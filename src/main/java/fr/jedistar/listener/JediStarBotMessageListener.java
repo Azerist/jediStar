@@ -28,6 +28,7 @@ import fr.jedistar.commands.AreneCommand;
 import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.commands.RaidCommand;
+import fr.jedistar.commands.SetUpCommand;
 import fr.jedistar.formats.CommandAnswer;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
@@ -58,11 +59,13 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		ModsCommand mods = new ModsCommand();
 		EquilibrageCommand balancing = new EquilibrageCommand();
 		AreneCommand arene = new AreneCommand();
+		SetUpCommand setup = new SetUpCommand();
 		
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
 		commandsMap.put(balancing.getCommand(), balancing);
 		commandsMap.put(arene.getCommand(), arene);
+		commandsMap.put(setup.getCommand(),setup);
 		
 		//Lecture du Json
 		try {

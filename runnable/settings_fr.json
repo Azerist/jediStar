@@ -11,6 +11,12 @@
 			8591
 		]
 	},
+	
+	"database":{
+		"url":"jdbc:mysql://localhost/jedistar",
+		"user":"jedistar",
+		"pwd":"JeDiStArBoT"
+	},
 
 	"baseMessage":"Bonjour %s,\r%s",
 	"errorMessage":"Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n",
@@ -152,6 +158,31 @@
 			"incoherentParams":"Un seul paramètre est nécessaire, le rang d'arène de départ",
 			"invalidRank":"Ce rang d'arène n'est pas valide",
 			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement"
+		}
+	},
+	
+	"setUpCommandParameters":{
+		
+		"commands":{
+			"base":"parametrage",
+			"guildNumber":"numeroGuilde"
+		},
+		
+		"help":"Cette commande vous permet de paramétrer le bot.\r\nCommandes possibles :\r\n!parametrage numeroGuilde XXX",
+		
+		"messages":{
+			"confirmUpdateGuild":"Ce serveur Discord est déjà associé avec l'id de guilde %d, êtes-vous sûr de vouloir changer l'association ?",
+			"guildSetupOK":"Configuration du numéro de guilde réussie",
+			"cancelAction":"OK, j'annule la demande."
+		},
+		
+		"errorMessages":{
+			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande",
+			"paramsNummber":"Pas suffisamment de paramètres",
+			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement",
+			"noChannel":"Cette commande doit être appelée depuis un serveur (pas de MP)",
+			"sqlError":"Une erreur est survenue lors de l'accès à la base de données",
+			"noCommandFound":"Commande non reconnue"
 		}
 	}
 }

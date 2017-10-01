@@ -22,12 +22,17 @@ public class Main {
 	
 	//Noms des éléments dans le fichier de paramètres
 	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
-	private static final String PARAM_SHEET_ID = "equilibrageSheetID";
-	private static final String PARAM_AUTH_FILE = "authFile";
 	private static final String PARAM_TOKEN = "discordToken";
-	private static final String PARAM_GOOGLE_API = "googleAPI";
+	private static final String PARAM_DB = "database";
+	private static final String PARAM_DB_URL = "url";
+	private static final String PARAM_DB_USER = "user";
+	private static final String PARAM_DB_PWD = "pwd";
 
 	private static final String DEFAULT_PARAMETERS_FILE = "settings.json";
+	
+	private static String url;
+	private static String user;
+	private static String passwd;
 	
 	public static void main(String ... args) {
 
@@ -63,7 +68,10 @@ public class Main {
 			String modsJsonUri = parameters.getString(PARAM_MODS_JSON_URI);
 			ModsCommand.setJsonUri(modsJsonUri);
 			
-			
+			JSONObject dbParams = parameters.getJSONObject(PARAM_DB);
+			url = dbParams.getString(PARAM_DB_URL);
+			user = dbParams.getString(PARAM_DB_USER);
+			passwd = dbParams.getString(PARAM_DB_PWD);
 			
 		}
 		catch(IOException e) {
@@ -76,13 +84,11 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		//Initialisation bdd
-		String url = "jdbc:mysql://localhost/jedistar";
-		String user = "jedistar";
-		String passwd = "JeDiStArBoT";
-		
+		//Initialisation bdd		
 		try {
+			logger.info("Connecting to database : "+url+" with user/pw "+user+"/"+passwd);
 			StaticVars.jdbcConnection = DriverManager.getConnection(url, user, passwd);		
+			logger.info("Connecting to database successful");
 		} catch (SQLException e) {
 			logger.error("Error connecting to mysql database");
 			e.printStackTrace();

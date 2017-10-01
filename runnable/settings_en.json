@@ -5,11 +5,17 @@
 
 	"botAdmins": {
 		"groups": [
-			"council"
+			"botadmins"
 		],
 		"users": [
 			8591
 		]
+	},
+	
+	"database":{
+		"url":"jdbc:mysql://localhost/jedistar",
+		"user":"jedistar",
+		"pwd":"JeDiStArBoT"
 	},
 
 	"baseMessage":"Hello %s,\r%s",
@@ -119,6 +125,31 @@
 			"incoherentParams":"Only one parameter is expected, the starting arena rank",
 			"invalidRank":"This rank is not valid",
 			"incorrectNumber":"I did not recognize a number"
+		}
+	},
+	
+	"setUpCommandParameters":{
+		
+		"commands":{
+			"base":"setup",
+			"guildNumber":"guildNumber"
+		},
+		
+		"help":"This command allows you to setup the bot.\r\nPossible commands :\r\n!setup guildNumber XXX",
+		
+		"messages":{
+			"confirmUpdateGuild":"This Discord server is already associated with guild number %d, do you really wish to change this ?",
+			"guildSetupOK":"Guild number setup successful",
+			"cancelAction":"OK, cancelling."
+		},
+		
+		"errorMessages":{
+			"forbidden":"You may not execute this command.",
+			"paramsNummber":"Not enough parameters",
+			"incorrectNumber":"The number you typed wasn't recognized correctly'",
+			"noChannel":"This command must be called from a Discord server (no PM)",
+			"sqlError":"An error occurred while accessing the database",
+			"noCommandFound":"Unrecognized command"
 		}
 	}
 }
