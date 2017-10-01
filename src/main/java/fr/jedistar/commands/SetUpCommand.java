@@ -193,6 +193,7 @@ public class SetUpCommand implements JediStarBotCommand {
 				logger.debug("Executing query : "+stmt.toString());
 				stmt.executeUpdate();
 				
+				return new CommandAnswer(SETUP_GUILD_OK,null);
 			}
 		}
 		catch(SQLException e) {
