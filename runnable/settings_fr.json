@@ -184,5 +184,23 @@
 			"sqlError":"Une erreur est survenue lors de l'accès à la base de données",
 			"noCommandFound":"Commande non reconnue"
 		}
+	},
+	
+	"territoryBattlesCommandParams":{
+		
+		"commands":{
+			"base":"tb",
+			"platoon":"platoon",
+			"characters":"persos",
+			"ships":"vaisseaux"
+		},
+		
+		"help":"Commandes possibles :\r\n!tb platoon persos aayla 5*\r\n!tb platoon vaisseaux ghost 5*",
+		
+		"errorMessages":{
+			"noChannel":"Cette commande doit être appelée depuis un serveur (pas de MP)",
+			"sqlError":"Une erreur est survenue lors de l'accès à la base de données",
+			"noGuildNumber":"Aucune guilde n'est associée avec votre serveur Discord. Veuillez demander à un administrateur du bot d'utiliser la commande !parametrage"
+		}
 	}
 }
