@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 
 import fr.jedistar.commands.ModsCommand;
+import fr.jedistar.utils.OnlineDataParser;
 
 public class Main {
 	
@@ -73,6 +74,7 @@ public class Main {
 			user = dbParams.getString(PARAM_DB_USER);
 			passwd = dbParams.getString(PARAM_DB_PWD);
 			
+			
 		}
 		catch(IOException e) {
 			logger.error("Cannot read the parameters file "+parametersFilePath);
@@ -94,6 +96,8 @@ public class Main {
 			e.printStackTrace();
 		}
 		
+		OnlineDataParser.parseSwgohGGCharacters();
+
 		logger.info("Launching bot with token -"+token+"-");
 
 		JediStarBot bot = new JediStarBot(token);

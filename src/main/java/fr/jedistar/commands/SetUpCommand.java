@@ -3,12 +3,10 @@
  */
 package fr.jedistar.commands;
 
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -17,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import com.vdurmont.emoji.EmojiManager;
 
-import de.btobastian.javacord.entities.Server;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.impl.ImplReaction;
 import fr.jedistar.JediStarBotCommand;
@@ -32,7 +29,7 @@ import fr.jedistar.listener.JediStarBotReactionAddListener;
  */
 public class SetUpCommand implements JediStarBotCommand {
 
-	final static Logger logger = LoggerFactory.getLogger(JediStarBotCommand.class);
+	final static Logger logger = LoggerFactory.getLogger(SetUpCommand.class);
 
 	private final String COMMAND;
 	private final String COMMAND_GUILD_NUMBER;
@@ -138,6 +135,7 @@ public class SetUpCommand implements JediStarBotCommand {
 			}
 			catch(NumberFormatException e) {
 				logger.warn(e.getMessage());
+				e.printStackTrace();
 				return new CommandAnswer(error(NUMBER_PROBLEM), null);
 			}
 		}
@@ -198,6 +196,7 @@ public class SetUpCommand implements JediStarBotCommand {
 		}
 		catch(SQLException e) {
 			logger.error(e.getMessage());
+			e.printStackTrace();
 			return new CommandAnswer(SQL_ERROR,null);
 		}
 		finally {
@@ -222,6 +221,7 @@ public class SetUpCommand implements JediStarBotCommand {
 		
 		Connection conn = StaticVars.jdbcConnection;
 		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		
 		try {
 			stmt = conn.prepareStatement(SELECT_GUILD_REQUEST);
@@ -230,7 +230,7 @@ public class SetUpCommand implements JediStarBotCommand {
 			
 			logger.debug("Executing query : "+stmt.toString());
 
-			ResultSet rs = stmt.executeQuery();
+			rs = stmt.executeQuery();
 			
 			if(rs.next()) {
 				return rs.getInt("guildID");
@@ -244,13 +244,21 @@ public class SetUpCommand implements JediStarBotCommand {
 			return -1;
 		}
 		finally {
-			if(stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					logger.error(e.getMessage());
+
+			try {
+				if(rs != null) {
+					rs.close();
 				}
+				
+				if(stmt != null) {
+					stmt.close();
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				logger.error(e.getMessage());
 			}
+
 		}
 	}
 	
@@ -287,6 +295,7 @@ public class SetUpCommand implements JediStarBotCommand {
 			}
 			catch(SQLException e) {
 				logger.error(e.getMessage());
+				e.printStackTrace();
 				return SQL_ERROR;
 			}
 			finally {
