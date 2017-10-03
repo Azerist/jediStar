@@ -177,7 +177,7 @@
 		},
 		
 		"errorMessages":{
-			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande",
+			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande.\r\nVous devez faire partie du groupe Discord «botadmins» pour administrer le bot.",
 			"paramsNummber":"Pas suffisamment de paramètres",
 			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement",
 			"noChannel":"Cette commande doit être appelée depuis un serveur (pas de MP)",

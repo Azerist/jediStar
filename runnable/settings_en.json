@@ -144,7 +144,7 @@
 		},
 		
 		"errorMessages":{
-			"forbidden":"You may not execute this command.",
+			"forbidden":"You may not execute this command.\r\nYou must be part of the «botAdmins» Discord group to administrate the bot.",
 			"paramsNummber":"Not enough parameters",
 			"incorrectNumber":"The number you typed wasn't recognized correctly'",
 			"noChannel":"This command must be called from a Discord server (no PM)",
