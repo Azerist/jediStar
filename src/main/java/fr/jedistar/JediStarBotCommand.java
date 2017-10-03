@@ -11,5 +11,5 @@ public interface JediStarBotCommand {
 	
 	public String getCommand();
 	
-	public CommandAnswer answer(List<String> params,Message messageRecu,boolean isAdmin);
+	public CommandAnswer answer(List<String> params,Message receivedMessage,boolean isAdmin);
 }

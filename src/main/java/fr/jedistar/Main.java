@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 
 import fr.jedistar.commands.ModsCommand;
+import fr.jedistar.utils.OnlineDataParser;
 
 public class Main {
 	
@@ -72,6 +73,7 @@ public class Main {
 			url = dbParams.getString(PARAM_DB_URL);
 			user = dbParams.getString(PARAM_DB_USER);
 			passwd = dbParams.getString(PARAM_DB_PWD);
+			
 			
 		}
 		catch(IOException e) {
