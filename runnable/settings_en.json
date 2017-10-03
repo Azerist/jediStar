@@ -100,7 +100,7 @@
 		
 		"messages":{
 			"approxMatches":"\r\n**Here's the characters that are close to your search :**\r\n\r\n",
-			"characterMods":"**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **ÃƒÂ¢Ã‹Å“Ã¯Â¿Â½** : %s\r\n  **ÃƒÂ¢Ã…Â¾Ã…Â¡** : %s\r\n  **ÃƒÂ¢Ã¢â‚¬â€�Ã¢â‚¬Â ** : %s\r\n  **ÃƒÅ½Ã¢â‚¬ï¿½** : %s\r\n  **O** : %s\r\n  **ÃƒÂ¢Ã…â€œÃ¢â€žÂ¢** : %s\r\n  ",
+			"characterMods":"**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **☐** : %s\r\n  **➚** : %s\r\n  **◆** : %s\r\n  **Δ** : %s\r\n  **O** : %s\r\n  **✙** : %s\r\n  ",
 			"help":"This command returns the mod setup advised for a given character.\r\n\r\n**Example**\r\n%mods anakin"
 		},
 		
