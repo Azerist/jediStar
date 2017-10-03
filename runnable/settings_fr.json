@@ -1,5 +1,5 @@
 {
-	"discordToken": "InsÃ©rer ICI le token Discord de votre bot",
+	"discordToken": "Insérer ICI le token Discord de votre bot",
 
 	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json",
 
@@ -104,9 +104,9 @@
 			"tooLong":"**La réponse détaillée est trop longue pour être affichée sur Discord.\r\nVoici la liste des personnages correspondant à votre recherche :**\r\n"
 		}
 	},
-	
+
 	"balancingCommandParameters":{
-	
+
 		"commands":{
 			"command":"equilibrage",
 			"update":"maj",
@@ -116,9 +116,9 @@
 			"delete":"supprimer",
 			"add":"ajouter"
 		},
-		
+
 		"help":"Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n!equilibrage rancor\r\n**Commandes pour les officiers :**\r\n!equilibrage maj\r\n!equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n!equilibrage ajouter @user\r\n!equilibrage supprimer @user\r\n!equlibrage supprimer XXXX\r\n!equilibrage terminer tank\r\n!equilibrage lancer tank podium-auto @exclusDuTop10\r\n!equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10",
-		
+
 		"messages":{
 			"embedTitle":"Équilibrage de %s",
 			"embedLine":"**Tranche %s** : %d\r\n",
@@ -129,7 +129,7 @@
 			"podiumEnd":"**+--------------+**\r\n\r\n",
 			"confirmDelete":"Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible !"
 		},
-		
+
 		"errorMessages":{
 			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande",
 			"writeJson":"Erreur lors de l'écriture du fichier JSON",
@@ -138,20 +138,36 @@
 			"numberProblem":"Un nombre entré n'a pas été reconnu"
 		}
 	},
-	
+
 	"arenaCommandParameters":{
-		
+
 		"command":"arene",
-		
+
 		"messages":{
 			"fastestPath":"Le meilleur classement peut être atteint en suivant la progression :\r\n **%s** \r\n",
 			"help":"Cette commande donne le plus haut rang d'arène accessible en 5 combats.\r\n\r\n**Exemple d'appel**\r\n!arene 26"
 		},
-		
+
 		"errorMessages":{
 			"incoherentParams":"Un seul paramètre est nécessaire, le rang d'arène de départ",
-			"invalidRank":"Ce rang d'arène n'est pas valide",
 			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement"
+		}
+	},
+	"helpCommandParameters":{
+
+		"command":"help",
+
+		"messages":{
+			"introMessage":"Message d'intro \r\n\r\n",
+			"modsMessage":"Message sur les mods",
+			"raidMessage":"Message sur les raids",
+			"equilibrageMessage":"Message sur l'équilibrage",
+			"arenaMessage":"Message sur l'arene"
+		},
+
+		"errorMessages":{
+			"paramsError":"la commande que vous demandez n'est pas connu, merci d'utiliser les notations suivantes : \r\n\r\n - !help : pour avoir accès à toutes l'aide \r\n - !help mods : pour une aide sur la fonctionnalité des mods \r\n - !help raid : pour une aide sur la fonctionnalité des raids \r\n - !help equilibrage : pour une aide sur la fonctionnalité d'équilibrage",
+			"technicalError": "une erreur technique est survenu, veuillez contacter votre administrateur Discord"
 		}
 	}
 }

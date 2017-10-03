@@ -46,7 +46,7 @@ public class RaidCommand implements JediStarBotCommand {
 	private static String INCORRECT_PARAMS_NUMBER;
 	private static String RAID_NOT_FOUND;
 			
-	//ReprÈsente 1% de HP pour les diffÈrentes phases des diffÈrents raids
+	//Repr√©sente 1% de HP pour les diff√©rentes phases des diff√©rents raids
 	private Map<String,Map<Integer,Integer>> phaseHPmap;
 	private Map<String,List<String>> aliasesMap;
 	
@@ -100,7 +100,7 @@ public class RaidCommand implements JediStarBotCommand {
 		//messages de base
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-		//ParamËtres propres ‡ l'Èquilibrage
+		//Param√®tres propres √† l'√©quilibrage
 		JSONObject raidParams = parameters.getJSONObject(JSON_RAID_COMMAND);
 
 		COMMAND = raidParams.getString(JSON_RAID_COMMAND_COMMAND);
@@ -248,7 +248,7 @@ public class RaidCommand implements JediStarBotCommand {
 				return new CommandAnswer(message, null);
 			}
 			else {
-				//Il s'agit d'une valeur en dÈg‚ts
+				//Il s'agit d'une valeur en d√©g√¢ts
 				Float responseValue = valueAsFloat / phaseHP1percent;
 				
 				String formattedValue = NumberFormat.getIntegerInstance().format(valueAsFloat.intValue());
@@ -271,7 +271,7 @@ public class RaidCommand implements JediStarBotCommand {
 			Float secondValueAsFloat = formatNumberParameters(secondValue);
 			
 			if(valueAsFloat <= 100 && secondValueAsFloat < 100) {
-				//Il s'agit de deux pourcentagesÖ
+				//Il s'agit de deux pourcentages‚Ä¶
 				return doPhaseWithTwoPercentages(valueAsFloat, secondValueAsFloat, raidName, phaseNumber);
 			}
 			
@@ -331,10 +331,10 @@ public class RaidCommand implements JediStarBotCommand {
 				return error(INCOHERENT_PARAMETERS);
 			}
 			
-			//DÈg‚ts faits ‡ la fin de la phase annoncÈe
+			//D√©g√¢ts faits √† la fin de la phase annonc√©e
 			Integer responseValue = (int) (valueAsFloat * phaseHP1percent);
 			
-			//On ajoute les dÈg‚ts faits au dÈbut de la phase suivante
+			//On ajoute les d√©g√¢ts faits au d√©but de la phase suivante
 			responseValue += (int) (100 - secondValueAsFloat) * nextPhaseHP1percent;
 			
 			String formattedValue = NumberFormat.getIntegerInstance().format(responseValue);

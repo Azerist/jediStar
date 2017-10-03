@@ -65,7 +65,7 @@ public class ModsCommand implements JediStarBotCommand {
 	private static String CHARACTERS_PORTRAIT_URL = "http://jeremiebellionjourdan.fr/swgoh/portraits/%s.png";
 	private static String CHARACTERS_PORTRAIT_SEPARATOR = "-";
 
-	//Nom des �l�ments dans le JSON de mods
+	//Nom des éléments dans le JSON de mods
 	private final static String JSON_DATA = "data";
 	private final static String JSON_NAME = "name";
 	private final static String JSON_CHAR_NAME = "cname";
@@ -82,7 +82,7 @@ public class ModsCommand implements JediStarBotCommand {
 
 	private static String JSON_URI = null;
 	
-	//Variables JSON de param�tres
+	//Variables JSON de paramètres
 	private final static String JSON_ERROR_MESSAGE = "errorMessage";
 	private final static String JSON_MODS_COMMAND = "modsCommandParameters";
 	private final static String JSON_MODS_COMMAND_COMMAND = "command";
@@ -110,7 +110,7 @@ public class ModsCommand implements JediStarBotCommand {
 		//messages de base
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-		//Param�tres propres aux mods
+		//Paramètres propres aux mods
 		JSONObject modsParams = parameters.getJSONObject(JSON_MODS_COMMAND);
 		
 		COMMAND = modsParams.getString(JSON_MODS_COMMAND_COMMAND);
@@ -149,7 +149,7 @@ public class ModsCommand implements JediStarBotCommand {
 			String currentMatchCharName = null;
 			boolean singleMatch = true;
 			
-			//Itérer sur les personnages présents dans le json
+			//ItÃ©rer sur les personnages prÃ©sents dans le json
 			for(int i=0;i<dataArray.length();i++) {
 				JSONObject charData = dataArray.getJSONObject(i);
 				
@@ -202,7 +202,7 @@ public class ModsCommand implements JediStarBotCommand {
 			
 			chars.sort(String::compareToIgnoreCase);
 			
-			//Si trop de réponses, on renvoie simplement la liste de noms
+			//Si trop de rÃ©ponses, on renvoie simplement la liste de noms
 			if(!singleMatch && chars.size() > MAX_ANSWERS) {
 				message = MESSAGE_TOO_LONG;
 				
@@ -212,7 +212,7 @@ public class ModsCommand implements JediStarBotCommand {
 				}
 			}
 			else {
-				//sinon, on renvoi la réponse détaillée
+				//sinon, on renvoi la rÃ©ponse dÃ©taillÃ©e
 				if(!exactMatches.isEmpty()) {
 					
 					Map<String,List<Match>> variantsPerChar = new HashMap<String,List<Match>>();
@@ -241,7 +241,7 @@ public class ModsCommand implements JediStarBotCommand {
 						}
 						
 						embed.addField("-","Mods advised by [Crouching Rancor](http://apps.crouchingrancor.com)\r\nBot designed by [JediStar](https://jedistar.jimdo.com)", false);
-						//On contourne le chemin de réponse habituel pour pouvoir retourner plusieurs embeds d'un coup
+						//On contourne le chemin de rÃ©ponse habituel pour pouvoir retourner plusieurs embeds d'un coup
 						messageRecu.reply(null, embed);
 					}
 					
@@ -250,7 +250,7 @@ public class ModsCommand implements JediStarBotCommand {
 			}
 			
 			
-			//Si pas de corresp. exactes, on renvoie les correspondances approx., en baissant progressivement le niveau de tolérance
+			//Si pas de corresp. exactes, on renvoie les correspondances approx., en baissant progressivement le niveau de tolÃ©rance
 			if(exactMatches.isEmpty() && !approxMatches.isEmpty()) {
 				message += APPROX_MATCHES_MESSAGE;
 				
@@ -328,9 +328,9 @@ public class ModsCommand implements JediStarBotCommand {
 	}
 	
 	/**
-	 * Remplit le message avec les données contenues dans le JsonObject
+	 * Remplit le message avec les donnÃ©es contenues dans le JsonObject
 	 * @param charData
-	 * @return le message formaté
+	 * @return le message formatÃ©
 	 */
 	private String formatMessageForChar(JSONObject charData) {
 		return String.format(CHAR_MESSAGE,

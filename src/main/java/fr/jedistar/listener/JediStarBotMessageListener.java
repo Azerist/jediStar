@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import fr.jedistar.commands.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,10 +25,6 @@ import de.btobastian.javacord.entities.permissions.Role;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
-import fr.jedistar.commands.AreneCommand;
-import fr.jedistar.commands.EquilibrageCommand;
-import fr.jedistar.commands.ModsCommand;
-import fr.jedistar.commands.RaidCommand;
 import fr.jedistar.formats.CommandAnswer;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
@@ -58,12 +55,18 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		ModsCommand mods = new ModsCommand();
 		EquilibrageCommand balancing = new EquilibrageCommand();
 		AreneCommand arene = new AreneCommand();
-		
+
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
 		commandsMap.put(balancing.getCommand(), balancing);
 		commandsMap.put(arene.getCommand(), arene);
 		
+
+
+		HelpCommand help = new HelpCommand();
+
+        commandsMap.put(help.getCommand(), help);
+
 		//Lecture du Json
 		try {
 			JSONObject parameters = StaticVars.jsonSettings;

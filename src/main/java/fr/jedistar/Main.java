@@ -18,7 +18,7 @@ public class Main {
 	
 	final static Logger logger = LoggerFactory.getLogger(Main.class);
 	
-	//Noms des éléments dans le fichier de paramètres
+	//Noms des Ã©lÃ©ments dans le fichier de paramÃªtres
 	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
 	private static final String PARAM_SHEET_ID = "equilibrageSheetID";
 	private static final String PARAM_AUTH_FILE = "authFile";
@@ -31,24 +31,24 @@ public class Main {
 
 		String parametersFilePath = "";
 			
-		//Si un argument, on l'utilise comme chemin au fichier de paramètres
+		//Si un argument, on l'utilise comme chemin au fichier de paramÃªtres
 		if(args.length != 0) {		
 			parametersFilePath = args[0];	
 		}
-		//Sinon, on utilise le chemin par défaut
+		//Sinon, on utilise le chemin par dÃ©faut
 		else {
 			parametersFilePath = DEFAULT_PARAMETERS_FILE;	
 		}
 
 		String token = "";
 		
-		//Lecture du fichier Json et récupération des paramètres
+		//Lecture du fichier Json et rÃ©cupÃ©ration des paramÃªtres
 		try {
 			//Lecture du fichier
 			byte[] encoded = Files.readAllBytes(Paths.get(parametersFilePath));
 			String parametersJson = new String(encoded, "utf-8");
 			
-			//Décodage du json
+			//DÃ©codage du json
 			JSONObject parameters = new JSONObject(parametersJson);
 			
 			StaticVars.jsonSettings = parameters;
@@ -57,7 +57,7 @@ public class Main {
 			//Lecture du token Discord
 			token = parameters.getString(PARAM_TOKEN);
 			
-			//URI et encodage du JSON des mods conseillés
+			//URI et encodage du JSON des mods conseillÃ©s
 			String modsJsonUri = parameters.getString(PARAM_MODS_JSON_URI);
 			ModsCommand.setJsonUri(modsJsonUri);
 			

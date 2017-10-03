@@ -41,7 +41,7 @@ public class AreneCommand implements JediStarBotCommand {
 	
 	
 	
-	
+
 	private final static String JSON_MESSAGE_HELP = "help";
 	private final static String JSON_ERROR_MESSAGE = "errorMessage";
 	private final static String JSON_ARENE = "arenaCommandParameters";
@@ -61,7 +61,7 @@ public class AreneCommand implements JediStarBotCommand {
 		JSONObject parameters = StaticVars.jsonSettings;
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-		//Paramètres propres à l'équilibrage
+		//ParamÃ¨tres propres Ã  l'Ã©quilibrage
 		JSONObject AreneParams = parameters.getJSONObject(JSON_ARENE);
 
 		COMMAND = AreneParams.getString(JSON_ARENE_COMMAND);

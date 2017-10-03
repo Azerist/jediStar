@@ -20,7 +20,7 @@ public class JediStarBot {
 		token = inToken;
 
 		api = Javacord.getApi(token, true);
-		
+
 		botCallback = new JediStarBotCallback();
 
 	}
