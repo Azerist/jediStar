@@ -8,7 +8,7 @@ USE jedistar;
 
 CREATE TABLE IF NOT EXISTS guild
 (
-	serverID VARCHAR(50) PRIMARY KEY,
+	channelID VARCHAR(50) PRIMARY KEY,
 	guildID INT NOT NULL
 );	
 

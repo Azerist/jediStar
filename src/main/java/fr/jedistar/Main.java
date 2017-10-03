@@ -96,8 +96,6 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		OnlineDataParser.parseSwgohGGCharacters();
-
 		logger.info("Launching bot with token -"+token+"-");
 
 		JediStarBot bot = new JediStarBot(token);

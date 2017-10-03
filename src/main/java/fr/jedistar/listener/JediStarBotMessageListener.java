@@ -29,11 +29,12 @@ import fr.jedistar.commands.EquilibrageCommand;
 import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.commands.RaidCommand;
 import fr.jedistar.commands.SetUpCommand;
+import fr.jedistar.commands.TerritoryBattlesCommand;
 import fr.jedistar.formats.CommandAnswer;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
 
-	public static final String PREFIXE_COMMANDES = "!";
+	public static final String PREFIXE_COMMANDES = "%";
 
 	Map<String,JediStarBotCommand> commandsMap;
 	
@@ -60,12 +61,14 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		EquilibrageCommand balancing = new EquilibrageCommand();
 		AreneCommand arene = new AreneCommand();
 		SetUpCommand setup = new SetUpCommand();
+		TerritoryBattlesCommand tb = new TerritoryBattlesCommand();
 		
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
 		commandsMap.put(balancing.getCommand(), balancing);
 		commandsMap.put(arene.getCommand(), arene);
 		commandsMap.put(setup.getCommand(),setup);
+		commandsMap.put(tb.getCommand(), tb);
 		
 		//Lecture du Json
 		try {
@@ -100,7 +103,16 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		
 		String messageAsString = receivedMessage.getContent().toLowerCase();
 		
-		//Si le message est vide ou ne commence pas par ! : Ne rien faire.
+		//Message temporaire lié au nouveau préfixe
+		if(messageAsString !=null && messageAsString.startsWith("!")) {
+			messageAsString = messageAsString.substring(1);
+			if(commandsMap.get(messageAsString) != null) {
+				receivedMessage.reply(String.format(MESSAGE, receivedMessage.getAuthor().getMentionTag(),"Depuis la dernière mise à jour, le préfixe du bot n'est plus ! mais %.\r\nPar exemple, %raid tank p1 50%"));
+				return;
+			}
+		}
+		
+		//Si le message est vide ou ne commence pas par % : Ne rien faire.
 		if(messageAsString == null
 				|| !messageAsString.startsWith(PREFIXE_COMMANDES)) {
 			return;

@@ -31,7 +31,7 @@
 			"damages":"On the **%s** during  *phase %d*, *%s* damage equals to **%.1f%%**",
 			"percent":"On the **%s** during *phase %d*, *%s* equals to **%s** damage",
 			"target":"On the **%s**, starting in *phase %d at %.1f%%* :\r\nYour objective being *%s* damage, you need to stop in **phase %d at %.1f%%**",
-			"help":"Here are the various commands I understand to evaluate your raid results :\r\n\r\n- **!raid rancor p1 5.5%** ==> Answers with the damage done corresponding to 5.5% during phase 1 on the Rancor Heroic raid\r\n- **!raid rancor p2 10% 4%** ==> Answers with the damage done corresponding to 6% done on phase 2 on the Rancor Heroic raid\r\n - ** !raid aat p3 40000 ** == > Answers with the percentage corresponding  to 40,000 damage on the Phase 3 of the Heroic AAT raid\r\n - ** !raid tank p4 35% 100000 ** == > Answers with the percentage to reach in order to perform 100,000 damage, starting your battle at 35 % on the Phase 4 of the Heroic AAT raid",
+			"help":"Here are the various commands I understand to evaluate your raid results :\r\n\r\n- **%raid rancor p1 5.5%** ==> Answers with the damage done corresponding to 5.5% during phase 1 on the Rancor Heroic raid\r\n- **%raid rancor p2 10% 4%** ==> Answers with the damage done corresponding to 6% done on phase 2 on the Rancor Heroic raid\r\n - ** %raid aat p3 40000 ** == > Answers with the percentage corresponding  to 40,000 damage on the Phase 3 of the Heroic AAT raid\r\n - ** %raid tank p4 35% 100000 ** == > Answers with the percentage to reach in order to perform 100,000 damage, starting your battle at 35 % on the Phase 4 of the Heroic AAT raid",
 			"targetRange":"On the **%s**, starting in *phase %d at %.1f%%* :\r\nYour objective being  *%s-%s* damage, you need to stop between\n **phase %d at %.1f%%** \n and \n **phase %d at %.1f%%**"
 		},
 		
@@ -101,7 +101,7 @@
 		"messages":{
 			"approxMatches":"\r\n**Here's the characters that are close to your search :**\r\n\r\n",
 			"characterMods":"**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **ÃƒÂ¢Ã‹Å“Ã¯Â¿Â½** : %s\r\n  **ÃƒÂ¢Ã…Â¾Ã…Â¡** : %s\r\n  **ÃƒÂ¢Ã¢â‚¬â€�Ã¢â‚¬Â ** : %s\r\n  **ÃƒÅ½Ã¢â‚¬ï¿½** : %s\r\n  **O** : %s\r\n  **ÃƒÂ¢Ã…â€œÃ¢â€žÂ¢** : %s\r\n  ",
-			"help":"This command returns the mod setup advised for a given character.\r\n\r\n**Example**\r\n!mods anakin"
+			"help":"This command returns the mod setup advised for a given character.\r\n\r\n**Example**\r\n%mods anakin"
 		},
 		
 		"errorMessages":{
@@ -118,7 +118,7 @@
 		
 		"messages":{
 			"fastestPath":"You can reach the highest rank fighting : **%s** \r\n",
-			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n!arena 26"
+			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n%arena 26"
 		},
 		
 		"errorMessages":{
@@ -135,10 +135,10 @@
 			"guildNumber":"guildNumber"
 		},
 		
-		"help":"This command allows you to setup the bot.\r\nPossible commands :\r\n!setup guildNumber XXX",
+		"help":"This command allows you to setup the bot.\r\nPossible commands :\r\n%setup guildNumber XXX",
 		
 		"messages":{
-			"confirmUpdateGuild":"This Discord server is already associated with guild number %d, do you really wish to change this ?",
+			"confirmUpdateGuild":"This Discord channel is already associated with guild number %d, do you really wish to change this ?",
 			"guildSetupOK":"Guild number setup successful",
 			"cancelAction":"OK, cancelling."
 		},
@@ -151,5 +151,33 @@
 			"sqlError":"An error occurred while accessing the database",
 			"noCommandFound":"Unrecognized command"
 		}
-	}
+	},
+	
+	"territoryBattlesCommandParams":{
+        
+        "commands":{
+            "base":"tb",
+            "platoon":"platoon",
+            "characters":"chars",
+            "ships":"ships"
+        },
+        
+        "help":"Possible command :\r\n%tb platoon chars aayla 5\*\r\n%tb platoon ships ghost 5\*",
+        
+        "messages":{
+			"displayedResults":"15 weakest units (total %d)",
+			"noUnitFound":"No one in your guild has this unit at the requested rarity level"
+		},
+		
+        "errorMessages":{
+            "noChannel":"This command must be typed from a server (not through a private message)",
+            "sqlError":"Database access error",
+            "noGuildNumber":"No guild associated to this Discord channel. Ask your bot admins to run *%setup*",
+            "commandError":"This command is not recognized",
+            "paramsNumber":"Parameters missing",
+            "incorrectNumber":"We did not recognized a number",
+            "dbUpdateError":"Database update error ",
+            "tooMuchResults":"Too many results, try limiting your search to one ofthe following chararacters :\r\n"
+        }
+    }
 }

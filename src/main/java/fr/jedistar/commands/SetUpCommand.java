@@ -48,9 +48,9 @@ public class SetUpCommand implements JediStarBotCommand {
 	private final String NO_COMMAND_FOUND;
 	
 	//Requêtes SQL
-	private static final String SELECT_GUILD_REQUEST = "SELECT * FROM guild WHERE serverID=?";
+	private static final String SELECT_GUILD_REQUEST = "SELECT * FROM guild WHERE channelID=?";
 	private static final String INSERT_GUILD_REQUEST = "INSERT INTO guild VALUES (?,?);";
-	private static final String UPDATE_GUILD_REQUEST = "UPDATE guild SET guildID=? WHERE serverID=?;";
+	private static final String UPDATE_GUILD_REQUEST = "UPDATE guild SET guildID=? WHERE channelID=?;";
 
 
 	//Nom des champs JSON
@@ -154,8 +154,8 @@ public class SetUpCommand implements JediStarBotCommand {
 	 */
 	private CommandAnswer registerNewGuild(Message receivedMessage,Integer guildID) {
 
-		String serverID = receivedMessage.getChannelReceiver().getServer().getId();
-		Integer existingGuildID = checkIfServerExists(serverID);
+		String channelID = receivedMessage.getChannelReceiver().getId();
+		Integer existingGuildID = checkIfChannelExists(channelID);
 		
 		//Erreur SQL
 		if(existingGuildID != null && existingGuildID == -1) {
@@ -169,7 +169,7 @@ public class SetUpCommand implements JediStarBotCommand {
 				return new CommandAnswer(SETUP_GUILD_OK,null);
 			}
 			
-			JediStarBotReactionAddListener.addPendingAction(new PendingAction(receivedMessage.getAuthor(),"executeUpdate",this,receivedMessage,1,serverID,guildID));
+			JediStarBotReactionAddListener.addPendingAction(new PendingAction(receivedMessage.getAuthor(),"executeUpdate",this,receivedMessage,1,channelID,guildID));
 			String emojiX = EmojiManager.getForAlias("x").getUnicode();
 			String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
 
@@ -185,7 +185,7 @@ public class SetUpCommand implements JediStarBotCommand {
 				
 				stmt = conn.prepareStatement(INSERT_GUILD_REQUEST);
 				
-				stmt.setString(1, serverID);
+				stmt.setString(1, channelID);
 				stmt.setInt(2, guildID);
 				
 				logger.debug("Executing query : "+stmt.toString());
@@ -217,7 +217,7 @@ public class SetUpCommand implements JediStarBotCommand {
 	 * @param serverID
 	 * @return
 	 */
-	private Integer checkIfServerExists(String serverID) {
+	private Integer checkIfChannelExists(String channelID) {
 		
 		Connection conn = StaticVars.jdbcConnection;
 		PreparedStatement stmt = null;
@@ -226,7 +226,7 @@ public class SetUpCommand implements JediStarBotCommand {
 		try {
 			stmt = conn.prepareStatement(SELECT_GUILD_REQUEST);
 			
-			stmt.setString(1,serverID);
+			stmt.setString(1,channelID);
 			
 			logger.debug("Executing query : "+stmt.toString());
 
@@ -268,7 +268,7 @@ public class SetUpCommand implements JediStarBotCommand {
 	 * @param guildID
 	 * @return
 	 */
-	public String executeUpdate(ImplReaction reaction,String serverID,Integer guildID) {
+	public String executeUpdate(ImplReaction reaction,String channelID,Integer guildID) {
 
 		String emojiX = EmojiManager.getForAlias("x").getUnicode();
 		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
@@ -285,7 +285,7 @@ public class SetUpCommand implements JediStarBotCommand {
 				stmt = conn.prepareStatement(UPDATE_GUILD_REQUEST);
 
 				stmt.setInt(1, guildID);
-				stmt.setString(2, serverID);
+				stmt.setString(2, channelID);
 
 				logger.debug("Executing query : "+stmt.toString());
 
