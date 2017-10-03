@@ -34,7 +34,7 @@ import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.Main;
 import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
-import fr.jedistar.usedapis.JaroWinklerDistance;
+import fr.jedistar.utils.JaroWinklerDistance;
 
 
 public class ModsCommand implements JediStarBotCommand {
@@ -304,9 +304,7 @@ public class ModsCommand implements JediStarBotCommand {
 	 * @throws UnsupportedEncodingException
 	 */
 	private JSONObject getHttpJsonFile() throws MalformedURLException, IOException, UnsupportedEncodingException {
-		
-		Date now = new Date();
-		
+				
 		URL url = new URL(JSON_URI);
 		URLConnection connection = url.openConnection();
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");

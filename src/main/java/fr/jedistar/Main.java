@@ -3,16 +3,19 @@ package fr.jedistar;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.util.StatusPrinter;
-import fr.jedistar.commands.EquilibrageCommand;
+
 import fr.jedistar.commands.ModsCommand;
+import fr.jedistar.utils.OnlineDataParser;
 
 public class Main {
 	
@@ -20,12 +23,17 @@ public class Main {
 	
 	//Noms des éléments dans le fichier de paramêtres
 	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
-	private static final String PARAM_SHEET_ID = "equilibrageSheetID";
-	private static final String PARAM_AUTH_FILE = "authFile";
 	private static final String PARAM_TOKEN = "discordToken";
-	private static final String PARAM_GOOGLE_API = "googleAPI";
+	private static final String PARAM_DB = "database";
+	private static final String PARAM_DB_URL = "url";
+	private static final String PARAM_DB_USER = "user";
+	private static final String PARAM_DB_PWD = "pwd";
 
 	private static final String DEFAULT_PARAMETERS_FILE = "settings.json";
+	
+	private static String url;
+	private static String user;
+	private static String passwd;
 	
 	public static void main(String ... args) {
 
@@ -61,6 +69,10 @@ public class Main {
 			String modsJsonUri = parameters.getString(PARAM_MODS_JSON_URI);
 			ModsCommand.setJsonUri(modsJsonUri);
 			
+			JSONObject dbParams = parameters.getJSONObject(PARAM_DB);
+			url = dbParams.getString(PARAM_DB_URL);
+			user = dbParams.getString(PARAM_DB_USER);
+			passwd = dbParams.getString(PARAM_DB_PWD);
 			
 			
 		}
@@ -74,6 +86,15 @@ public class Main {
 			e.printStackTrace();
 		}
 		
+		//Initialisation bdd		
+		try {
+			logger.info("Connecting to database : "+url+" with user/pw "+user+"/"+passwd);
+			StaticVars.jdbcConnection = DriverManager.getConnection(url, user, passwd);		
+			logger.info("Connecting to database successful");
+		} catch (SQLException e) {
+			logger.error("Error connecting to mysql database");
+			e.printStackTrace();
+		}
 		
 		logger.info("Launching bot with token -"+token+"-");
 

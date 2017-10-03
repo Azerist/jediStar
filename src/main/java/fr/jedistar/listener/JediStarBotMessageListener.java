@@ -29,7 +29,7 @@ import fr.jedistar.formats.CommandAnswer;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
 
-	public static final String PREFIXE_COMMANDES = "!";
+	public static final String PREFIXE_COMMANDES = "%";
 
 	Map<String,JediStarBotCommand> commandsMap;
 	
@@ -55,16 +55,16 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		ModsCommand mods = new ModsCommand();
 		EquilibrageCommand balancing = new EquilibrageCommand();
 		AreneCommand arene = new AreneCommand();
+		SetUpCommand setup = new SetUpCommand();
+		TerritoryBattlesCommand tb = new TerritoryBattlesCommand();
+        HelpCommand help = new HelpCommand();
 
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
 		commandsMap.put(balancing.getCommand(), balancing);
 		commandsMap.put(arene.getCommand(), arene);
-		
-
-
-		HelpCommand help = new HelpCommand();
-
+		commandsMap.put(setup.getCommand(),setup);
+		commandsMap.put(tb.getCommand(), tb);
         commandsMap.put(help.getCommand(), help);
 
 		//Lecture du Json
@@ -100,7 +100,21 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		
 		String messageAsString = receivedMessage.getContent().toLowerCase();
 		
-		//Si le message est vide ou ne commence pas par ! : Ne rien faire.
+		//Si le message est vide ou ne commence pas par % : Ne rien faire.
+		//Message temporaire li� au nouveau pr�fixe
+		if(messageAsString !=null && messageAsString.startsWith("!")) {
+			messageAsString = messageAsString.substring(1);
+
+			String[] messagePartsArray = messageAsString.split(" ");
+			String command = messagePartsArray[0];
+
+			if(commandsMap.get(command) != null) {
+				receivedMessage.reply(String.format(MESSAGE, receivedMessage.getAuthor().getMentionTag(),"Depuis la derni�re mise � jour, le pr�fixe du bot n'est plus ! mais %.\r\nPar exemple, %raid tank p1 50%"));
+				return;
+			}
+		}
+
+		//Si le message est vide ou ne commence pas par % : Ne rien faire.
 		if(messageAsString == null
 				|| !messageAsString.startsWith(PREFIXE_COMMANDES)) {
 			return;
