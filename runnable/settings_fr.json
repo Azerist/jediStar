@@ -168,7 +168,7 @@
 			"guildNumber":"numeroGuilde"
 		},
 		
-		"help":"Cette commande vous permet de paramétrer le bot.\r\nCommandes possibles :\r\n%parametrage numeroGuilde XXX",
+		"help":"Cette commande vous permet de paramétrer le bot.\r\nCommandes possibles :\r\n%parametrage numeroGuilde XXX\r\nVous trouverez votre numéro de guilde sur swgoh.gg, dans l'adresse de votre page de guilde.",
 		
 		"messages":{
 			"confirmUpdateGuild":"Ce salon Discord est déjà associé avec l'id de guilde %d, êtes-vous sûr de vouloir changer l'association ?",

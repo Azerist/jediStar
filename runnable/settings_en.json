@@ -135,7 +135,7 @@
 			"guildNumber":"guildNumber"
 		},
 		
-		"help":"This command allows you to setup the bot.\r\nPossible commands :\r\n%setup guildNumber XXX",
+		"help":"This command allows you to setup the bot.\r\nPossible commands :\r\n%setup guildNumber XXX\r\nYou can find your guild number on swgoh.gg in the address of your guild page",
 		
 		"messages":{
 			"confirmUpdateGuild":"This Discord channel is already associated with guild number %d, do you really wish to change this ?",
