@@ -162,7 +162,7 @@
             "ships":"ships"
         },
         
-        "help":"Possible command :\r\n%tb platoon chars aayla 5\*\r\n%tb platoon ships ghost 5\*",
+        "help":"Possible command :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*",
         
         "messages":{
 			"displayedResults":"15 weakest units (total %d)",

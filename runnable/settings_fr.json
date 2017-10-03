@@ -195,7 +195,7 @@
 			"ships":"vaisseaux"
 		},
 		
-		"help":"Commandes possibles :\r\n%tb platoon persos aayla 5*\r\n%tb platoon vaisseaux ghost 5*",
+		"help":"Commandes possibles :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*",
 		
 		"messages":{
 			"displayedResults":"Liste des 15 plus faibles (total %d)",
