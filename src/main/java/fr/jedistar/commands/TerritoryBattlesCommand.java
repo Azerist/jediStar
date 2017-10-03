@@ -309,7 +309,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 						String currentContent = contentPerRarity.get(currRarity);
 						Integer intPower = rs.getInt("power");
 						String power = NumberFormat.getIntegerInstance().format(intPower);
-						currentContent += power +" GP - "+rs.getString("player")+"  \r\n";
+						currentContent += power +" GP - "+rs.getString("player")+" \r\n";
 						contentPerRarity.put(currRarity,currentContent);
 					}
 
