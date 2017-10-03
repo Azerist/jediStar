@@ -103,7 +103,11 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		//Message temporaire lié au nouveau préfixe
 		if(messageAsString !=null && messageAsString.startsWith("!")) {
 			messageAsString = messageAsString.substring(1);
-			if(commandsMap.get(messageAsString) != null) {
+			
+			String[] messagePartsArray = messageAsString.split(" ");	
+			String command = messagePartsArray[0];
+
+			if(commandsMap.get(command) != null) {
 				receivedMessage.reply(String.format(MESSAGE, receivedMessage.getAuthor().getMentionTag(),"Depuis la dernière mise à jour, le préfixe du bot n'est plus ! mais %.\r\nPar exemple, %raid tank p1 50%"));
 				return;
 			}
