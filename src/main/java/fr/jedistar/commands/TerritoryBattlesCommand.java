@@ -147,7 +147,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			
 			Integer rarity = 0;
 			try {
-				String rarityAsString = params.get(3).replace("*","");
+				String rarityAsString = params.get(params.size()-1).replace("*","");
 				rarity = Integer.parseInt(rarityAsString);
 			}
 			catch(NumberFormatException e) {
@@ -155,12 +155,18 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				return new CommandAnswer(error(ERROR_INCORRECT_NUMBER),null);
 			}
 			
+			//récupérer le nom du perso si celui-ci contient des espaces
+			String unitName = params.get(2);
+			for(int i=3;i<params.size()-1;i++) {
+				unitName += " "+params.get(i);
+			}
+			
 			String retour = error(ERROR_COMMAND);
 			if(COMMAND_SHIPS.equals(params.get(1))) {
-				retour = findUnits(guildID, SHIP_MODE, params.get(2), rarity,receivedMessage);
+				retour = findUnits(guildID, SHIP_MODE, unitName, rarity,receivedMessage);
 			}
 			else if(COMMAND_CHARS.equals(params.get(1))) {
-				retour = findUnits(guildID, CHAR_MODE, params.get(2), rarity,receivedMessage);
+				retour = findUnits(guildID, CHAR_MODE, unitName, rarity,receivedMessage);
 			}
 			
 			return new CommandAnswer(retour,null);
