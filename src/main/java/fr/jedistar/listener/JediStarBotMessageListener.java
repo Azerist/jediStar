@@ -109,7 +109,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			String command = messagePartsArray[0];
 
 			if(commandsMap.get(command) != null) {
-				receivedMessage.reply(String.format(MESSAGE, receivedMessage.getAuthor().getMentionTag(),"Depuis la dernière mise à jour, le préfixe du bot n'est plus ! mais %.\r\nPar exemple, %raid tank p1 50%"));
+				receivedMessage.reply(String.format(MESSAGE, receivedMessage.getAuthor().getMentionTag(),"Since the last update, the bot prefix is not ! any more, but %\r\nFor instance, %raid tank p1 50%"));
 				return;
 			}
 		}
