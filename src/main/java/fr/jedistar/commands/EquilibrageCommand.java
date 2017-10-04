@@ -1026,7 +1026,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		@Override
 		public int compareTo(UserScore o) {
 			
-			return ( 100000 * (int)(o.score - this.score));
+			return (int)( 100000 * (o.score - this.score));
 		}
 		
 	}
