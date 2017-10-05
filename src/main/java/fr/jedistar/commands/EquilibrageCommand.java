@@ -50,8 +50,9 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String LAUNCH_RAID_COMMAND;
 	private final String END_RAID_COMMAND;
 	private final String REPORT_COMMAND;
-	private final Object COMMAND_DELETE;
-	private final Object COMMAND_ADD;
+	private final String COMMAND_DELETE;
+	private final String COMMAND_ADD;
+	private final String COMMAND_ADJUST;
 		
 	private final String PODIUM = "podium";
 	private final Integer PODIUM_VALUE = -100;
@@ -84,6 +85,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 	//Des Map pour représenter les tableaux...
 	private Map<String,List<Ranking>> rankingsPerRaid;
+	
 	private HashMap<String,HashMap<Integer,HashMap<String,List<Integer>>>> valuesPerUserPerRaid = null ;
 	
 	
@@ -108,6 +110,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final static String JSON_BALANCING_COMMANDS_REPORT="report";
 	private final static String JSON_BALANCING_COMMANDS_DELETE="delete";
 	private final static String JSON_BALANCING_COMMANDS_ADD="add";
+	private final static String JSON_BALANCING_COMMANDS_ADJUST="adjust";
 	
 	private final static String JSON_BALANCING_HELP="help";
 	
@@ -171,8 +174,9 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		LAUNCH_RAID_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_LAUNCH_RAID);
 		END_RAID_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_END_RAID);
 		REPORT_COMMAND = commands.getString(JSON_BALANCING_COMMANDS_REPORT);
-		COMMAND_DELETE = commands.get(JSON_BALANCING_COMMANDS_DELETE);
-		COMMAND_ADD = commands.get(JSON_BALANCING_COMMANDS_ADD);
+		COMMAND_DELETE = commands.getString(JSON_BALANCING_COMMANDS_DELETE);
+		COMMAND_ADD = commands.getString(JSON_BALANCING_COMMANDS_ADD);
+		COMMAND_ADJUST = commands.getString(JSON_BALANCING_COMMANDS_ADJUST);
 		
 		HELP = balancingParams.getString(JSON_BALANCING_HELP);
 		
@@ -407,7 +411,89 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			return launchRaid(raidName,podium,excludedFromFirstRank,chan);
 		}
 		
+		else if(params.size() == 5 && COMMAND_ADJUST.equals(params.get(0))) {
+			
+			if(!params.get(1).startsWith("<@") || ! params.get(1).endsWith(">")) {
+				return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner les joueurs", null);
+			}
+			
+			try {
+				
+				Integer userId = getUserDiscriminator(chan, params.get(1));
+				String raidName = params.get(2);
+				String rangeIndex = params.get(3);
+				Integer adjustmentValue = Integer.parseInt(params.get(4));
+				
+				return adjustUserValue(userId,raidName,rangeIndex,adjustmentValue);
+			}
+			catch(NumberFormatException e) {
+				return new CommandAnswer("Un nombre entré n'a pas été reconnu", null);
+			}
+		}
+		
 		return new CommandAnswer(error("Commande incorrecte"),null);
+	}
+
+
+
+	private CommandAnswer adjustUserValue(Integer userId, String raidName, String rangeIndex, Integer adjustmentValue) throws NumberFormatException {
+
+		HashMap<Integer,HashMap<String,List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
+		
+		if(valuesPerUser == null) {
+			return new CommandAnswer("raid non trouvé",null);
+		}
+		
+		HashMap<String,List<Integer>> valuesMapForThisUser = valuesPerUser.get(userId);
+		
+		if(valuesMapForThisUser == null) {
+			return new CommandAnswer("utilisateur non trouvé",null);
+		}
+		
+		Integer listIndex = null;
+		
+		if(PODIUM.equals(rangeIndex)) {
+			listIndex = 0;
+			
+			List<Integer> newValuesList = new ArrayList<Integer>();
+			Integer currentValue = valuesMapForThisUser.get(KEY_PODIUMS).get(0);
+			
+			newValuesList.add(currentValue + adjustmentValue);
+			
+			valuesMapForThisUser.put(KEY_PODIUMS, newValuesList);
+		}
+		else {
+			listIndex = Integer.parseInt(rangeIndex) -1;
+		}
+		
+		List<Integer> valuesListForThisUser = valuesMapForThisUser.get(KEY_VALUES);
+		
+		if(listIndex +1 > valuesListForThisUser.size()) {
+			return new CommandAnswer("Cette tranche n'a pas été trouvée", null);
+		}
+		
+		List<Integer> newValuesList = new ArrayList<Integer>();
+		
+		for(int i=0;i<valuesListForThisUser.size();i++) {
+			Integer currValue = valuesListForThisUser.get(i);
+			
+			if(i == listIndex) {
+				currValue += adjustmentValue;
+			}
+			
+			newValuesList.add(currValue);
+		}
+		
+		valuesMapForThisUser.put(KEY_VALUES, newValuesList);
+			
+		String write = writeToJson();
+		
+		if(write == null) {
+			return new CommandAnswer("Ajutement réussi", null);
+		}
+		else {
+			return new CommandAnswer(write,null);
+		}
 	}
 
 
