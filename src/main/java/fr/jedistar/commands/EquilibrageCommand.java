@@ -413,6 +413,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 		else if(params.size() == 5 && COMMAND_ADJUST.equals(params.get(0))) {
 			
+			if(!isAdmin) {
+				return new CommandAnswer(FORBIDDEN,null);
+			}
+			
 			if(!params.get(1).startsWith("<@") || ! params.get(1).endsWith(">")) {
 				return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner les joueurs", null);
 			}
