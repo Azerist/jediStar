@@ -204,6 +204,10 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return true;
 		}
 		
+		if(messageRecu.isPrivateMessage()) {
+			return false;
+		}
+		
 		for(Role role : author.getRoles(messageRecu.getChannelReceiver().getServer())) {
 			if(adminGroups.contains(role.getName())) {
 				return true;
