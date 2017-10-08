@@ -200,8 +200,8 @@
 		},
 
 		"errorMessages":{
-			"paramsError":"la commande que vous demandez n'est pas connu, merci d'utiliser les notations suivantes : \r\n\r\n - !help : pour avoir accès à toutes l'aide \r\n - !help mods : pour une aide sur la fonctionnalité des mods \r\n - !help raid : pour une aide sur la fonctionnalité des raids \r\n - !help equilibrage : pour une aide sur la fonctionnalité d'équilibrage",
-			"technicalError": "une erreur technique est survenu, veuillez contacter votre administrateur Discord"
+			"paramsError":"The command you asked is unknown, thanks to use one of those : \r\n\r\n - %help : to have an overview \r\n - %help mods : to know more about mods command \r\n - %help raid : to know more about raid command \r\n ",
+			"technicalError": "An error occured, please contact you Discord's Administrator"
 		}
 	}
 }
