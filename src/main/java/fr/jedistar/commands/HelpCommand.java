@@ -22,6 +22,7 @@ public class HelpCommand implements JediStarBotCommand {
     private static final String RAID=StaticVars.jsonSettings.getJSONObject("raidCommandParameters").getString(JSON_MODS_COMMAND_COMMAND);
     private static final String ARENE=StaticVars.jsonSettings.getJSONObject("arenaCommandParameters").getString(JSON_MODS_COMMAND_COMMAND);
     private static final String EQUILIBRAGE=StaticVars.jsonSettings.getJSONObject("balancingCommandParameters").getJSONObject("commands").getString(JSON_MODS_COMMAND_COMMAND);
+    private static final String TB=StaticVars.jsonSettings.getJSONObject("territoryBattlesCommandParams").getJSONObject("commands").getString("base");
 
     private final static String JSON_HELP_MESSAGES = "messages";
     private static final String JSON_HELP_MESSAGE_INTRO_MESSAGE = "introMessage";
@@ -29,6 +30,12 @@ public class HelpCommand implements JediStarBotCommand {
     private static final String JSON_HELP_MESSAGE_RAID_MESSAGE = "raidMessage";
     private static final String JSON_HELP_MESSAGE_EQUILIBRAGE_MESSAGE = "equilibrageMessage";
     private static final String JSON_HELP_MESSAGE_ARENA_MESSAGE = "arenaMessage";
+    private static final String JSON_HELP_MESSAGE_TB_MESSAGE = "tbMessage";
+    private static final String JSON_HELP_MESSAGE_SMALL_MODS_MESSAGE = "smallModsMessage";
+    private static final String JSON_HELP_MESSAGE_SMALL_RAID_MESSAGE = "smallRaidMessage";
+    private static final String JSON_HELP_MESSAGE_SMALL_EQUILIBRAGE_MESSAGE = "smallEquilibrageMessage";
+    private static final String JSON_HELP_MESSAGE_SMALL_ARENA_MESSAGE = "smallArenaMessage";
+    private static final String JSON_HELP_MESSAGE_SMALL_TB_MESSAGE = "smallTbMessage";
 
     private final static String JSON_HELP_ERROR_MESSAGES = "errorMessages";
     private final static String JSON_HELP_ERROR_MESSAGES_PARAMS_ERROR = "paramsError";
@@ -41,6 +48,12 @@ public class HelpCommand implements JediStarBotCommand {
     private static String RAID_MESSAGE;
     private static String ARENA_MESSAGE;
     private static String EQUILIBRAGE_MESSAGE;
+    private static String TB_MESSAGE;
+    private static String SMALL_MODS_MESSAGE;
+    private static String SMALL_RAID_MESSAGE;
+    private static String SMALL_ARENA_MESSAGE;
+    private static String SMALL_EQUILIBRAGE_MESSAGE;
+    private static String SMALL_TB_MESSAGE;
     private static String PARAMS_ERROR;
     private static String TECHNICAL_ERROR;
 
@@ -64,6 +77,12 @@ public class HelpCommand implements JediStarBotCommand {
         RAID_MESSAGE = messages.getString(JSON_HELP_MESSAGE_RAID_MESSAGE);
         EQUILIBRAGE_MESSAGE = messages.getString(JSON_HELP_MESSAGE_EQUILIBRAGE_MESSAGE);
         ARENA_MESSAGE = messages.getString(JSON_HELP_MESSAGE_ARENA_MESSAGE);
+        TB_MESSAGE = messages.getString(JSON_HELP_MESSAGE_TB_MESSAGE);
+        SMALL_MODS_MESSAGE = messages.getString(JSON_HELP_MESSAGE_SMALL_MODS_MESSAGE);
+        SMALL_RAID_MESSAGE = messages.getString(JSON_HELP_MESSAGE_SMALL_RAID_MESSAGE);
+        SMALL_ARENA_MESSAGE = messages.getString(JSON_HELP_MESSAGE_SMALL_ARENA_MESSAGE);
+        SMALL_EQUILIBRAGE_MESSAGE = messages.getString(JSON_HELP_MESSAGE_SMALL_EQUILIBRAGE_MESSAGE);
+        SMALL_TB_MESSAGE = messages.getString(JSON_HELP_MESSAGE_SMALL_TB_MESSAGE);
 
         //Messages d'erreur
         JSONObject errorMessages = modsParams.getJSONObject(JSON_HELP_ERROR_MESSAGES);
@@ -98,7 +117,9 @@ public class HelpCommand implements JediStarBotCommand {
             sb.append(EQUILIBRAGE_MESSAGE);
         } else if (s.equals(RAID)) {
             sb.append(RAID_MESSAGE);
-        } else {
+        } else if (s.equals(TB)) {
+            sb.append(TB_MESSAGE);
+        }else {
             throw new HelpParamException();
         }
 
@@ -109,13 +130,15 @@ public class HelpCommand implements JediStarBotCommand {
         StringBuilder sb = new StringBuilder();
         sb.append(INTRO_MESSAGE);
         sb.append("\r\n");
-        sb.append(MODS_MESSAGE);
+        sb.append(SMALL_MODS_MESSAGE);
         sb.append("\r\n\n\n");
-        sb.append(RAID_MESSAGE);
+        sb.append(SMALL_RAID_MESSAGE);
         sb.append("\r\n\n\n");
-        sb.append(EQUILIBRAGE_MESSAGE);
+        sb.append(SMALL_EQUILIBRAGE_MESSAGE);
         sb.append("\r\n\n\n");
-        sb.append(ARENA_MESSAGE);
+        sb.append(SMALL_ARENA_MESSAGE);
+        sb.append("\r\n\n\n");
+        sb.append(SMALL_TB_MESSAGE);
 
         return sb.toString();
     }
