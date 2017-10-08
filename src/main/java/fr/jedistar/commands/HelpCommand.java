@@ -18,10 +18,10 @@ public class HelpCommand implements JediStarBotCommand {
     private final static String JSON_ERROR_MESSAGE = "errorMessage";
     private final static String JSON_MODS_COMMAND = "helpCommandParameters";
     private final static String JSON_MODS_COMMAND_COMMAND = "command";
-    private static final String MODS = "mods";
-    private static final String RAID = "raid";
-    private static final String ARENE = "arene";
-    private static final String EQUILIBRAGE = "balance";
+    private static final String MODS=StaticVars.jsonSettings.getJSONObject("modsCommandParameters").getString(JSON_MODS_COMMAND_COMMAND);
+    private static final String RAID=StaticVars.jsonSettings.getJSONObject("raidCommandParameters").getString(JSON_MODS_COMMAND_COMMAND);
+    private static final String ARENE=StaticVars.jsonSettings.getJSONObject("arenaCommandParameters").getString(JSON_MODS_COMMAND_COMMAND);
+    private static final String EQUILIBRAGE=StaticVars.jsonSettings.getJSONObject("balancingCommandParameters").getJSONObject("commands").getString(JSON_MODS_COMMAND_COMMAND);
 
     private final static String JSON_HELP_MESSAGES = "messages";
     private static final String JSON_HELP_MESSAGE_INTRO_MESSAGE = "introMessage";
@@ -90,34 +90,31 @@ public class HelpCommand implements JediStarBotCommand {
     private String constructAppropriateMessage(String s) throws HelpParamException {
         StringBuilder sb = new StringBuilder();
         sb.append(INTRO_MESSAGE);
-        switch (s){
-            case MODS:
-                sb.append(MODS_MESSAGE);
-                break;
-            case ARENE:
-                sb.append(ARENA_MESSAGE);
-                break;
-            case EQUILIBRAGE:
-                sb.append(EQUILIBRAGE_MESSAGE);
-                break;
-            case RAID:
-                sb.append(RAID_MESSAGE);
-                break;
-            default:
-                throw new HelpParamException();
+        if (s.equals(MODS)) {
+            sb.append(MODS_MESSAGE);
+        } else if (s.equals(ARENE)) {
+            sb.append(ARENA_MESSAGE);
+        } else if (s.equals(EQUILIBRAGE)) {
+            sb.append(EQUILIBRAGE_MESSAGE);
+        } else if (s.equals(RAID)) {
+            sb.append(RAID_MESSAGE);
+        } else {
+            throw new HelpParamException();
         }
+
         return sb.toString();
     }
 
     private String constructFullMessage() {
         StringBuilder sb = new StringBuilder();
         sb.append(INTRO_MESSAGE);
+        sb.append("\r\n");
         sb.append(MODS_MESSAGE);
-        sb.append("\r\n");
+        sb.append("\r\n\n\n");
         sb.append(RAID_MESSAGE);
-        sb.append("\r\n");
+        sb.append("\r\n\n\n");
         sb.append(EQUILIBRAGE_MESSAGE);
-        sb.append("\r\n");
+        sb.append("\r\n\n\n");
         sb.append(ARENA_MESSAGE);
 
         return sb.toString();

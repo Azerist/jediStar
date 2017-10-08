@@ -49,7 +49,7 @@ public abstract class OnlineDataParser {
 		BufferedReader in = null;
 		
 		try {
-			//VÈrifier si un m‡j est nÈcessaire
+			//V√©rifier si un m√†j est n√©cessaire
 			stmt = conn.prepareStatement(SQL_SELECT_CHARS_EXPIRATION);
 			
 			rs = stmt.executeQuery();
@@ -82,7 +82,7 @@ public abstract class OnlineDataParser {
 
 			JSONArray charsJson = new JSONArray(json);
 			
-			//InsÈrer les donnÈes
+			//Ins√©rer les donn√©es
 			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(SQL_INSERT_CHARS);
 			
@@ -141,7 +141,7 @@ public static boolean parseSwgohGGShips() {
 		BufferedReader in = null;
 		
 		try {
-			//VÈrifier si un m‡j est nÈcessaire
+			//V√©rifier si un m√†j est n√©cessaire
 			stmt = conn.prepareStatement(SQL_SELECT_SHIPS_EXPIRATION);
 			
 			rs = stmt.executeQuery();
@@ -174,7 +174,7 @@ public static boolean parseSwgohGGShips() {
 
 			JSONArray charsJson = new JSONArray(json);
 			
-			//InsÈrer les donnÈes
+			//Ins√©rer les donn√©es
 			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(SQL_INSERT_SHIPS);
 			
@@ -237,7 +237,7 @@ public static boolean parseSwgohGGGuildUnits(Integer guildID) {
 	BufferedReader in = null;
 	
 	try {
-		//VÈrifier si un m‡j est nÈcessaire
+		//V√©rifier si un m√†j est n√©cessaire
 		stmt = conn.prepareStatement(SQL_SELECT_GUILD_UNITS_EXPIRATION);
 		stmt.setInt(1, guildID);
 		
@@ -272,7 +272,7 @@ public static boolean parseSwgohGGGuildUnits(Integer guildID) {
 
 		JSONObject unitsJson = new JSONObject(json);
 		
-		//InsÈrer les donnÈes
+		//Ins√©rer les donn√©es
 		conn.setAutoCommit(false);
 		stmt = conn.prepareStatement(SQL_INSERT_GUILD_UNITS);
 		

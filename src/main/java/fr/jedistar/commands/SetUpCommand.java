@@ -47,7 +47,7 @@ public class SetUpCommand implements JediStarBotCommand {
 	private final String SQL_ERROR;	
 	private final String NO_COMMAND_FOUND;
 	
-	//Requêtes SQL
+	//RequÃªtes SQL
 	private static final String SELECT_GUILD_REQUEST = "SELECT * FROM guild WHERE channelID=?";
 	private static final String INSERT_GUILD_REQUEST = "INSERT INTO guild VALUES (?,?);";
 	private static final String UPDATE_GUILD_REQUEST = "UPDATE guild SET guildID=? WHERE channelID=?;";
@@ -180,7 +180,7 @@ public class SetUpCommand implements JediStarBotCommand {
 		PreparedStatement stmt = null;
 		
 		try {
-			//Guilde inexistante, on l'insère
+			//Guilde inexistante, on l'insÃ¨re
 			if(existingGuildID == null) {
 				
 				stmt = conn.prepareStatement(INSERT_GUILD_REQUEST);
