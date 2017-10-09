@@ -118,7 +118,8 @@
 		
 		"messages":{
 			"fastestPath":"You can reach the highest rank fighting : **%s** \r\n",
-			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n%arena 26"
+			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n%arena 26",
+			"helpUs":"This result is an estimate. Join us on Discord to signal any error, your feedback is highly appreciated.\r\n"
 		},
 		
 		"errorMessages":{
