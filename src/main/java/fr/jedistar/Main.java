@@ -21,7 +21,7 @@ public class Main {
 	
 	final static Logger logger = LoggerFactory.getLogger(Main.class);
 	
-	//Noms des éléments dans le fichier de paramètres
+	//Noms des ï¿½lï¿½ments dans le fichier de paramï¿½tres
 	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
 	private static final String PARAM_TOKEN = "discordToken";
 	private static final String PARAM_DB = "database";
@@ -39,24 +39,24 @@ public class Main {
 
 		String parametersFilePath = "";
 			
-		//Si un argument, on l'utilise comme chemin au fichier de paramètres
+		//Si un argument, on l'utilise comme chemin au fichier de paramï¿½tres
 		if(args.length != 0) {		
 			parametersFilePath = args[0];	
 		}
-		//Sinon, on utilise le chemin par défaut
+		//Sinon, on utilise le chemin par dï¿½faut
 		else {
 			parametersFilePath = DEFAULT_PARAMETERS_FILE;	
 		}
 
 		String token = "";
 		
-		//Lecture du fichier Json et récupération des paramètres
+		//Lecture du fichier Json et rï¿½cupï¿½ration des paramï¿½tres
 		try {
 			//Lecture du fichier
 			byte[] encoded = Files.readAllBytes(Paths.get(parametersFilePath));
 			String parametersJson = new String(encoded, "utf-8");
 			
-			//Décodage du json
+			//Dï¿½codage du json
 			JSONObject parameters = new JSONObject(parametersJson);
 			
 			StaticVars.jsonSettings = parameters;
@@ -65,7 +65,7 @@ public class Main {
 			//Lecture du token Discord
 			token = parameters.getString(PARAM_TOKEN);
 			
-			//URI et encodage du JSON des mods conseillés
+			//URI et encodage du JSON des mods conseillï¿½s
 			String modsJsonUri = parameters.getString(PARAM_MODS_JSON_URI);
 			ModsCommand.setJsonUri(modsJsonUri);
 			
@@ -88,9 +88,10 @@ public class Main {
 		
 		//Initialisation bdd		
 		try {
-			logger.info("Connecting to database : "+url+" with user/pw "+user+"/"+passwd);
-			StaticVars.jdbcConnection = DriverManager.getConnection(url, user, passwd);		
-			logger.info("Connecting to database successful");
+			StaticVars.setJdbcParams(url, user, passwd);
+			logger.info("testing database connection");
+			StaticVars.getJdbcConnection();
+			logger.info("database connection OK");
 		} catch (SQLException e) {
 			logger.error("Error connecting to mysql database");
 			e.printStackTrace();

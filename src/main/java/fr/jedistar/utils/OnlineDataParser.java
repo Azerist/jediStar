@@ -28,13 +28,13 @@ public abstract class OnlineDataParser {
 	private final static Logger logger = LoggerFactory.getLogger(OnlineDataParser.class);
 
 	private final static String SQL_SELECT_CHARS_EXPIRATION = "SELECT expiration FROM characters LIMIT 1;";
-	private final static String SQL_INSERT_CHARS = "INSERT INTO characters VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE baseID=VALUES(baseID),url=VALUES(url),image=VALUES(image),power=VALUES(power),description=VALUES(description),combatType=VALUES(combatType),expiration=VALUES(expiration);";
+	private final static String SQL_INSERT_CHARS = "INSERT INTO characters (name,baseID,url,image,power,description,combatType,expiration) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE baseID=VALUES(baseID),url=VALUES(url),image=VALUES(image),power=VALUES(power),description=VALUES(description),combatType=VALUES(combatType),expiration=VALUES(expiration);";
 	
 	private final static String SQL_SELECT_SHIPS_EXPIRATION = "SELECT expiration FROM ships LIMIT 1;";
-	private final static String SQL_INSERT_SHIPS = "INSERT INTO ships VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE baseID=VALUES(baseID),url=VALUES(url),image=VALUES(image),power=VALUES(power),description=VALUES(description),combatType=VALUES(combatType),expiration=VALUES(expiration);";
+	private final static String SQL_INSERT_SHIPS = "INSERT INTO ships (name,baseID,url,image,power,description,combatType,expiration) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE baseID=VALUES(baseID),url=VALUES(url),image=VALUES(image),power=VALUES(power),description=VALUES(description),combatType=VALUES(combatType),expiration=VALUES(expiration);";
 	
 	private final static String SQL_SELECT_GUILD_UNITS_EXPIRATION = "SELECT expiration FROM guildUnits WHERE guildID=? LIMIT 1";
-	private final static String SQL_INSERT_GUILD_UNITS = "INSERT INTO guildUnits VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE rarity=VALUES(rarity),combatType=VALUES(combatType),power=VALUES(power),level=VALUES(level),expiration=VALUES(expiration);";
+	private final static String SQL_INSERT_GUILD_UNITS = "INSERT INTO guildUnits (guildID,player,charID,rarity,combatType,power,level,expiration) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE rarity=VALUES(rarity),combatType=VALUES(combatType),power=VALUES(power),level=VALUES(level),expiration=VALUES(expiration);";
 
 	
 	private final static String CHARS_URI = "https://swgoh.gg/api/characters/?format=json";
@@ -43,13 +43,15 @@ public abstract class OnlineDataParser {
 
 	public static boolean parseSwgohGGCharacters() {
 		
-		Connection conn = StaticVars.jdbcConnection;
+		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		BufferedReader in = null;
 		
 		try {
-			//Vérifier si un màj est nécessaire
+			//VÃ©rifier si une mÃ j est nÃ©cessaire
+			conn = StaticVars.getJdbcConnection();
+
 			stmt = conn.prepareStatement(SQL_SELECT_CHARS_EXPIRATION);
 			
 			rs = stmt.executeQuery();
@@ -82,7 +84,7 @@ public abstract class OnlineDataParser {
 
 			JSONArray charsJson = new JSONArray(json);
 			
-			//Insérer les données
+			//Insï¿½rer les donnï¿½es
 			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(SQL_INSERT_CHARS);
 			
@@ -135,13 +137,15 @@ public abstract class OnlineDataParser {
 	
 public static boolean parseSwgohGGShips() {
 		
-		Connection conn = StaticVars.jdbcConnection;
+		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		BufferedReader in = null;
 		
 		try {
-			//Vérifier si un màj est nécessaire
+			conn = StaticVars.getJdbcConnection();
+
+			//VÃ©rifier si une mÃ j est nÃ©cessaire
 			stmt = conn.prepareStatement(SQL_SELECT_SHIPS_EXPIRATION);
 			
 			rs = stmt.executeQuery();
@@ -174,7 +178,7 @@ public static boolean parseSwgohGGShips() {
 
 			JSONArray charsJson = new JSONArray(json);
 			
-			//Insérer les données
+			//Insï¿½rer les donnï¿½es
 			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(SQL_INSERT_SHIPS);
 			
@@ -231,13 +235,15 @@ public static boolean parseSwgohGGGuildUnits(Integer guildID) {
 		return false;
 	}
 	
-	Connection conn = StaticVars.jdbcConnection;
+	Connection conn = null;
 	PreparedStatement stmt = null;
 	ResultSet rs = null;
 	BufferedReader in = null;
 	
 	try {
-		//Vérifier si un màj est nécessaire
+		conn = StaticVars.getJdbcConnection();
+
+		//VÃ©rifier si une mÃ j est nÃ©cessaire
 		stmt = conn.prepareStatement(SQL_SELECT_GUILD_UNITS_EXPIRATION);
 		stmt.setInt(1, guildID);
 		
@@ -272,7 +278,7 @@ public static boolean parseSwgohGGGuildUnits(Integer guildID) {
 
 		JSONObject unitsJson = new JSONObject(json);
 		
-		//Insérer les données
+		//Insï¿½rer les donnï¿½es
 		conn.setAutoCommit(false);
 		stmt = conn.prepareStatement(SQL_INSERT_GUILD_UNITS);
 		

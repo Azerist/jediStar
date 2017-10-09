@@ -47,7 +47,7 @@ public class SetUpCommand implements JediStarBotCommand {
 	private final String SQL_ERROR;	
 	private final String NO_COMMAND_FOUND;
 	
-	//Requêtes SQL
+	//Requï¿½tes SQL
 	private static final String SELECT_GUILD_REQUEST = "SELECT * FROM guild WHERE channelID=?";
 	private static final String INSERT_GUILD_REQUEST = "INSERT INTO guild VALUES (?,?);";
 	private static final String UPDATE_GUILD_REQUEST = "UPDATE guild SET guildID=? WHERE channelID=?;";
@@ -176,13 +176,13 @@ public class SetUpCommand implements JediStarBotCommand {
 			return new CommandAnswer(String.format(CONFIRM_UPDATE_GUILD,existingGuildID),null,emojiV,emojiX);
 		}
 		
-		Connection conn = StaticVars.jdbcConnection;
+		Connection conn = null;
 		PreparedStatement stmt = null;
 		
 		try {
-			//Guilde inexistante, on l'insère
+			//Guilde inexistante, on l'insï¿½re
 			if(existingGuildID == null) {
-				
+				conn = StaticVars.getJdbcConnection();
 				stmt = conn.prepareStatement(INSERT_GUILD_REQUEST);
 				
 				stmt.setString(1, channelID);
@@ -219,11 +219,13 @@ public class SetUpCommand implements JediStarBotCommand {
 	 */
 	private Integer checkIfChannelExists(String channelID) {
 		
-		Connection conn = StaticVars.jdbcConnection;
+		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		
 		try {
+			conn = StaticVars.getJdbcConnection();
+
 			stmt = conn.prepareStatement(SELECT_GUILD_REQUEST);
 			
 			stmt.setString(1,channelID);
@@ -278,10 +280,12 @@ public class SetUpCommand implements JediStarBotCommand {
 		}
 
 		if(emojiV.equals(reaction.getUnicodeEmoji())) {
-			Connection conn = StaticVars.jdbcConnection;
+			Connection conn = null;
 			PreparedStatement stmt = null;
 
 			try {
+				conn = StaticVars.getJdbcConnection();
+
 				stmt = conn.prepareStatement(UPDATE_GUILD_REQUEST);
 
 				stmt.setInt(1, guildID);

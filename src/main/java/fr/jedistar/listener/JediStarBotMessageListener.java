@@ -1,7 +1,12 @@
 package fr.jedistar.listener;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,8 +21,11 @@ import fr.jedistar.commands.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.btobastian.javacord.DiscordAPI;
+import de.btobastian.javacord.entities.Server;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
@@ -35,6 +43,8 @@ import fr.jedistar.formats.CommandAnswer;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
 
+	private static final Logger logger = LoggerFactory.getLogger(JediStarBotMessageListener.class);
+
 	public static final String PREFIXE_COMMANDES = "%";
 
 	Map<String,JediStarBotCommand> commandsMap;
@@ -50,10 +60,12 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 	private Set<String> adminGroups;
 	private Set<Integer> adminUsers;
 	
-		
+	private static final String SQL_INSERT_HISTORY = "INSERT INTO commandHistory(command,ts,userID,userName,serverID,serverName,serverRegion) VALUES (?,?,?,?,?,?,?);";
+	
 	public JediStarBotMessageListener() {
 		super();
 		
+
 		commandsMap = new HashMap<String,JediStarBotCommand>();
 		
 		//AJOUTER ICI DE NOUVELLES COMMANDES
@@ -154,6 +166,9 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			return;
 		}
 		
+		insertCommandHistory(command, receivedMessage);
+		
+		
 		if(receivedMessage.getChannelReceiver() != null) {
 			receivedMessage.getChannelReceiver().type();
 		}
@@ -199,7 +214,6 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			}
 			
 		}
-
 	}
 
 	private boolean isAdmin(Message messageRecu) {
@@ -223,4 +237,50 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		return false;
 	}
 
+	private void insertCommandHistory(String command,Message receivedMessage) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		try {
+			conn = StaticVars.getJdbcConnection();
+			
+			stmt = conn.prepareStatement(SQL_INSERT_HISTORY);
+			
+			stmt.setString(1,command);
+			
+			java.sql.Timestamp ts = new Timestamp(new Date().getTime());
+			stmt.setTimestamp(2, ts);
+			
+			stmt.setString(3, receivedMessage.getAuthor().getId());
+			stmt.setString(4, receivedMessage.getAuthor().getName());
+			
+			if(receivedMessage.isPrivateMessage()) {
+				stmt.setString(5, null);
+				stmt.setString(6, null);
+				stmt.setString(7, null);
+			}
+			else {
+				Server server = receivedMessage.getChannelReceiver().getServer();
+				stmt.setString(5, server.getId());
+				stmt.setString(6, server.getName());
+				stmt.setString(7, server.getRegion().getName());
+			}
+			
+			logger.debug("executing query "+stmt.toString());
+			stmt.executeUpdate();
+		}
+		catch(SQLException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		finally {
+			if(stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			}
+		}
+	}
 }
