@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS ships
 CREATE TABLE IF NOT EXISTS guildUnits
 (
 	guildID INTEGER NOT NULL,
-	player VARCHAR(32) NOT NULL CHARACTER SET utf8,
+	player VARCHAR(32) NOT NULL,
 	charID VARCHAR(64) NOT NULL,
 	rarity INTEGER,
 	combatType INTEGER,
@@ -47,4 +47,16 @@ CREATE TABLE IF NOT EXISTS guildUnits
 	level INTEGER,
 	expiration TIMESTAMP,
 	PRIMARY KEY (guildID,player,charID)
+);
+
+CREATE TABLE IF NOT EXISTS commandHistory
+(
+	command VARCHAR(32),
+	ts TIMESTAMP,
+	userID VARCHAR(64),
+	userName VARCHAR(32) NOT NULL,
+	serverID VARCHAR(128),
+	serverName VARCHAR(128),
+	serverRegion VARCHAR(64),
+	PRIMARY KEY (command,ts,userID)
 );

@@ -155,7 +155,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				return new CommandAnswer(error(ERROR_INCORRECT_NUMBER),null);
 			}
 			
-			//récupérer le nom du perso si celui-ci contient des espaces
+			//rï¿½cupï¿½rer le nom du perso si celui-ci contient des espaces
 			String unitName = params.get(2);
 			for(int i=3;i<params.size()-1;i++) {
 				unitName += " "+params.get(i);
@@ -184,11 +184,13 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 
 		String channelID = message.getChannelReceiver().getId();
 
-		Connection conn = StaticVars.jdbcConnection;
+		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 
 		try {
+			conn = StaticVars.getJdbcConnection();
+
 			stmt = conn.prepareStatement(SQL_GUILD_ID);
 
 			stmt.setString(1,channelID);
@@ -265,11 +267,13 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			embed.setThumbnail(chara.image);
 			embed.setColor(EMBED_COLOR);
 			
-			Connection conn = StaticVars.jdbcConnection;
+			Connection conn = null;
 			PreparedStatement stmt = null;
 			ResultSet rs = null;
 
 			try {
+				conn = StaticVars.getJdbcConnection();
+
 				stmt = conn.prepareStatement(SQL_COUNT_GUILD_UNITS);
 				
 				stmt.setInt(1,guildID);
@@ -353,12 +357,15 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 		List<Character> charList = new ArrayList<Character>();
 		
-		Connection conn = StaticVars.jdbcConnection;
+		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 
 		try {
+			conn = StaticVars.getJdbcConnection();
+
 			String query = String.format(SQL_FIND_CHARS,mode);
+
 			stmt = conn.prepareStatement(query);
 
 			stmt.setString(1, "%"+charName+"%");
