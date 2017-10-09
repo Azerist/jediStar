@@ -186,11 +186,11 @@
 		"command":"help",
 
 		"messages":{
-			"introMessage":"Detailed help can be found here : https://jedistar.jimdo.com/jedistar-bot/\r\nHere is a little overview of what i can do for you :",
+			"introMessage":"Detailed help can be found here : <https://jedistar.jimdo.com/jedistar-bot/>\r\nHere is a little overview of what i can do for you :",
 			"smallModsMessage":"- %help mods : to know more about mods command",
 			"smallRaidMessage":"- %help raid : to know more about raid command",
 			"smallEquilibrageMessage":"",
-			"smallArenaMessage":"- %help arene : to know more about arene command",
+			"smallArenaMessage":"- %help arena : to know more about arena command",
 			"smallTbMessage":"- %help tb : to know more about tb command",
 			"modsMessage":"**This command returns the mod setup advised for a given character.**\r\n\r\n**Example**\r\n%mods anakin",
 			"raidMessage":"**Here are the various commands I understand to evaluate your raid results** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Answers with the damage done corresponding to 5.5% during phase 1 on the Rancor Heroic raid\r\n- **%raid rancor p2 10% 4%** ==> Answers with the damage done corresponding to 6% done on phase 2 on the Rancor Heroic raid\r\n - ** %raid aat p3 40000 ** == > Answers with the percentage corresponding  to 40,000 damage on the Phase 3 of the Heroic AAT raid\r\n - ** %raid tank p4 35% 100000 ** == > Answers with the percentage to reach in order to perform 100,000 damage, starting your battle at 35 % on the Phase 4 of the Heroic AAT raid",
