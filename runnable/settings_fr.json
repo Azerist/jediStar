@@ -213,5 +213,28 @@
 			"dbUpdateError":"Erreur lors de la mise à jour de la base de données",
 			"tooMuchResults":"Trop de résultats, voici les personnages correspondant à votre recherche\r\n"
 		}
+	},
+	"helpCommandParameters":{
+
+		"command":"help",
+
+		"messages":{
+			"introMessage":"Voici un petit aperçu de ce que je peux faire pour vous :",
+            "smallModsMessage":"- %help mods : pour en savoir plus sur la commande mods",
+            "smallRaidMessage":"- %help raid : pour en savoir plus sur la commande raid",
+            "smallEquilibrageMessage":"- %help equilibrage : pour en savoir plus sur la commande equilibrage",
+            "smallArenaMessage":"- %help arene : pour en savoir plus sur la commande arene",
+            "smallTbMessage":"- %help tb : pour en savoir plus sur la commande tb",
+			"modsMessage":"**Cette commande vous permet de connaître les mods recommandés pour un personnage.**\r\n\r\n**Exemple d'appel**\r\n%mods anakin",
+			"raidMessage":"**Voici des exemples de commandes disponibles pour déterminer vos résultats de raid** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **%raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** %raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** %raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** %raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
+			"equilibrageMessage":"**Cette commande vous permet de connaître votre équilibrage sur un raid.**\r\n\r\n**Exemple d'appel**\r\n%equilibrage rancor\r\n**Commandes pour les officiers :**\r\n%equilibrage maj\r\n%equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n%equilibrage ajouter @user\r\n%equilibrage supprimer @user\r\n%equlibrage supprimer XXXX\r\n%equilibrage terminer tank\r\n%equilibrage lancer tank podium-auto @exclusDuTop10\r\n%equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10",
+			"arenaMessage":"**Cette commande donne le plus haut rang d'arène accessible en 5 combats.**\r\n\r\n**Exemple d'appel**\r\n%arene 26",
+			"tbMessage":"**Commandes possibles** :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*"
+		},
+
+		"errorMessages":{
+			"paramsError":"la commande que vous demandez n'est pas connu, merci d'utiliser les notations suivantes : \r\n\r\n - %help : pour avoir accès à toutes l'aide \r\n - %help mods : pour une aide sur la fonctionnalité des mods \r\n - %help raid : pour une aide sur la fonctionnalité des raids \r\n - %help equilibrage : pour une aide sur la fonctionnalité d'équilibrage",
+			"technicalError": "une erreur technique est survenu, veuillez contacter votre administrateur Discord"
+		}
 	}
 }

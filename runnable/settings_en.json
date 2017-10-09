@@ -179,5 +179,29 @@
             "dbUpdateError":"Database update error ",
             "tooMuchResults":"Too many results, try limiting your search to one ofthe following chararacters :\r\n"
         }
-    }
+    },
+
+	"helpCommandParameters":{
+
+		"command":"help",
+
+		"messages":{
+			"introMessage":"Here is a little overview of what i can do for you :",
+			"smallModsMessage":"- %help mods : to know more about mods command",
+			"smallRaidMessage":"- %help raid : to know more about raid command",
+			"smallEquilibrageMessage":"",
+			"smallArenaMessage":"- %help arene : to know more about arene command",
+			"smallTbMessage":"- %help tb : to know more about tb command",
+			"modsMessage":"**This command returns the mod setup advised for a given character.**\r\n\r\n**Example**\r\n%mods anakin",
+			"raidMessage":"**Here are the various commands I understand to evaluate your raid results** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Answers with the damage done corresponding to 5.5% during phase 1 on the Rancor Heroic raid\r\n- **%raid rancor p2 10% 4%** ==> Answers with the damage done corresponding to 6% done on phase 2 on the Rancor Heroic raid\r\n - ** %raid aat p3 40000 ** == > Answers with the percentage corresponding  to 40,000 damage on the Phase 3 of the Heroic AAT raid\r\n - ** %raid tank p4 35% 100000 ** == > Answers with the percentage to reach in order to perform 100,000 damage, starting your battle at 35 % on the Phase 4 of the Heroic AAT raid",
+			"equilibrageMessage":"",
+			"arenaMessage":"**This command returns the highest arena rank reachable with 5 fights.**\r\n\r\n**Example**\r\n%arena 26",
+			"tbMessage":"**Possible commands** :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*"
+		},
+
+		"errorMessages":{
+			"paramsError":"The command you asked is unknown, thanks to use one of those : \r\n\r\n - %help : to have an overview \r\n - %help mods : to know more about mods command \r\n - %help raid : to know more about raid command \r\n ",
+			"technicalError": "An error occured, please contact you Discord's Administrator"
+		}
+	}
 }

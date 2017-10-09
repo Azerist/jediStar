@@ -1,7 +1,9 @@
 /target/
+/.idea/
 /client_secret.json
 /settings.json
 /httpLatencyMonitor
 /balancingMembersDB.json
 /History/
 /reports/
+*.iml
