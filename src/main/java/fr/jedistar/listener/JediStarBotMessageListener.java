@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import fr.jedistar.commands.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,13 +61,15 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		AreneCommand arene = new AreneCommand();
 		SetUpCommand setup = new SetUpCommand();
 		TerritoryBattlesCommand tb = new TerritoryBattlesCommand();
-		
+        HelpCommand help = new HelpCommand();
+
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
 		commandsMap.put(arene.getCommand(), arene);
 		commandsMap.put(setup.getCommand(),setup);
 		commandsMap.put(tb.getCommand(), tb);
-		
+        commandsMap.put(help.getCommand(), help);
+
 		//Lecture du Json
 		try {
 			JSONObject parameters = StaticVars.jsonSettings;
@@ -101,7 +104,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		String messageAsString = receivedMessage.getContent().toLowerCase();
 		
 		//Si le message est vide ou ne commence pas par % : Ne rien faire.
-		//Message temporaire lié au nouveau préfixe
+		//Message temporaire liï¿½ au nouveau prï¿½fixe
 		if(messageAsString !=null && messageAsString.startsWith("!")) {
 			messageAsString = messageAsString.substring(1);
 			

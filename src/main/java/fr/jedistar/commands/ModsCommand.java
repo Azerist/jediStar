@@ -193,15 +193,16 @@ public class ModsCommand implements JediStarBotCommand {
 						
 			Collections.sort(exactMatches);
 			
+			//Liste de noms uniques dans exactMatches
 			List<String> chars = new ArrayList<String>();
 			for(Match match : exactMatches) {
 				if(!chars.contains(match.charName)) {
 					chars.add(match.charName);
 				}
 			}
-			
 			chars.sort(String::compareToIgnoreCase);
 			
+		
 			//Si trop de rÃ©ponses, on renvoie simplement la liste de noms
 			if(!singleMatch && chars.size() > MAX_ANSWERS) {
 				message = MESSAGE_TOO_LONG;
@@ -253,6 +254,11 @@ public class ModsCommand implements JediStarBotCommand {
 			//Si pas de corresp. exactes, on renvoie les correspondances approx., en baissant progressivement le niveau de tolÃ©rance
 			if(exactMatches.isEmpty() && !approxMatches.isEmpty()) {
 				message += APPROX_MATCHES_MESSAGE;
+						
+				Set<String> approxChars = new HashSet<String>();
+				for(Match match : approxMatches) {
+					approxChars.add(match.charName);
+				}
 				
 				Collections.sort(approxMatches);
 					
@@ -269,8 +275,12 @@ public class ModsCommand implements JediStarBotCommand {
 							break;
 						}
 						
-						message += approx.charName+"\r\n";			
-						nothingFound = false;
+						//Utiliser la liste approxChars pour ne pas renvoyer deux fois la même réponse
+						if(approxChars.contains(approx.charName)) {
+							message += approx.charName+"\r\n";			
+							nothingFound = false;
+							approxChars.remove(approx.charName);
+						}
 						
 					}
 				}
