@@ -26,7 +26,8 @@ public class AreneCommand implements JediStarBotCommand {
 		        put(18, 5);
 		        put(24, 6);
 		        put(33, 7);
-		        put(56, 8);
+		        put(44, 8);
+		        put(54, 9);
 		    }});
 	
 	private final String COMMAND;
@@ -38,6 +39,7 @@ public class AreneCommand implements JediStarBotCommand {
 	private static String ERROR_MESSAGE_INVALID_RANK;
 	private static String ERROR_MESSAGE_INCORRECT_NUMBER;
 	private static String MESSAGES_FASTEST_PATH;
+	private static String MESSAGES_HELP_US;
 	
 	
 	
@@ -48,11 +50,13 @@ public class AreneCommand implements JediStarBotCommand {
 	private final static String JSON_ARENE_COMMAND = "command";
 	private final static String JSON_MESSAGES = "messages";
 	private final static String JSON_MESSAGES_FASTEST_PATH = "fastestPath";
+	private final static String JSON_MESSAGES_HELP_US = "helpUs";
 	private final static String JSON_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_ERROR_MESSAGE_INCOHERENT_PARAM = "incoherentParams";
 	private final static String JSON_ERROR_MESSAGE_INVALID_RANK = "invalidRank";
 	private final static String JSON_ERROR_MESSAGE_INCORRECT_NUMBER = "incorrectNumber";
 
+	private boolean isApproximation = false;
 	
 	
 	public AreneCommand() {
@@ -70,6 +74,7 @@ public class AreneCommand implements JediStarBotCommand {
 		JSONObject messages = AreneParams.getJSONObject(JSON_MESSAGES);
 		HELP = messages.getString(JSON_MESSAGE_HELP);
 		MESSAGES_FASTEST_PATH = messages.getString(JSON_MESSAGES_FASTEST_PATH);
+		MESSAGES_HELP_US = messages.getString(JSON_MESSAGES_HELP_US);
 
 		JSONObject errorMessages = AreneParams.getJSONObject(JSON_ERROR_MESSAGES);
 		ERROR_MESSAGE_INCOHERENT_PARAM = errorMessages.getString(JSON_ERROR_MESSAGE_INCOHERENT_PARAM);
@@ -80,6 +85,7 @@ public class AreneCommand implements JediStarBotCommand {
 
 	public CommandAnswer answer(List<String> params, Message messageRecu, boolean isAdmin) {
 		
+		isApproximation = false;
 		if(params.size() == 0) {
 			return new CommandAnswer(HELP,null);
 		}
@@ -114,6 +120,10 @@ public class AreneCommand implements JediStarBotCommand {
 			remainingFight--;
 		}
 		String message = String.format(MESSAGES_FASTEST_PATH,path);
+		if(isApproximation)
+		{
+			message += MESSAGES_HELP_US;
+		}
 		return new CommandAnswer(message,null);
 	}
 	
@@ -124,6 +134,11 @@ public class AreneCommand implements JediStarBotCommand {
 		if(reachableRank.isEmpty())
 		{
 			newRank = (int) Math.round(rank*0.85);
+			if(newRank < attackRangeMap.get(attackRangeMap.lastKey()))
+			{
+				newRank =attackRangeMap.get(attackRangeMap.lastKey())+1;
+			}
+			isApproximation = true;
 		}
 		else
 		{
