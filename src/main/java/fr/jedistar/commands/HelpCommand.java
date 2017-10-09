@@ -134,8 +134,8 @@ public class HelpCommand implements JediStarBotCommand {
         sb.append("\r\n\n\n");
         sb.append(SMALL_RAID_MESSAGE);
         sb.append("\r\n\n\n");
-        sb.append(SMALL_EQUILIBRAGE_MESSAGE);
-        sb.append("\r\n\n\n");
+        //sb.append(SMALL_EQUILIBRAGE_MESSAGE);
+        //sb.append("\r\n\n\n");
         sb.append(SMALL_ARENA_MESSAGE);
         sb.append("\r\n\n\n");
         sb.append(SMALL_TB_MESSAGE);
