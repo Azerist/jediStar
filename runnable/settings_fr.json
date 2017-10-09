@@ -219,7 +219,7 @@
 		"command":"help",
 
 		"messages":{
-			"introMessage":"Voici un petit aperçu de ce que je peux faire pour vous :",
+			"introMessage":"Pour une aide détaillée, consulter : https://jedistar.jimdo.com/jedistar-bot/\r\nVoici un petit aperçu de ce que je peux faire pour vous :",
             "smallModsMessage":"- %help mods : pour en savoir plus sur la commande mods",
             "smallRaidMessage":"- %help raid : pour en savoir plus sur la commande raid",
             "smallEquilibrageMessage":"- %help equilibrage : pour en savoir plus sur la commande equilibrage",
