@@ -145,21 +145,21 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 		rulesPerRaid = new HashMap<String,String>();
 		rulesPerRaid.put(RANCOR, "@everyone \r\n"
-				+ ":round_pushpin: Raid **RANCOR** Lanc� :round_pushpin: \r\n" + 
-				":white_small_square: Podium � 800k pour se placer\r\n" + 
+				+ ":round_pushpin: Raid **RANCOR** Lancé :round_pushpin: \r\n" + 
+				":white_small_square: Podium à 800k pour se placer\r\n" + 
 				":white_small_square: Tranche 4-10 entre 400K et 600K\r\n" + 
 				":white_small_square: Tranche 11-30 entre 100K et 300K\r\n" + 
-				":white_small_square: Tranche 31+ � 0\r\n" + 
+				":white_small_square: Tranche 31+ à 0\r\n" + 
 				":clock2: Au bout de **24h**, le podium finit le raid\r\n" + 
-				":warning: Un podium sera comptabilis� pour non respect de la tranche de d�g�ts. :warning:");
+				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
 		rulesPerRaid.put(TANK, "@everyone \r\n"
-				+ ":round_pushpin: Raid **TANK** Lanc� :round_pushpin: \r\n" + 
-				":white_small_square: Podium � fond\r\n" + 
+				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
+				":white_small_square: Podium à fond\r\n" + 
 				":white_small_square: Tranche 4-10 entre 1,1M et 1,3M\r\n" + 
 				":white_small_square: Tranche 11-30 entre 800K et 1M\r\n" + 
 				":white_small_square: Tranche 31+ entre 600K et 700K\r\n" + 
 				":clock2: Au bout de **36h**, le podium finit le raid\r\n" +
-				":warning: Un podium sera comptabilis� pour non respect de la tranche de d�g�ts :warning:");
+				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts :warning:");
 		
 		//Lire le Json
 		JSONObject parameters = StaticVars.jsonSettings;
@@ -276,7 +276,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			}
 			
 			else {
-				return new CommandAnswer(error("Nom du raid non trouv�"),null);
+				return new CommandAnswer(error("Nom du raid non trouvé"),null);
 			}
 		}
 		else if(params.size() >= 2 && END_RAID_COMMAND.equals(params.get(0))) {
@@ -293,14 +293,14 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				String[] param = params.get(i).split("-");
 				
 				if(param.length != 2) {
-					return new CommandAnswer("Merci d'utiliser la forme @user-X pour d�signer les membres dans cette commande",null);
+					return new CommandAnswer("Merci d'utiliser la forme @user-X pour désigner les membres dans cette commande",null);
 				}
 				
 				String userId = param[0];
 				String rank = param[1];
 				
 				if(!userId.startsWith("<@") || ! userId.endsWith(">")) {
-					return new CommandAnswer("Merci d'utiliser la forme @user-X pour d�signer les membres dans cette commande",null);
+					return new CommandAnswer("Merci d'utiliser la forme @user-X pour désigner les membres dans cette commande",null);
 				}
 				
 				Integer userDiscriminator = getUserDiscriminator(chan, userId);
@@ -319,7 +319,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 						punished.put(userDiscriminator, rankInt);
 					}
 					catch(NumberFormatException e) {
-						return new CommandAnswer("Merci d'utiliser la forme @user-X pour d�signer les membres dans cette commande",null);
+						return new CommandAnswer("Merci d'utiliser la forme @user-X pour désigner les membres dans cette commande",null);
 					}
 				}		
 			}
@@ -357,7 +357,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				}
 				else {
 					if(!param.startsWith("<@") || !param.endsWith(">")) {
-						return new CommandAnswer("Merci d'utiliser les tags �@user� pour d�signer l'utilisateur",null);
+						return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner l'utilisateur",null);
 					}
 					return new CommandAnswer(addUser(getUserDiscriminator(chan, param)),null);
 				}
@@ -380,14 +380,14 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				podium = generatePodium(raidName);
 				
 				if(podium == null) {
-					return new CommandAnswer("Une erreur s'est produite lors de la g�n�ration du podium",null);
+					return new CommandAnswer("Une erreur s'est produite lors de la génération du podium",null);
 				}
 				firstExcluded = 3;
 			}
 			else {
 				if(!params.get(2).startsWith("<@") || !params.get(3).startsWith("<@") || !params.get(4).startsWith("<@")
 						|| !params.get(2).endsWith(">") || !params.get(3).endsWith(">") || !params.get(4).endsWith(">")) {
-					return new CommandAnswer("Merci d'utiliser les tags �@user� pour d�signer le podium",null);
+					return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner le podium",null);
 				}
 				podium = new HashSet<Integer>();
 				podium.add(getUserDiscriminator(chan, params.get(2)));
@@ -402,7 +402,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				String excluded = params.get(i);
 				
 				if(!excluded.startsWith("<@") || ! excluded.endsWith(">")) {
-					return new CommandAnswer("Merci d'utiliser les tags �@user� pour d�signer les joueurs exclus",null);
+					return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner les joueurs exclus",null);
 				}
 
 				excludedFromFirstRank.add(getUserDiscriminator(chan, excluded));
@@ -418,7 +418,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			}
 			
 			if(!params.get(1).startsWith("<@") || ! params.get(1).endsWith(">")) {
-				return new CommandAnswer("Merci d'utiliser les tags �@user� pour d�signer les joueurs", null);
+				return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner les joueurs", null);
 			}
 			
 			try {
@@ -431,7 +431,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				return adjustUserValue(userId,raidName,rangeIndex,adjustmentValue);
 			}
 			catch(NumberFormatException e) {
-				return new CommandAnswer("Un nombre entr� n'a pas �t� reconnu", null);
+				return new CommandAnswer("Un nombre entré n'a pas été reconnu", null);
 			}
 		}
 		
@@ -445,13 +445,13 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		HashMap<Integer,HashMap<String,List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
 		
 		if(valuesPerUser == null) {
-			return new CommandAnswer("raid non trouv�",null);
+			return new CommandAnswer("raid non trouvé",null);
 		}
 		
 		HashMap<String,List<Integer>> valuesMapForThisUser = valuesPerUser.get(userId);
 		
 		if(valuesMapForThisUser == null) {
-			return new CommandAnswer("utilisateur non trouv�",null);
+			return new CommandAnswer("utilisateur non trouvé",null);
 		}
 		
 		Integer listIndex = null;
@@ -473,7 +473,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		List<Integer> valuesListForThisUser = valuesMapForThisUser.get(KEY_VALUES);
 		
 		if(listIndex +1 > valuesListForThisUser.size()) {
-			return new CommandAnswer("Cette tranche n'a pas �t� trouv�e", null);
+			return new CommandAnswer("Cette tranche n'a pas été trouvée", null);
 		}
 		
 		List<Integer> newValuesList = new ArrayList<Integer>();
@@ -493,7 +493,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		String write = writeToJson();
 		
 		if(write == null) {
-			return new CommandAnswer("Ajutement r�ussi", null);
+			return new CommandAnswer("Ajutement réussi", null);
 		}
 		else {
 			return new CommandAnswer(write,null);
@@ -588,7 +588,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		HashMap<Integer, HashMap<String, List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
 		
 		if(valuesPerUser == null) {
-			return new CommandAnswer("Raid non trouv�",null);
+			return new CommandAnswer("Raid non trouvé",null);
 		}
 		
 		//Gestion des membres punis
@@ -688,7 +688,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		String write = writeToJson();
 		
 		if(write == null) {
-			return new CommandAnswer("Raid termin� avec succ�s",null);
+			return new CommandAnswer("Raid terminé avec succès",null);
 		}
 		else {
 			return new CommandAnswer(write,null);
@@ -705,17 +705,17 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		Map<Integer, HashMap<String, List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
 		
 		if(possibleRankings == null || valuesPerUser == null) {
-			return error("Nom du raid non trouv�");
+			return error("Nom du raid non trouvé");
 		}
 		
 		if(valuesPerUser.get(userID) == null) {
-			return error("Probl�me dans le fichier json, l'avez-vous modifi� � la main ?");
+			return error("Problème dans le fichier json, l'avez-vous modifié à la main ?");
 		}
 		
 		List<Integer> values = valuesPerUser.get(userID).get(KEY_VALUES);
 		
 		if(values == null) {
-			return error("Votre num�ro d'utilisateur n'a pas �t� trouv� dans le tableau d'�quilibrage");
+			return error("Votre numéro d'utilisateur n'a pas été trouvé dans le tableau d'équilibrage");
 		}
 		
 		String returnMessage = "";
@@ -801,7 +801,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		Map<Integer,HashMap<String,List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
 		
 		if(rankings == null || valuesPerUser == null) {
-			return new CommandAnswer(error("Nom du raid non trouv�"), null);
+			return new CommandAnswer(error("Nom du raid non trouvé"), null);
 		}
 		
 		//cr�er une liste d'utilisateurs
@@ -834,7 +834,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				}
 				else {
 					if(valuesPerUser.get(user.userId) == null) {
-						return new CommandAnswer(error("Probl�me dans le fichier json, l'avez-vous modifi� � la main ?"),null);
+						return new CommandAnswer(error("Problème dans le fichier json, l'avez-vous modifié à la main ?"),null);
 					}
 					user.score = computeScore(rankings, valuesPerUser.get(user.userId).get(KEY_VALUES), rankCur);
 				}
@@ -898,7 +898,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				return userName;
 			}
 		}
-		return "Utilisateur non trouv� sur Discord";
+		return "Utilisateur non trouvé sur Discord";
 
 	}
 	
@@ -986,7 +986,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				Object remove = valuesPerUserPerRaid.get(raidName).remove(userToDelete);
 				
 				if(remove == null) {
-					return "Utilisateur non trouv�";
+					return "Utilisateur non trouvé";
 				}
 			}
 			String write = writeToJson();
@@ -1016,7 +1016,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		for(String raidName : valuesPerUserPerRaid.keySet()) {			
 
 			if(valuesPerUserPerRaid.get(raidName).get(userId) != null) {
-				return "L'utilisateur existe d�j� !";
+				return "L'utilisateur existe déjà !";
 			}
 			List<Integer> newValuesList = new ArrayList<Integer>();
 
@@ -1039,7 +1039,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			return WRITE_ERROR;
 		}
 		
-		return "Ajout r�ussi";
+		return "Ajout réussi";
 	}
 	
 	/**
@@ -1107,7 +1107,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				
 		} catch (IOException | InterruptedException | ExecutionException e) {
 			e.printStackTrace();
-			return "Une erreur est survenue lors de la g�n�ration du rapport";
+			return "Une erreur est survenue lors de la génération du rapport";
 		}
 		
 		return null;
@@ -1173,7 +1173,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		{
 			if(lowDamage == highDamage)
 			{
-				return "� "+formatNumber(lowDamage);
+				return "à "+formatNumber(lowDamage);
 			}
 			else
 			{
