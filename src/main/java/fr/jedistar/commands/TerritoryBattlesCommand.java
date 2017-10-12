@@ -39,6 +39,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 
 	private final String DISPLAYED_RESULTS;
 	private final String NO_UNIT_FOUND;
+	private final String MAX_STARS_FROM_GP_TITLE;
 	private final String MAX_STARS_FROM_GP;
 	
 	private final String ERROR_MESSAGE;
@@ -55,8 +56,8 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE name LIKE ?";
 	private final static String SQL_FIND_GUILD_UNITS = "SELECT * FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=? ORDER BY power LIMIT 15";
 	private final static String SQL_COUNT_GUILD_UNITS = "SELECT COUNT(*) as count FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=?";
-	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
-	private final static String SQL_SUM_GUILD_SHIPS_GP = "SELECT SUM(u.power) FROM guildUnits u INNER JOIN ships s ON (s.baseID=u.charID) WHERE guildID=?";
+	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
+	private final static String SQL_SUM_GUILD_SHIPS_GP = "SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN ships s ON (s.baseID=u.charID) WHERE guildID=?";
 	
 	private final static String CHAR_MODE = "characters";
 	private final static String SHIP_MODE = "ships";
@@ -83,6 +84,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_MESSAGES_DISPLAYED_RESULTS = "displayedResults";
 	private final static String JSON_TB_MESSAGES_NO_UNTI_FOUND = "noUnitFound";
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP = "maxStarResult";
+	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE = "maxStarTitle";
 
 	private final static String JSON_TB_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_TB_ERROR_MESSAGES_SQL = "sqlError";
@@ -115,6 +117,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		DISPLAYED_RESULTS = messages.getString(JSON_TB_MESSAGES_DISPLAYED_RESULTS);
 		NO_UNIT_FOUND = messages.getString(JSON_TB_MESSAGES_NO_UNTI_FOUND);
 		MAX_STARS_FROM_GP = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP);
+		MAX_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE);
 		
 		JSONObject errorMessages = tbParams.getJSONObject(JSON_TB_ERROR_MESSAGES);
 		ERROR_MESSAGE_SQL = errorMessages.getString(JSON_TB_ERROR_MESSAGES_SQL);
@@ -160,8 +163,8 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				Integer ShipGP =getGPSUM(guildID,CHAR_MODE);
 				
 				GalaticPowerToStars strat = new GalaticPowerToStars(CharacterGP,ShipGP);
-				String result = String.format(MAX_STARS_FROM_GP,CharacterGP, ShipGP,ShipGP+CharacterGP,strat.StarFromShip,strat.StarFromCharacter,strat.StarFromShip+strat.StarFromCharacter)+strat.Strategy;
-				embed.addField("core", result, true);
+				String result = String.format(MAX_STARS_FROM_GP,CharacterGP/1000000, ShipGP/1000000,(ShipGP+CharacterGP)/1000000,strat.StarFromShip,strat.StarFromCharacter,strat.StarFromShip+strat.StarFromCharacter)+strat.Strategy;
+				embed.addField(MAX_STARS_FROM_GP_TITLE, result, true);
 				return new CommandAnswer(null,embed);
 				
 			}
@@ -278,16 +281,16 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		boolean updateOK = true;
 		String request = "";
 		
-		updateOK = updateOK && OnlineDataParser.parseSwgohGGGuildUnits(guildID);
+		updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
 		
 		if(SHIP_MODE.equals(mode)) {
-			updateOK = updateOK && OnlineDataParser.parseSwgohGGShips();
+			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
 			request=SQL_SUM_GUILD_UNITS_GP;
 		}
 		
 		if(CHAR_MODE.equals(mode)) {
-			updateOK = updateOK && OnlineDataParser.parseSwgohGGCharacters();
-			request=SQL_SUM_GUILD_UNITS_GP;
+			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
+			request=SQL_SUM_GUILD_SHIPS_GP;
 		}
 		
 		if(!updateOK) {
@@ -311,7 +314,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			
 			rs.next();
 			
-			result = rs.getInt("SUM");
+			result = rs.getInt("sumGP");
 				
 		}
 		catch(SQLException e) {

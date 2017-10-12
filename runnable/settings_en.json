@@ -119,7 +119,9 @@
 		"messages":{
 			"fastestPath":"You can reach the highest rank fighting : **%s** \r\n",
 			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n%arena 26",
-			"helpUs":"This result is an estimate. Join us on Discord to signal any error, your feedback is highly appreciated (<https://jedistar.jimdo.com/jedistar-bot/>).\r\n"
+			"helpUs":"This result is an estimate. Join us on Discord to signal any error, your feedback is highly appreciated (<https://jedistar.jimdo.com/jedistar-bot/>).\r\n",
+			"fastestPathTitle":"From rank %d in 5 fight",
+			"helpUsTitle":"Warning"
 		},
 		
 		"errorMessages":{
@@ -160,14 +162,17 @@
             "base":"tb",
             "platoon":"platoon",
             "characters":"chars",
-            "ships":"ships"
+            "ships":"ships",
+			"strategy":"gp"
         },
         
         "help":"Possible command :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*",
         
         "messages":{
 			"displayedResults":"15 weakest units (total %d)",
-			"noUnitFound":"No one in your guild has this unit at the requested rarity level"
+			"noUnitFound":"No one in your guild has this unit at the requested rarity level",
+			"maxStarResult" : "GP Characters : %d M\r\nGP Ships : %d M\r\nTOTAL GP : %d M\r\n------\r\nMaximum achievable from air : %d :star:\r\nMaximum achievable from ground : %d :star:\r\nTOTAL : %d :star:\r\n",
+			"maxStarTitle" : "Maximum achievable with all platoons filled and perfect combats missions for all players"
 		},
 		
         "errorMessages":{
