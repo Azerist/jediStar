@@ -1,5 +1,6 @@
 package fr.jedistar.commands;
 
+import java.awt.Color;
 import java.util.Collections;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.btobastian.javacord.entities.message.Message;
+import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
@@ -30,6 +32,8 @@ public class AreneCommand implements JediStarBotCommand {
 		        put(54, 9);
 		    }});
 	
+	private final static Color EMBED_COLOR = Color.WHITE;
+	
 	private final String COMMAND;
 	
 	
@@ -40,6 +44,8 @@ public class AreneCommand implements JediStarBotCommand {
 	private static String ERROR_MESSAGE_INCORRECT_NUMBER;
 	private static String MESSAGES_FASTEST_PATH;
 	private static String MESSAGES_HELP_US;
+	private static String MESSAGES_FASTEST_PATH_TITLE;
+	private static String MESSAGES_HELP_US_TITLE;
 	
 	
 	
@@ -51,6 +57,8 @@ public class AreneCommand implements JediStarBotCommand {
 	private final static String JSON_MESSAGES = "messages";
 	private final static String JSON_MESSAGES_FASTEST_PATH = "fastestPath";
 	private final static String JSON_MESSAGES_HELP_US = "helpUs";
+	private final static String JSON_MESSAGES_FASTEST_PATH_TITLE = "fastestPathTitle";
+	private final static String JSON_MESSAGES_HELP_US_TITLE = "helpUsTitle";
 	private final static String JSON_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_ERROR_MESSAGE_INCOHERENT_PARAM = "incoherentParams";
 	private final static String JSON_ERROR_MESSAGE_INVALID_RANK = "invalidRank";
@@ -75,6 +83,8 @@ public class AreneCommand implements JediStarBotCommand {
 		HELP = messages.getString(JSON_MESSAGE_HELP);
 		MESSAGES_FASTEST_PATH = messages.getString(JSON_MESSAGES_FASTEST_PATH);
 		MESSAGES_HELP_US = messages.getString(JSON_MESSAGES_HELP_US);
+		MESSAGES_FASTEST_PATH_TITLE = messages.getString(JSON_MESSAGES_FASTEST_PATH_TITLE);
+		MESSAGES_HELP_US_TITLE = messages.getString(JSON_MESSAGES_HELP_US_TITLE);
 
 		JSONObject errorMessages = AreneParams.getJSONObject(JSON_ERROR_MESSAGES);
 		ERROR_MESSAGE_INCOHERENT_PARAM = errorMessages.getString(JSON_ERROR_MESSAGE_INCOHERENT_PARAM);
@@ -110,8 +120,13 @@ public class AreneCommand implements JediStarBotCommand {
 		Integer currentRank = rank;
 		Integer remainingFight = 5;
 		String path =currentRank.toString();
+		
 		if(currentRank<1)
 			return error(ERROR_MESSAGE_INVALID_RANK);
+		
+		EmbedBuilder embed = new EmbedBuilder();
+		embed.setColor(EMBED_COLOR);
+		
 		while(currentRank > 1 && remainingFight >0)
 		{
 			
@@ -120,11 +135,13 @@ public class AreneCommand implements JediStarBotCommand {
 			remainingFight--;
 		}
 		String message = String.format(MESSAGES_FASTEST_PATH,path);
+		String messageTitle = String.format(MESSAGES_FASTEST_PATH_TITLE,rank);
+		embed.addField(messageTitle, message, true);
 		if(isApproximation)
 		{
-			message += MESSAGES_HELP_US;
+			embed.addField(MESSAGES_HELP_US_TITLE, MESSAGES_HELP_US, true);
 		}
-		return new CommandAnswer(message,null);
+		return new CommandAnswer(null,embed);
 	}
 	
 	private Integer GetMaxAccessibleRank(Integer rank)

@@ -21,6 +21,7 @@ import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
+import fr.jedistar.commands.helper.GalaticPowerToStars;
 import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.utils.GuildUnitsSWGOHGGDataParser;
 
@@ -32,11 +33,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String COMMAND_PLATOON;
 	private final String COMMAND_CHARS;
 	private final String COMMAND_SHIPS;
+	private final String COMMAND_STRATEGY;
 
 	private final String HELP;
 
 	private final String DISPLAYED_RESULTS;
 	private final String NO_UNIT_FOUND;
+	private final String MAX_STARS_FROM_GP_TITLE;
+	private final String MAX_STARS_FROM_GP;
 	
 	private final String ERROR_MESSAGE;
 	private final String ERROR_MESSAGE_SQL;
@@ -52,6 +56,8 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE name LIKE ?";
 	private final static String SQL_FIND_GUILD_UNITS = "SELECT * FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=? ORDER BY power LIMIT 15";
 	private final static String SQL_COUNT_GUILD_UNITS = "SELECT COUNT(*) as count FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=?";
+	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
+	private final static String SQL_SUM_GUILD_SHIPS_GP = "SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN ships s ON (s.baseID=u.charID) WHERE guildID=?";
 	
 	private final static String CHAR_MODE = "characters";
 	private final static String SHIP_MODE = "ships";
@@ -72,10 +78,13 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_COMMANDS_PLATOON = "platoon";
 	private final static String JSON_TB_COMMANDS_CHARS = "characters";
 	private final static String JSON_TB_COMMANDS_SHIPS = "ships";
+	private final static String JSON_TB_COMMANDS_STRATEGY = "strategy";
 	
 	private final static String JSON_TB_MESSAGES = "messages";
 	private final static String JSON_TB_MESSAGES_DISPLAYED_RESULTS = "displayedResults";
 	private final static String JSON_TB_MESSAGES_NO_UNTI_FOUND = "noUnitFound";
+	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP = "maxStarResult";
+	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE = "maxStarTitle";
 
 	private final static String JSON_TB_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_TB_ERROR_MESSAGES_SQL = "sqlError";
@@ -102,10 +111,13 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		COMMAND_PLATOON = commands.getString(JSON_TB_COMMANDS_PLATOON);
 		COMMAND_CHARS = commands.getString(JSON_TB_COMMANDS_CHARS);
 		COMMAND_SHIPS = commands.getString(JSON_TB_COMMANDS_SHIPS);
+		COMMAND_STRATEGY = commands.getString(JSON_TB_COMMANDS_STRATEGY);
 
 		JSONObject messages = tbParams.getJSONObject(JSON_TB_MESSAGES);
 		DISPLAYED_RESULTS = messages.getString(JSON_TB_MESSAGES_DISPLAYED_RESULTS);
 		NO_UNIT_FOUND = messages.getString(JSON_TB_MESSAGES_NO_UNTI_FOUND);
+		MAX_STARS_FROM_GP = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP);
+		MAX_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE);
 		
 		JSONObject errorMessages = tbParams.getJSONObject(JSON_TB_ERROR_MESSAGES);
 		ERROR_MESSAGE_SQL = errorMessages.getString(JSON_TB_ERROR_MESSAGES_SQL);
@@ -126,6 +138,45 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	@Override
 	public CommandAnswer answer(List<String> params, Message receivedMessage, boolean isAdmin) {
 
+		if(COMMAND_STRATEGY.equals(params.get(0))) {
+			
+			if(params.size() !=  1) {
+				return new CommandAnswer(ERROR_MESSAGE_PARAMS_NUMBER,null);
+			}
+			
+			try {
+				
+				Integer guildID = getGuildIDFromDB(receivedMessage);
+
+				if(guildID == null) {
+					return new CommandAnswer(ERROR_MESSAGE_SQL, null);
+				}
+
+				if(guildID == -1) {
+					return new CommandAnswer(ERROR_MESSAGE_NO_GUILD_NUMBER,null);
+				}
+				
+				EmbedBuilder embed = new EmbedBuilder();
+				embed.setColor(EMBED_COLOR);
+				
+				Integer CharacterGP = getGPSUM(guildID,SHIP_MODE);
+				Integer ShipGP =getGPSUM(guildID,CHAR_MODE);
+				
+				GalaticPowerToStars strat = new GalaticPowerToStars(CharacterGP,ShipGP);
+				String result = String.format(MAX_STARS_FROM_GP,CharacterGP/1000000, ShipGP/1000000,(ShipGP+CharacterGP)/1000000,strat.starFromShip,strat.starFromCharacter,strat.starFromShip+strat.starFromCharacter)+strat.strategy;
+				embed.addField(MAX_STARS_FROM_GP_TITLE, result, true);
+				return new CommandAnswer(null,embed);
+				
+			}
+			catch(NumberFormatException e) {
+				return new CommandAnswer("Invalid number",null);
+			}
+		
+			
+
+		}
+		
+			
 		if(params.size() < 4) {
 			return new CommandAnswer(ERROR_MESSAGE_PARAMS_NUMBER,null);
 		}
@@ -221,6 +272,71 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				logger.error(e.getMessage());
 			}
 		}
+	}
+	
+	private Integer getGPSUM(Integer guildID,String mode) 
+	{
+
+		Integer result = -1;
+		boolean updateOK = true;
+		String request = "";
+		
+		updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
+		
+		if(SHIP_MODE.equals(mode)) {
+			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
+			request=SQL_SUM_GUILD_UNITS_GP;
+		}
+		
+		if(CHAR_MODE.equals(mode)) {
+			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
+			request=SQL_SUM_GUILD_SHIPS_GP;
+		}
+		
+		if(!updateOK) {
+			return 0;
+		}
+		
+		
+			
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = StaticVars.getJdbcConnection();
+
+			stmt = conn.prepareStatement(request);
+			
+			stmt.setInt(1,guildID);
+			
+			logger.debug("Executing query : "+stmt.toString());
+			rs = stmt.executeQuery();
+			
+			rs.next();
+			
+			result = rs.getInt("sumGP");
+				
+		}
+		catch(SQLException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			return -1;
+		}
+		finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				if(stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+		}
+		
+		return result;
 	}
 
 	private String findUnits(Integer guildID,String mode,String charName,Integer rarity,Message receivedMessage) {

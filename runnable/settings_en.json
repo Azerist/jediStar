@@ -119,7 +119,9 @@
 		"messages":{
 			"fastestPath":"You can reach the highest rank fighting : **%s** \r\n",
 			"help":"This command returns the highest arena rank reachable for 5 fight.\r\n\r\n**Example**\r\n%arena 26",
-			"helpUs":"This result is an estimate. Join us on Discord to signal any error, your feedback is highly appreciated (<https://jedistar.jimdo.com/jedistar-bot/>).\r\n"
+			"helpUs":"This result is an estimate. Join us on Discord to signal any error, your feedback is highly appreciated (<https://jedistar.jimdo.com/jedistar-bot/>).\r\n",
+			"fastestPathTitle":"From rank %d in 5 fight",
+			"helpUsTitle":"Warning"
 		},
 		
 		"errorMessages":{
@@ -160,14 +162,17 @@
             "base":"tb",
             "platoon":"platoon",
             "characters":"chars",
-            "ships":"ships"
+            "ships":"ships",
+			"strategy":"gp"
         },
         
-        "help":"Possible command :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*",
+        "help":"Possible command :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*\r\n%tb gp",
         
         "messages":{
 			"displayedResults":"15 weakest units (total %d)",
-			"noUnitFound":"No one in your guild has this unit at the requested rarity level"
+			"noUnitFound":"No one in your guild has this unit at the requested rarity level",
+			"maxStarResult" : "GP Characters : %d M\r\nGP Ships : %d M\r\nTOTAL GP : %d M\r\n------\r\nMaximum achievable from air : %d :star:\r\nMaximum achievable from ground : %d :star:\r\nTOTAL : %d :star:\r\n",
+			"maxStarTitle" : "Maximum achievable with all platoons filled and perfect combats missions for 50 players"
 		},
 		
         "errorMessages":{
@@ -197,7 +202,7 @@
 			"raidMessage":"**Here are the various commands I understand to evaluate your raid results** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Answers with the damage done corresponding to 5.5% during phase 1 on the Rancor Heroic raid\r\n- **%raid rancor p2 10% 4%** ==> Answers with the damage done corresponding to 6% done on phase 2 on the Rancor Heroic raid\r\n - ** %raid aat p3 40000 ** == > Answers with the percentage corresponding  to 40,000 damage on the Phase 3 of the Heroic AAT raid\r\n - ** %raid tank p4 35% 100000 ** == > Answers with the percentage to reach in order to perform 100,000 damage, starting your battle at 35 % on the Phase 4 of the Heroic AAT raid",
 			"equilibrageMessage":"",
 			"arenaMessage":"**This command returns the highest arena rank reachable with 5 fights.**\r\n\r\n**Example**\r\n%arena 26",
-			"tbMessage":"**Possible commands** :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*"
+			"tbMessage":"**Possible commands** :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*\r\n%tb gp"
 		},
 
 		"errorMessages":{
