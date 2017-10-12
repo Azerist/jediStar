@@ -23,7 +23,7 @@ import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 import fr.jedistar.commands.helper.GalaticPowerToStars;
 import fr.jedistar.formats.CommandAnswer;
-import fr.jedistar.utils.OnlineDataParser;
+import fr.jedistar.utils.GuildUnitsSWGOHGGDataParser;
 
 public class TerritoryBattlesCommand implements JediStarBotCommand {
 
@@ -339,14 +339,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 		boolean updateOK = true;
 		
-		updateOK = updateOK && OnlineDataParser.parseSwgohGGGuildUnits(guildID);
+		updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
 		
 		if(SHIP_MODE.equals(mode)) {
-			updateOK = updateOK && OnlineDataParser.parseSwgohGGShips();
+			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
 		}
 		
 		if(CHAR_MODE.equals(mode)) {
-			updateOK = updateOK && OnlineDataParser.parseSwgohGGCharacters();
+			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
 		}
 		
 		if(!updateOK) {
