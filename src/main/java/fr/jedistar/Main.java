@@ -3,19 +3,14 @@ package fr.jedistar;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import fr.jedistar.commands.ModsCommand;
-import fr.jedistar.utils.OnlineDataParser;
 
 public class Main {
 	

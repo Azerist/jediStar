@@ -231,7 +231,6 @@ public class SetUpCommand implements JediStarBotCommand {
 			stmt.setString(1,channelID);
 			
 			logger.debug("Executing query : "+stmt.toString());
-
 			rs = stmt.executeQuery();
 			
 			if(rs.next()) {
@@ -292,7 +291,6 @@ public class SetUpCommand implements JediStarBotCommand {
 				stmt.setString(2, channelID);
 
 				logger.debug("Executing query : "+stmt.toString());
-
 				stmt.executeUpdate();
 
 				return SETUP_GUILD_OK;
