@@ -163,7 +163,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				Integer ShipGP =getGPSUM(guildID,CHAR_MODE);
 				
 				GalaticPowerToStars strat = new GalaticPowerToStars(CharacterGP,ShipGP);
-				String result = String.format(MAX_STARS_FROM_GP,CharacterGP/1000000, ShipGP/1000000,(ShipGP+CharacterGP)/1000000,strat.StarFromShip,strat.StarFromCharacter,strat.StarFromShip+strat.StarFromCharacter)+strat.Strategy;
+				String result = String.format(MAX_STARS_FROM_GP,CharacterGP/1000000, ShipGP/1000000,(ShipGP+CharacterGP)/1000000,strat.starFromShip,strat.starFromCharacter,strat.starFromShip+strat.starFromCharacter)+strat.strategy;
 				embed.addField(MAX_STARS_FROM_GP_TITLE, result, true);
 				return new CommandAnswer(null,embed);
 				
@@ -310,6 +310,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			
 			stmt.setInt(1,guildID);
 			
+			logger.debug("Executing query : "+stmt.toString());
 			rs = stmt.executeQuery();
 			
 			rs.next();

@@ -172,7 +172,7 @@
 			"displayedResults":"15 weakest units (total %d)",
 			"noUnitFound":"No one in your guild has this unit at the requested rarity level",
 			"maxStarResult" : "GP Characters : %d M\r\nGP Ships : %d M\r\nTOTAL GP : %d M\r\n------\r\nMaximum achievable from air : %d :star:\r\nMaximum achievable from ground : %d :star:\r\nTOTAL : %d :star:\r\n",
-			"maxStarTitle" : "Maximum achievable with all platoons filled and perfect combats missions for all players"
+			"maxStarTitle" : "Maximum achievable with all platoons filled and perfect combats missions for 50 players"
 		},
 		
         "errorMessages":{

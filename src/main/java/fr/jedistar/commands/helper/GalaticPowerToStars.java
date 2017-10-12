@@ -7,13 +7,13 @@ import java.util.TreeMap;
 
 
 public class GalaticPowerToStars {
-	private Integer CharacterGP = 0;
-	private Integer ShipGP = 0;
-	public Integer StarFromShip =0;
-	public Integer StarFromCharacter=0;
-	public String 	Strategy ="";
-	private TerritoryBattleStrategy GroundStrategy;
-	private TerritoryBattleStrategy AirStrategy;
+	private Integer characterGP = 0;
+	private Integer shipGP = 0;
+	public Integer starFromShip =0;
+	public Integer starFromCharacter=0;
+	public String 	strategy ="";
+	private TerritoryBattleStrategy groundStrategy;
+	private TerritoryBattleStrategy airStrategy;
 	
 	private static class TerritoryBattleStrategy
 	{
@@ -63,12 +63,12 @@ public class GalaticPowerToStars {
 	
 	public GalaticPowerToStars(Integer CharacterGP,Integer ShipGP)
 	{
-		this.CharacterGP =CharacterGP;
-		this.ShipGP =ShipGP;
-		this.GroundStrategy = getStrategyFromGP(CharacterGP,groundGPMap);
-		this.AirStrategy = getStrategyFromGP(ShipGP,airGPMap);
-		this.StarFromShip =AirStrategy.starCount;
-		this.StarFromCharacter=GroundStrategy.starCount;
+		this.characterGP =CharacterGP;
+		this.shipGP =ShipGP;
+		this.groundStrategy = getStrategyFromGP(CharacterGP,groundGPMap);
+		this.airStrategy = getStrategyFromGP(ShipGP,airGPMap);
+		this.starFromShip =airStrategy.starCount;
+		this.starFromCharacter=groundStrategy.starCount;
 		FormatGroundAndAirStrategy();
 		
 	}
@@ -90,10 +90,10 @@ public class GalaticPowerToStars {
 	
 	private void FormatGroundAndAirStrategy()
 	{
-		Strategy = "";
-		for(int i =0;i<GroundStrategy.strategies.length;i++)
+		strategy = "";
+		for(int i =0;i<groundStrategy.strategies.length;i++)
 		{
-			Strategy +="P"+ (i+1)+" "+AirStrategy.strategies[i]+GroundStrategy.strategies[i]+"\r\n";
+			strategy +="P"+ (i+1)+" "+airStrategy.strategies[i]+groundStrategy.strategies[i]+"\r\n";
 		}
 	}
 
