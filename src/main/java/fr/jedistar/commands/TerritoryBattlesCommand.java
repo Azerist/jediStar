@@ -138,6 +138,10 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	@Override
 	public CommandAnswer answer(List<String> params, Message receivedMessage, boolean isAdmin) {
 
+		if(params.size() == 0) {
+			return new CommandAnswer(ERROR_MESSAGE_PARAMS_NUMBER,null);
+		}
+		
 		if(COMMAND_STRATEGY.equals(params.get(0))) {
 			
 			if(params.size() !=  1) {
