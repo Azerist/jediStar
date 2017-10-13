@@ -45,13 +45,13 @@ public class Main {
 
 		String token = "";
 		
-		//Lecture du fichier Json et r�cup�ration des param�tres
+		//Lecture du fichier Json et récupération des paramètres
 		try {
 			//Lecture du fichier
 			byte[] encoded = Files.readAllBytes(Paths.get(parametersFilePath));
 			String parametersJson = new String(encoded, "utf-8");
 			
-			//D�codage du json
+			//Décodage du json
 			JSONObject parameters = new JSONObject(parametersJson);
 			
 			StaticVars.jsonSettings = parameters;
