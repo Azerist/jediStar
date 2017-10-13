@@ -6,4 +6,4 @@
 /balancingMembersDB.json
 /History/
 /reports/
-*.iml
+*.iml//src/main/java/logback.xml
