@@ -119,20 +119,6 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		String messageAsString = receivedMessage.getContent().toLowerCase();
 		
 		//Si le message est vide ou ne commence pas par % : Ne rien faire.
-		//Message temporaire li� au nouveau pr�fixe
-		if(messageAsString !=null && messageAsString.startsWith("!")) {
-			messageAsString = messageAsString.substring(1);
-			
-			String[] messagePartsArray = messageAsString.split(" ");	
-			String command = messagePartsArray[0];
-
-			if(commandsMap.get(command) != null) {
-				receivedMessage.reply(String.format(MESSAGE, receivedMessage.getAuthor().getMentionTag(),"Depuis la dernière mise à jour, le préfixe du bot n'est plus ! mais %.\r\nPar exemple, %raid tank p1 50%"));
-				return;
-			}
-		}
-		
-		//Si le message est vide ou ne commence pas par % : Ne rien faire.
 		if(messageAsString == null
 				|| !messageAsString.startsWith(PREFIXE_COMMANDES)) {
 			return;
