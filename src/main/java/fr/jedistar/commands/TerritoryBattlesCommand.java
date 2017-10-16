@@ -1,6 +1,7 @@
 package fr.jedistar.commands;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,6 +52,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String ERROR_INCORRECT_NUMBER;
 	private final String ERROR_DB_UPDATE;
 	private final String TOO_MUCH_RESULTS;
+	private final String ERROR_SWGOHGG_BLOCKER;
 
 	private final static String SQL_GUILD_ID = "SELECT guildID FROM guild WHERE channelID=?;";
 	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE name LIKE ?";
@@ -95,6 +97,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_ERROR_MESSAGES_INCORRECT_NUMBER = "incorrectNumber";
 	private final static String JSON_TB_ERROR_MESSAGES_DB_UPDATE = "dbUpdateError";
 	private final static String JSON_TB_TOO_MUCH_RESULTS = "tooMuchResults";
+	private final static String JSON_TB_SWGOHGG_BLOCKER = "swgohGGblocker";
 
 	public TerritoryBattlesCommand() {
 
@@ -128,6 +131,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		ERROR_INCORRECT_NUMBER = errorMessages.getString(JSON_TB_ERROR_MESSAGES_INCORRECT_NUMBER);
 		ERROR_DB_UPDATE = errorMessages.getString(JSON_TB_ERROR_MESSAGES_DB_UPDATE);
 		TOO_MUCH_RESULTS = errorMessages.getString(JSON_TB_TOO_MUCH_RESULTS);
+		ERROR_SWGOHGG_BLOCKER = errorMessages.getString(JSON_TB_SWGOHGG_BLOCKER);
 	}
 
 	@Override
@@ -214,7 +218,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				return new CommandAnswer(error(ERROR_INCORRECT_NUMBER),null);
 			}
 			
-			//r�cup�rer le nom du perso si celui-ci contient des espaces
+			//récupérer le nom du perso si celui-ci contient des espaces
 			String unitName = params.get(2);
 			for(int i=3;i<params.size()-1;i++) {
 				unitName += " "+params.get(i);
@@ -288,23 +292,35 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		Integer result = -1;
 		boolean updateOK = true;
 		String request = "";
-		
-		updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
-		
-		if(SHIP_MODE.equals(mode)) {
-			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
-			request=SQL_SUM_GUILD_UNITS_GP;
+
+		try {
+			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
+
+			if(SHIP_MODE.equals(mode)) {
+				updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
+				request=SQL_SUM_GUILD_UNITS_GP;
+			}
+
+			if(CHAR_MODE.equals(mode)) {
+				updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
+				request=SQL_SUM_GUILD_SHIPS_GP;
+			}
 		}
-		
-		if(CHAR_MODE.equals(mode)) {
-			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
-			request=SQL_SUM_GUILD_SHIPS_GP;
+
+		catch(IOException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			if(e.getMessage().contains("Server returned HTTP response code: 402")) {
+				return -2;
+			}
+
+			return -1;
 		}
 		
 		if(!updateOK) {
 			return -1;
 		}
-		
+
 		
 			
 		Connection conn = null;
@@ -351,14 +367,25 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 		boolean updateOK = true;
 		
-		updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
-		
-		if(SHIP_MODE.equals(mode)) {
-			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
+		try {
+			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
+
+			if(SHIP_MODE.equals(mode)) {
+				updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
+			}
+
+			if(CHAR_MODE.equals(mode)) {
+				updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
+			}
 		}
-		
-		if(CHAR_MODE.equals(mode)) {
-			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
+		catch(IOException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			if(e.getMessage().contains("Server returned HTTP response code: 402")) {
+				return ERROR_SWGOHGG_BLOCKER;
+			}
+
+			return ERROR_DB_UPDATE;
 		}
 		
 		if(!updateOK) {

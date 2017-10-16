@@ -1,7 +1,9 @@
 package fr.jedistar.utils;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Connection;
@@ -41,7 +43,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 	private final static String SHIPS_URI = "https://swgoh.gg/api/ships/?format=json";
 	private final static String GUILD_UNITS_URI = "https://swgoh.gg/api/guilds/%d/units/";
 
-	public static boolean parseCharacters() {
+	public static boolean parseCharacters() throws IOException {
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -113,7 +115,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 			conn.commit();
 			conn.setAutoCommit(true);
 		}
-		catch(Exception e) {
+		catch(SQLException | MalformedURLException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 			return false;
@@ -137,7 +139,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 		return true;
 	}
 	
-public static boolean parseShips() {
+public static boolean parseShips() throws IOException {
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -209,7 +211,7 @@ public static boolean parseShips() {
 			conn.commit();
 			conn.setAutoCommit(true);
 		}
-		catch(Exception e) {
+		catch(SQLException | MalformedURLException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 			return false;
@@ -233,7 +235,7 @@ public static boolean parseShips() {
 		return true;
 	}
 
-public static boolean parseGuildUnits(Integer guildID) {
+public static boolean parseGuildUnits(Integer guildID) throws IOException {
 	
 	if(guildID == null) {
 		return false;
@@ -329,7 +331,7 @@ public static boolean parseGuildUnits(Integer guildID) {
 		logger.debug("Executing query :"+stmt.toString());
 		stmt.executeUpdate();
 	}
-	catch(Exception e) {
+	catch(SQLException | MalformedURLException e) {
 		logger.error(e.getMessage());
 		e.printStackTrace();
 		return false;
