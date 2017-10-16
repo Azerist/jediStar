@@ -183,7 +183,8 @@
             "paramsNumber":"Parameters missing",
             "incorrectNumber":"We did not recognized a number",
             "dbUpdateError":"Database update error ",
-            "tooMuchResults":"Too many results, try limiting your search to one ofthe following chararacters :\r\n"
+            "tooMuchResults":"Too many results, try limiting your search to one ofthe following chararacters :\r\n",
+            "swgohGGblocker":"swgoh.gg refused to send us data about your guild.\r\nThis is most likely due to a high number of guilds trying to use the %tb function at this time.\r\nPlease try again in a few minutes."
         }
     },
 

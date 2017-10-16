@@ -217,7 +217,8 @@
 			"paramsNumber":"Pas suffisamment de paramètres",
 			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement",
 			"dbUpdateError":"Erreur lors de la mise à jour de la base de données",
-			"tooMuchResults":"Trop de résultats, voici les personnages correspondant à votre recherche\r\n"
+			"tooMuchResults":"Trop de résultats, voici les personnages correspondant à votre recherche\r\n",
+			"swgohGGblocker":"swgoh.gg a refusé de nous envoyer des informations sur votre guilde.\r\nCeci est probablement dû à une trop forte activité sur la commande %tb actuellement.\r\nMerci de réessayer dans quelques minutes."
 		}
 	},
 	"helpCommandParameters":{
