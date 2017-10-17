@@ -35,12 +35,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String COMMAND_CHARS;
 	private final String COMMAND_SHIPS;
 	private final String COMMAND_STRATEGY;
+	private final String COMMAND_MIN_STRATEGY;
 
 	private final String HELP;
 
 	private final String DISPLAYED_RESULTS;
 	private final String NO_UNIT_FOUND;
 	private final String MAX_STARS_FROM_GP_TITLE;
+	private final String MIN_STARS_FROM_GP_TITLE;
 	private final String MAX_STARS_FROM_GP;
 	
 	private final String ERROR_MESSAGE;
@@ -81,12 +83,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_COMMANDS_CHARS = "characters";
 	private final static String JSON_TB_COMMANDS_SHIPS = "ships";
 	private final static String JSON_TB_COMMANDS_STRATEGY = "strategy";
+	private final static String JSON_TB_COMMANDS_MIN_STRATEGY = "strategyMin";
 	
 	private final static String JSON_TB_MESSAGES = "messages";
 	private final static String JSON_TB_MESSAGES_DISPLAYED_RESULTS = "displayedResults";
 	private final static String JSON_TB_MESSAGES_NO_UNTI_FOUND = "noUnitFound";
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP = "maxStarResult";
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE = "maxStarTitle";
+	private final static String JSON_TB_MESSAGES_MIN_STARS_FROM_GP_TITLE = "minStarTitle";
 
 	private final static String JSON_TB_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_TB_ERROR_MESSAGES_SQL = "sqlError";
@@ -115,12 +119,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		COMMAND_CHARS = commands.getString(JSON_TB_COMMANDS_CHARS);
 		COMMAND_SHIPS = commands.getString(JSON_TB_COMMANDS_SHIPS);
 		COMMAND_STRATEGY = commands.getString(JSON_TB_COMMANDS_STRATEGY);
+		COMMAND_MIN_STRATEGY = commands.getString(JSON_TB_COMMANDS_MIN_STRATEGY);
 
 		JSONObject messages = tbParams.getJSONObject(JSON_TB_MESSAGES);
 		DISPLAYED_RESULTS = messages.getString(JSON_TB_MESSAGES_DISPLAYED_RESULTS);
 		NO_UNIT_FOUND = messages.getString(JSON_TB_MESSAGES_NO_UNTI_FOUND);
 		MAX_STARS_FROM_GP = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP);
 		MAX_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE);
+		MIN_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MIN_STARS_FROM_GP_TITLE);
 		
 		JSONObject errorMessages = tbParams.getJSONObject(JSON_TB_ERROR_MESSAGES);
 		ERROR_MESSAGE_SQL = errorMessages.getString(JSON_TB_ERROR_MESSAGES_SQL);
@@ -148,8 +154,8 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 		if(COMMAND_STRATEGY.equals(params.get(0))) {
 			
-			if(params.size() !=  1) {
-				return new CommandAnswer(ERROR_MESSAGE_PARAMS_NUMBER,null);
+			if(params.size() >  2 ) {
+				return new CommandAnswer(ERROR_COMMAND,null);
 			}
 			
 			try {
@@ -175,8 +181,20 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				}
 				
 				GalaticPowerToStars strat = new GalaticPowerToStars(CharacterGP,ShipGP);
-				String result = String.format(MAX_STARS_FROM_GP,CharacterGP/1000000, ShipGP/1000000,(ShipGP+CharacterGP)/1000000,strat.starFromShip,strat.starFromCharacter,strat.starFromShip+strat.starFromCharacter)+strat.strategy;
-				embed.addField(MAX_STARS_FROM_GP_TITLE, result, true);
+				Integer starFromAir = strat.starFromShip;
+				Integer starFromGround =strat.starFromCharacter;
+				String 	strategyText =strat.strategy;
+				String 	title =MAX_STARS_FROM_GP_TITLE;
+				
+				if(params.size() == 2 && COMMAND_MIN_STRATEGY.equals(params.get(1)))
+				{
+					starFromAir = strat.minStarFromShip;
+					starFromGround =strat.minStarFromCharacter;
+					strategyText =strat.minStrategy;
+					title =MIN_STARS_FROM_GP_TITLE;
+				}
+				String result = String.format(MAX_STARS_FROM_GP,CharacterGP/1000000, ShipGP/1000000,(ShipGP+CharacterGP)/1000000,starFromAir,starFromGround,starFromAir+starFromGround)+strategyText;
+				embed.addField(title, result, true);
 				return new CommandAnswer(null,embed);
 				
 			}
