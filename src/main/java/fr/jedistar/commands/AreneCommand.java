@@ -28,8 +28,8 @@ public class AreneCommand implements JediStarBotCommand {
 		        put(18, 5);
 		        put(24, 6);
 		        put(33, 7);
-		        put(44, 8);
-		        put(54, 9);
+		        put(42, 8);
+		        put(55, 9);
 		    }});
 	
 	private final static Color EMBED_COLOR = Color.WHITE;
@@ -150,7 +150,7 @@ public class AreneCommand implements JediStarBotCommand {
 		SortedMap<Integer, Integer> reachableRank = attackRangeMap.tailMap(rank);
 		if(reachableRank.isEmpty())
 		{
-			newRank = (int) Math.round(rank*0.85);
+			newRank = (int) Math.round(rank*0.85) -1 ;
 			if(newRank < attackRangeMap.get(attackRangeMap.lastKey()))
 			{
 				newRank =attackRangeMap.get(attackRangeMap.lastKey())+1;
