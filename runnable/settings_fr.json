@@ -154,7 +154,7 @@
 			"fastestPath":"Le meilleur classement peut être atteint en suivant la progression :\r\n **%s** \r\n",
 			"help":"Cette commande donne le plus haut rang d'arène accessible en 5 combats.\r\n\r\n**Exemple d'appel**\r\n%arene 26",
 			"helpUs":"Attention ce résultat est approximatif par manque de données. N'hésitez pas à nous aider en nous contactant sur Discord (<https://jedistar.jimdo.com/jedistar-bot/>).\r\n",
-			"fastestPathTitle":"En 5 combats à partir du rang %d",
+			"fastestPathTitle":"Sans dépenser de cristaux à partir du rang %d",
 			"helpUsTitle":"Attention"
 		},
 		

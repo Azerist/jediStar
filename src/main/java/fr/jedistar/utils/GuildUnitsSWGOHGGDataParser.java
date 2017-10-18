@@ -20,9 +20,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
-
-import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 
 public abstract class GuildUnitsSWGOHGGDataParser {

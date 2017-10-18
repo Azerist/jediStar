@@ -2,12 +2,10 @@ package fr.jedistar.commands;
 
 import java.awt.Color;
 import java.util.Collections;
-
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +21,17 @@ public class AreneCommand implements JediStarBotCommand {
 	final static Logger logger = LoggerFactory.getLogger(JediStarBotCommand.class);
 	
 	private static final SortedMap<Integer, Integer> attackRangeMap = Collections.unmodifiableSortedMap(
-		    new TreeMap<Integer, Integer>() {{
+		    new TreeMap<Integer, Integer>() {
+
+				private static final long serialVersionUID = 4607362140163522483L;
+
+			{
 		        put(12, 4);
 		        put(18, 5);
 		        put(24, 6);
 		        put(33, 7);
-		        put(44, 8);
-		        put(54, 9);
+		        put(42, 8);
+		        put(55, 9);
 		    }});
 	
 	private final static Color EMBED_COLOR = Color.WHITE;
@@ -73,7 +75,7 @@ public class AreneCommand implements JediStarBotCommand {
 		JSONObject parameters = StaticVars.jsonSettings;
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-		//Paramètres propres à l'équilibrage
+		//Paramï¿½tres propres ï¿½ l'ï¿½quilibrage
 		JSONObject AreneParams = parameters.getJSONObject(JSON_ARENE);
 
 		COMMAND = AreneParams.getString(JSON_ARENE_COMMAND);
@@ -150,7 +152,7 @@ public class AreneCommand implements JediStarBotCommand {
 		SortedMap<Integer, Integer> reachableRank = attackRangeMap.tailMap(rank);
 		if(reachableRank.isEmpty())
 		{
-			newRank = (int) Math.round(rank*0.85);
+			newRank = (int) Math.round(rank*0.85) -1 ;
 			if(newRank < attackRangeMap.get(attackRangeMap.lastKey()))
 			{
 				newRank =attackRangeMap.get(attackRangeMap.lastKey())+1;

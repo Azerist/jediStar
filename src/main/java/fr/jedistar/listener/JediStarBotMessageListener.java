@@ -5,11 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -17,7 +15,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import fr.jedistar.commands.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +31,7 @@ import de.btobastian.javacord.listener.message.MessageCreateListener;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 import fr.jedistar.commands.AreneCommand;
+import fr.jedistar.commands.HelpCommand;
 import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.commands.RaidCommand;
 import fr.jedistar.commands.SetUpCommand;
@@ -64,6 +62,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 	public JediStarBotMessageListener() {
 		super();
 		
+
 		commandsMap = new HashMap<String,JediStarBotCommand>();
 		
 		//AJOUTER ICI DE NOUVELLES COMMANDES
@@ -113,7 +112,6 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 	public void onMessageCreate(DiscordAPI api, Message receivedMessage) {
 		
 		String messageAsString = receivedMessage.getContent().toLowerCase();
-		
 		
 		//Si le message est vide ou ne commence pas par % : Ne rien faire.
 		if(messageAsString == null
@@ -197,7 +195,6 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			}
 			
 		}
-
 	}
 
 	private boolean isAdmin(Message messageRecu) {
