@@ -1,6 +1,5 @@
 package fr.jedistar.formats;
 
-import java.awt.List;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
