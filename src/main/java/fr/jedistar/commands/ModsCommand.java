@@ -8,12 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,12 +22,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.btobastian.javacord.entities.Channel;
-import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
-import fr.jedistar.Main;
 import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.utils.JaroWinklerDistance;
@@ -65,7 +58,7 @@ public class ModsCommand implements JediStarBotCommand {
 	private static String CHARACTERS_PORTRAIT_URL = "http://jeremiebellionjourdan.fr/swgoh/portraits/%s.png";
 	private static String CHARACTERS_PORTRAIT_SEPARATOR = "-";
 
-	//Nom des éléments dans le JSON de mods
+	//Nom des ï¿½lï¿½ments dans le JSON de mods
 	private final static String JSON_DATA = "data";
 	private final static String JSON_NAME = "name";
 	private final static String JSON_CHAR_NAME = "cname";
@@ -82,7 +75,7 @@ public class ModsCommand implements JediStarBotCommand {
 
 	private static String JSON_URI = null;
 	
-	//Variables JSON de paramètres
+	//Variables JSON de paramï¿½tres
 	private final static String JSON_ERROR_MESSAGE = "errorMessage";
 	private final static String JSON_MODS_COMMAND = "modsCommandParameters";
 	private final static String JSON_MODS_COMMAND_COMMAND = "command";
@@ -110,7 +103,7 @@ public class ModsCommand implements JediStarBotCommand {
 		//messages de base
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-		//Paramètres propres aux mods
+		//Paramï¿½tres propres aux mods
 		JSONObject modsParams = parameters.getJSONObject(JSON_MODS_COMMAND);
 		
 		COMMAND = modsParams.getString(JSON_MODS_COMMAND_COMMAND);
@@ -275,7 +268,7 @@ public class ModsCommand implements JediStarBotCommand {
 							break;
 						}
 						
-						//Utiliser la liste approxChars pour ne pas renvoyer deux fois la même réponse
+						//Utiliser la liste approxChars pour ne pas renvoyer deux fois la mï¿½me rï¿½ponse
 						if(approxChars.contains(approx.charName)) {
 							message += approx.charName+"\r\n";			
 							nothingFound = false;

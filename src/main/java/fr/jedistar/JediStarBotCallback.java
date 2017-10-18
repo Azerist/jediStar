@@ -3,8 +3,6 @@ package fr.jedistar;
 import com.google.common.util.concurrent.FutureCallback;
 
 import de.btobastian.javacord.DiscordAPI;
-import de.btobastian.javacord.ImplDiscordAPI;
-import de.btobastian.javacord.entities.impl.ImplUser;
 import fr.jedistar.listener.JediStarBotMessageListener;
 import fr.jedistar.listener.JediStarBotReactionAddListener;
 

@@ -3,22 +3,17 @@ package fr.jedistar.commands;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.btobastian.javacord.entities.Channel;
-import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import fr.jedistar.JediStarBotCommand;
-import fr.jedistar.Main;
 import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
 
@@ -46,7 +41,7 @@ public class RaidCommand implements JediStarBotCommand {
 	private static String INCORRECT_PARAMS_NUMBER;
 	private static String RAID_NOT_FOUND;
 			
-	//Représente 1% de HP pour les différentes phases des différents raids
+	//Reprï¿½sente 1% de HP pour les diffï¿½rentes phases des diffï¿½rents raids
 	private Map<String,Map<Integer,Integer>> phaseHPmap;
 	private Map<String,List<String>> aliasesMap;
 	
@@ -100,7 +95,7 @@ public class RaidCommand implements JediStarBotCommand {
 		//messages de base
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
-		//Paramètres propres à l'équilibrage
+		//Paramï¿½tres propres ï¿½ l'ï¿½quilibrage
 		JSONObject raidParams = parameters.getJSONObject(JSON_RAID_COMMAND);
 
 		COMMAND = raidParams.getString(JSON_RAID_COMMAND_COMMAND);
@@ -248,7 +243,7 @@ public class RaidCommand implements JediStarBotCommand {
 				return new CommandAnswer(message, null);
 			}
 			else {
-				//Il s'agit d'une valeur en dégâts
+				//Il s'agit d'une valeur en dï¿½gï¿½ts
 				Float responseValue = valueAsFloat / phaseHP1percent;
 				
 				String formattedValue = NumberFormat.getIntegerInstance().format(valueAsFloat.intValue());
@@ -271,7 +266,7 @@ public class RaidCommand implements JediStarBotCommand {
 			Float secondValueAsFloat = formatNumberParameters(secondValue);
 			
 			if(valueAsFloat <= 100 && secondValueAsFloat < 100) {
-				//Il s'agit de deux pourcentages…
+				//Il s'agit de deux pourcentagesï¿½
 				return doPhaseWithTwoPercentages(valueAsFloat, secondValueAsFloat, raidName, phaseNumber);
 			}
 			
@@ -331,10 +326,10 @@ public class RaidCommand implements JediStarBotCommand {
 				return error(INCOHERENT_PARAMETERS);
 			}
 			
-			//Dégâts faits à la fin de la phase annoncée
+			//Dï¿½gï¿½ts faits ï¿½ la fin de la phase annoncï¿½e
 			Integer responseValue = (int) (valueAsFloat * phaseHP1percent);
 			
-			//On ajoute les dégâts faits au début de la phase suivante
+			//On ajoute les dï¿½gï¿½ts faits au dï¿½but de la phase suivante
 			responseValue += (int) (100 - secondValueAsFloat) * nextPhaseHP1percent;
 			
 			String formattedValue = NumberFormat.getIntegerInstance().format(responseValue);

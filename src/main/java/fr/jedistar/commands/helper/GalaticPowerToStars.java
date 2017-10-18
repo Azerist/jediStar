@@ -36,7 +36,12 @@ public class GalaticPowerToStars {
 	
 	
 	private static final SortedMap<Integer, TerritoryBattleStrategy> groundGPMap = Collections.unmodifiableSortedMap(
-		    new TreeMap<Integer, TerritoryBattleStrategy>() {{
+		    new TreeMap<Integer, TerritoryBattleStrategy>() {/**
+				 * 
+				 */
+				private static final long serialVersionUID = 8633415667127566560L;
+
+			{
 		    	put(0		, 	new TerritoryBattleStrategy(19,new String[] {"2","2/2","2/2","2/2","1/2","1/1"}));
 		    	put(6350000	, 	new TerritoryBattleStrategy(20,new String[] {"2","2/2","2/2","2/2","1/2","1/2"}));
 		    	put(12570000, 	new TerritoryBattleStrategy(21,new String[] {"2","2/3","2/2","2/2","1/2","1/2"}));
@@ -55,7 +60,12 @@ public class GalaticPowerToStars {
 		    }});
 	
 	private static final SortedMap<Integer, TerritoryBattleStrategy> airGPMap = Collections.unmodifiableSortedMap(
-		    new TreeMap<Integer, TerritoryBattleStrategy>() {{
+		    new TreeMap<Integer, TerritoryBattleStrategy>() {/**
+				 * 
+				 */
+				private static final long serialVersionUID = 8926699849073076427L;
+
+			{
 		    	put(0		, 	new TerritoryBattleStrategy(6,new String[] {"","","2/","2/","1/","1/"}));
 		    	put(4940000		, 	new TerritoryBattleStrategy(7,new String[] {"","","2/","3/","1/","1/"}));
 		    	put(6120000		, 	new TerritoryBattleStrategy(8,new String[] {"","","2/","3/","2/","1/"}));
