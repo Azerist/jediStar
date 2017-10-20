@@ -141,7 +141,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		//AJOUTER DE NOUVEAUX RAIDS ICI
 		rankingsPerRaid = new HashMap<String,List<Ranking>>();
 		rankingsPerRaid.put(RANCOR,Arrays.asList(new Ranking("1-10",1,7,400000,600000),new Ranking("11-30",2,20,100000,300000),new Ranking("31+",2,20,0,0)));
-		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7,1100000,1300000),new Ranking("11-30",2,20,800000,1000000),new Ranking("31+",2,20,600000,700000)));
+		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7,1100000,1300000),new Ranking("11-30",2,20,800000,1000000),new Ranking("31+",2,20,500000,700000)));
 		
 		rulesPerRaid = new HashMap<String,String>();
 		rulesPerRaid.put(RANCOR, "@everyone \r\n"
