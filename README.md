@@ -38,11 +38,11 @@ There are two ways to do it :
 If anything went well in the previous steps, your bot should now be able to answer your commands.
 
 Right now, the available commands are (unless you customized them in the settings.json) :
-* %arena <rankNumber>
-* %mods <characterName>
-* %raid <raidName> <raidPhase> <percent or damage #>
+* %arena [rankNumber]
+* %mods [haracterName]
+* %raid [raidName] [raidPhase] [percent or damage #]
 * %tb gp
-* %tb platoon <character>
+* %tb platoon [character]
 
 Enjoy !
 
