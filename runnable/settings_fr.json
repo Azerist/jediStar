@@ -134,7 +134,7 @@
 			"currentRaidPodium":"**%S **: Podium\r\n",
 			"podiumText":"**+--- Podium ---+**\r\n",
 			"podiumEnd":"**+--------------+**\r\n\r\n",
-			"confirmDelete":"Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible %"
+			"confirmDelete":"Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible !"
 		},
 		
 		"errorMessages":{
