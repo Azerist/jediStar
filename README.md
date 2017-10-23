@@ -6,8 +6,12 @@ All you'll need is a computer connected to the Internet. Any OS that can run Jav
 
 No need to be a computer crack, the installation is very easy.
 
-Of course, if you want the boot to be available 24/7, the computer that runs it will need to stay up 24/7.
-You can also rent a small server, for example i was able to rent one for less than 4€/month.
+Of course, if you want the bot to be available 24/7, the computer that runs it will need to stay up 24/7.
+You can also rent a small server, for example I was able to rent one for less than 4€/month.
+
+Some examples of hosting services:
+* https://aws.amazon.com/
+* https://cloud.google.com/
 
 ## Installing the bot
 
@@ -34,8 +38,11 @@ There are two ways to do it :
 If anything went well in the previous steps, your bot should now be able to answer your commands.
 
 Right now, the available commands are (unless you customized them in the settings.json) :
-* !raid
-* !mods
+* %arena <rankNumber>
+* %mods <characterName>
+* %raid <raidName> <raidPhase> <percent or damage #>
+* %tb gp
+* %tb platoon <character>
 
 Enjoy !
 
