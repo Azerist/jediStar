@@ -39,7 +39,7 @@ If anything went well in the previous steps, your bot should now be able to answ
 
 Right now, the available commands are (unless you customized them in the settings.json) :
 * %arena [rankNumber]
-* %mods [haracterName]
+* %mods [characterName]
 * %raid [raidName] [raidPhase] [percent or damage #]
 * %tb gp
 * %tb platoon [character]
