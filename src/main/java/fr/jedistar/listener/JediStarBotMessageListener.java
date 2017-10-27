@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.btobastian.javacord.DiscordAPI;
+import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.Server;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
@@ -33,6 +34,7 @@ import fr.jedistar.StaticVars;
 import fr.jedistar.commands.AreneCommand;
 import fr.jedistar.commands.HelpCommand;
 import fr.jedistar.commands.ModsCommand;
+import fr.jedistar.commands.PayoutCommand;
 import fr.jedistar.commands.RaidCommand;
 import fr.jedistar.commands.SetUpCommand;
 import fr.jedistar.commands.TerritoryBattlesCommand;
@@ -72,6 +74,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		SetUpCommand setup = new SetUpCommand();
 		TerritoryBattlesCommand tb = new TerritoryBattlesCommand();
         HelpCommand help = new HelpCommand();
+        PayoutCommand payout = new PayoutCommand();
 
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
@@ -79,6 +82,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		commandsMap.put(setup.getCommand(),setup);
 		commandsMap.put(tb.getCommand(), tb);
         commandsMap.put(help.getCommand(), help);
+        commandsMap.put(payout.getCommand(), payout);
 
 		//Lecture du Json
 		try {

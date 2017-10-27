@@ -16,7 +16,7 @@ public class Main {
 
 	final static Logger logger = LoggerFactory.getLogger(Main.class);
 
-	// Noms des �l�ments dans le fichier de param�tres
+	// Noms des éléments dans le fichier de paramètres
 	private static final String PARAM_MODS_JSON_URI = "modsJsonURI";
 	private static final String PARAM_TOKEN = "discordToken";
 	private static final String PARAM_DB = "database";
@@ -45,7 +45,7 @@ public class Main {
 
 		String token = "";
 
-		// Lecture du fichier Json et r�cup�ration des param�tres
+		// Lecture du fichier Json et récupération des paramètres
 		try {
 			// Lecture du fichier
 			byte[] encoded = Files.readAllBytes(Paths.get(parametersFilePath));

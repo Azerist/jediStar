@@ -2,6 +2,7 @@ package fr.jedistar;
 
 import de.btobastian.javacord.DiscordAPI;
 import de.btobastian.javacord.Javacord;
+import de.btobastian.javacord.entities.Channel;
 
 public class JediStarBot {
 
@@ -21,7 +22,7 @@ public class JediStarBot {
 
 	public void connect() {
 		api.connect(botCallback);
-
+		
 	}
 
 }
