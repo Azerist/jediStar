@@ -199,11 +199,13 @@
 			"smallEquilibrageMessage":"",
 			"smallArenaMessage":"- %help arena : to know more about arena command",
 			"smallTbMessage":"- %help tb : to know more about tb command",
+			"smallPayoutsMessage":"- %help payouts : to know more about payouts command",
 			"modsMessage":"**This command returns the mod setup advised for a given character.**\r\n\r\n**Example**\r\n%mods anakin",
 			"raidMessage":"**Here are the various commands I understand to evaluate your raid results** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Answers with the damage done corresponding to 5.5% during phase 1 on the Rancor Heroic raid\r\n- **%raid rancor p2 10% 4%** ==> Answers with the damage done corresponding to 6% done on phase 2 on the Rancor Heroic raid\r\n - ** %raid aat p3 40000 ** == > Answers with the percentage corresponding  to 40,000 damage on the Phase 3 of the Heroic AAT raid\r\n - ** %raid tank p4 35% 100000 ** == > Answers with the percentage to reach in order to perform 100,000 damage, starting your battle at 35 % on the Phase 4 of the Heroic AAT raid",
 			"equilibrageMessage":"",
 			"arenaMessage":"**This command returns the highest arena rank reachable with 5 fights.**\r\n\r\n**Example**\r\n%arena 26",
-			"tbMessage":"**Possible commands** :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*\r\n%tb gp"
+			"tbMessage":"**Possible commands** :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*\r\n%tb gp",
+			"payoutsMessage":"This command allows you to manage your arena payouts.\r\n**Examples :** %payouts\r\n**Administration commands :**\r\n%payouts add user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts add user 12:00 EST\r\n%payouts delete user",
 		},
 
 		"errorMessages":{
