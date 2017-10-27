@@ -8,7 +8,7 @@ USE jedistar;
 
 CREATE TABLE IF NOT EXISTS guild
 (
-	channelID VARCHAR(50) PRIMARY KEY,
+	channelID VARCHAR(64) PRIMARY KEY,
 	guildID INT NOT NULL
 );	
 
@@ -59,4 +59,14 @@ CREATE TABLE IF NOT EXISTS commandHistory
 	serverName VARCHAR(128),
 	serverRegion VARCHAR(64),
 	PRIMARY KEY (command,ts,userID)
+);
+
+CREATE TABLE IF NOT EXISTS payoutTime
+(
+	channelID varchar(64),
+	userName varchar(64),
+	payoutTime TIME,
+	flag varchar(16),
+	swgohggLink varchar(256),
+	PRIMARY KEY (channelID,userName)
 );

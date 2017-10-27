@@ -232,16 +232,48 @@
             "smallEquilibrageMessage":"- %help equilibrage : pour en savoir plus sur la commande equilibrage",
             "smallArenaMessage":"- %help arene : pour en savoir plus sur la commande arene",
             "smallTbMessage":"- %help tb : pour en savoir plus sur la commande tb",
+            "smallPayoutsMessage":"- %help payouts : pour en savoir plus sur la fonction payouts",
 			"modsMessage":"**Cette commande vous permet de connaître les mods recommandés pour un personnage.**\r\n\r\n**Exemple d'appel**\r\n%mods anakin",
 			"raidMessage":"**Voici des exemples de commandes disponibles pour déterminer vos résultats de raid** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **%raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** %raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** %raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** %raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
 			"equilibrageMessage":"**Cette commande vous permet de connaître votre équilibrage sur un raid.**\r\n\r\n**Exemple d'appel**\r\n%equilibrage rancor\r\n**Commandes pour les officiers :**\r\n%equilibrage maj\r\n%equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n%equilibrage ajouter @user\r\n%equilibrage supprimer @user\r\n%equlibrage supprimer XXXX\r\n%equilibrage terminer tank\r\n%equilibrage lancer tank podium-auto @exclusDuTop10\r\n%equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10",
 			"arenaMessage":"**Cette commande donne le plus haut rang d'arène accessible en 5 combats.**\r\n\r\n**Exemple d'appel**\r\n%arene 26",
-			"tbMessage":"**Commandes possibles** :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp"
+			"tbMessage":"**Commandes possibles** :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp",
+			"payoutsMessage":"Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user"
 		},
 
 		"errorMessages":{
 			"paramsError":"la commande que vous demandez n'est pas connu, merci d'utiliser les notations suivantes : \r\n\r\n - %help : pour avoir accès à toutes l'aide \r\n - %help mods : pour une aide sur la fonctionnalité des mods \r\n - %help raid : pour une aide sur la fonctionnalité des raids \r\n - %help equilibrage : pour une aide sur la fonctionnalité d'équilibrage",
 			"technicalError": "une erreur technique est survenu, veuillez contacter votre administrateur Discord"
+		}
+	},
+	
+	"payoutCommandParameters":{
+		"commands":{
+			"main":"payouts",
+			"add":"ajouter",
+			"delete":"supprimer"
+		},
+		
+		"help":"Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user",
+		
+		"messages":{
+			"embedTitle":"Temps avant le prochain payout :",
+			"timezoneConfirmation":"En utilisant le fuseau horaire **%s**, je calcule que le payout de cet utilisateur aura lieu dans **%02d:%02d** heures.\r\nEst-ce correct ?",
+			"timezoneChoice":"Les fuseaux horaires suivants correspondent à votre saisie :",
+			"noTimezoneFound":"Aucun fuseau horaire trouvé. Voici un fichier texte contenant la liste des fuseaux possibles.",
+			"cancel":"OK, j'annule.",
+			"addUserSuccess":"Utilisateur ajouté avec succès",
+			"deleteConfirmation":"Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
+			"deleteSuccess":"Supression de l'utilisateur réussie"
+		},
+		
+		"errorMessages":{
+			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande.\r\nVous devez faire partie du groupe Discord «botadmins» pour administrer le bot.",
+			"unrecognizedCommand":"Commande non reconnue",
+			"timeFormat":"L'heure est mal formatée. Merci d'utiliser le format HH:MM (par exemple 08:30)",
+			"sqlError":"Une erreur est survenue lors de l'accès à la base de données",
+			"noChannel":"Cette commande doit être utilisée depuis un salon Discord (pas de message privé)",
+			"noUserFound":"Cet utilisateur n'est pas enregistré dans la commande %payouts dans ce salon"
 		}
 	}
 }

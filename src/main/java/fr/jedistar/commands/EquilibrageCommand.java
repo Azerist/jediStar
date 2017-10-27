@@ -203,7 +203,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	@Override
 	public CommandAnswer answer(List<String> params,Message receivedMessage,boolean isAdmin) {
 		
-		//Si les tableaux n'ont pas �t� charg�s, les charger maintenant...
+		//Si les tableaux n'ont pas été chargés, les charger maintenant...
 		if(valuesPerUserPerRaid == null) {
 			String readReturn = readFromJson();
 			if(readReturn != null) {

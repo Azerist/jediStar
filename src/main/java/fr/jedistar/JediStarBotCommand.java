@@ -6,7 +6,7 @@ import de.btobastian.javacord.entities.message.Message;
 import fr.jedistar.formats.CommandAnswer;
 
 public interface JediStarBotCommand {
-
+	
 	public String getCommand();
 
 	public CommandAnswer answer(List<String> params, Message receivedMessage, boolean isAdmin);

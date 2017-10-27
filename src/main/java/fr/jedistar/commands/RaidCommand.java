@@ -41,7 +41,7 @@ public class RaidCommand implements JediStarBotCommand {
 	private static String INCORRECT_PARAMS_NUMBER;
 	private static String RAID_NOT_FOUND;
 			
-	//Repr�sente 1% de HP pour les diff�rentes phases des diff�rents raids
+	//Représente 1% de HP pour les différentes phases des différents raids
 	private Map<String,Map<Integer,Integer>> phaseHPmap;
 	private Map<String,List<String>> aliasesMap;
 	
