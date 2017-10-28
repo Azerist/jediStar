@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -140,7 +141,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		//AJOUTER DE NOUVEAUX RAIDS ICI
 		rankingsPerRaid = new HashMap<String,List<Ranking>>();
 		rankingsPerRaid.put(RANCOR,Arrays.asList(new Ranking("1-10",1,7,400000,600000),new Ranking("11-30",2,20,100000,300000),new Ranking("31+",2,20,0,0)));
-		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7,1100000,1300000),new Ranking("11-30",2,20,800000,1000000),new Ranking("31+",2,20,600000,700000)));
+		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7,1100000,1300000),new Ranking("11-30",2,20,800000,1000000),new Ranking("31+",2,20,500000,700000)));
 		
 		rulesPerRaid = new HashMap<String,String>();
 		rulesPerRaid.put(RANCOR, "@everyone \r\n"
@@ -202,7 +203,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	@Override
 	public CommandAnswer answer(List<String> params,Message receivedMessage,boolean isAdmin) {
 		
-		//Si les tableaux n'ont pas �t� charg�s, les charger maintenant...
+		//Si les tableaux n'ont pas été chargés, les charger maintenant...
 		if(valuesPerUserPerRaid == null) {
 			String readReturn = readFromJson();
 			if(readReturn != null) {
@@ -410,28 +411,55 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			return launchRaid(raidName,podium,excludedFromFirstRank,chan);
 		}
 		
-		else if(params.size() == 5 && COMMAND_ADJUST.equals(params.get(0))) {
-			
+		
+		else if(params.size()>=5 && COMMAND_ADJUST.equals(params.get(0))) {
 			if(!isAdmin) {
 				return new CommandAnswer(FORBIDDEN,null);
 			}
-			
-			if(!params.get(1).startsWith("<@") || ! params.get(1).endsWith(">")) {
-				return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner les joueurs", null);
-			}
-			
+
 			try {
+
+				String raidName = params.get(1);
+				String rangeIndex = params.get(2);
+				Integer adjustmentValue = Integer.parseInt(params.get(3));
+								
+				String returnMessage = "";
 				
-				Integer userId = getUserDiscriminator(chan, params.get(1));
-				String raidName = params.get(2);
-				String rangeIndex = params.get(3);
-				Integer adjustmentValue = Integer.parseInt(params.get(4));
+				for(int i=4;i<params.size();i++) {
+					String param = params.get(i);
+					
+					if(!param.startsWith("<@") || ! param.endsWith(">")) {
+						return new CommandAnswer("Merci d'utiliser les tags «@user» pour désigner les joueurs", null);
+					}
+					
+					Integer userId = getUserDiscriminator(chan, param);
+					
+					String errorMessage = adjustUserValue(userId,raidName,rangeIndex,adjustmentValue);
+					
+					if(StringUtils.isNotBlank(errorMessage)) {
+						returnMessage += "**Erreur lors de l'ajustement pour l'utilisateur "+param+"**\r\n"+errorMessage+"\r\n";
+					}
+				}
+
+				if(StringUtils.isNotBlank(returnMessage)) {
+					returnMessage = "**DES ERREURS SE SONT PRODUITES POUR CERTAINS UTILISATEURS :**\r\n"+returnMessage;
+				}
 				
-				return adjustUserValue(userId,raidName,rangeIndex,adjustmentValue);
+				String write = writeToJson();
+				
+				if(write == null) {
+					returnMessage = "**AJUSTEMENT OK**\r\n" + returnMessage;
+				}
+				else {
+					returnMessage = "**PROBLEME LORS DE L'ECRITURE DU FICHIER**\r\n";
+				}
+				
+				return new CommandAnswer(returnMessage,null);
 			}
 			catch(NumberFormatException e) {
 				return new CommandAnswer("Un nombre entré n'a pas été reconnu", null);
 			}
+
 		}
 		
 		return new CommandAnswer(error("Commande incorrecte"),null);
@@ -439,18 +467,29 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 
 
-	private CommandAnswer adjustUserValue(Integer userId, String raidName, String rangeIndex, Integer adjustmentValue) throws NumberFormatException {
+	/**
+	 * Adjusts a user's value
+	 * 
+	 * DOESN'T write to JSON file
+	 * @param userId
+	 * @param raidName
+	 * @param rangeIndex
+	 * @param adjustmentValue
+	 * @return an error message if anything went wrong, null if adjustment went OK
+	 * @throws NumberFormatException
+	 */
+	private String adjustUserValue(Integer userId, String raidName, String rangeIndex, Integer adjustmentValue) throws NumberFormatException {
 
 		HashMap<Integer,HashMap<String,List<Integer>>> valuesPerUser = valuesPerUserPerRaid.get(raidName);
 		
 		if(valuesPerUser == null) {
-			return new CommandAnswer("raid non trouvé",null);
+			return "raid non trouvé";
 		}
 		
 		HashMap<String,List<Integer>> valuesMapForThisUser = valuesPerUser.get(userId);
 		
 		if(valuesMapForThisUser == null) {
-			return new CommandAnswer("utilisateur non trouvé",null);
+			return "utilisateur non trouvé";
 		}
 		
 		Integer listIndex = null;
@@ -472,7 +511,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		List<Integer> valuesListForThisUser = valuesMapForThisUser.get(KEY_VALUES);
 		
 		if(listIndex +1 > valuesListForThisUser.size()) {
-			return new CommandAnswer("Cette tranche n'a pas été trouvée", null);
+			return "Cette tranche n'a pas été trouvée";
 		}
 		
 		List<Integer> newValuesList = new ArrayList<Integer>();
@@ -489,14 +528,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 		valuesMapForThisUser.put(KEY_VALUES, newValuesList);
 			
-		String write = writeToJson();
-		
-		if(write == null) {
-			return new CommandAnswer("Ajutement réussi", null);
-		}
-		else {
-			return new CommandAnswer(write,null);
-		}
+		return null;
 	}
 
 
