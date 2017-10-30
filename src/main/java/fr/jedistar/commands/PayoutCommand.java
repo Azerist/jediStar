@@ -62,6 +62,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final String SQL_ERROR;
 	private final String ERROR_NO_CHANNEL;
 	private final String ERROR_USER_NOT_FOUND;
+	private final String ERROR_NO_USER_IN_CHAN;
 
 	private final static Color EMBED_COLOR = Color.YELLOW;
 	private final static String CLOCK_IMG_URL = "http://37.187.39.193/swgoh/clock.png";
@@ -100,6 +101,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final static String JSON_PAYOUT_ERRORS_SQL = "sqlError";
 	private final static String JSON_PAYOUT_ERRORS_NO_CHANNEL = "noChannel";
 	private final static String JSON_PAYOUT_ERRORS_USER_NOT_FOUND = "noUserFound";
+	private final static String JSON_PAYOUT_ERRORS_NO_USER_IN_CHAN = "noUsersInThisChan";
 
 
 	public PayoutCommand() {
@@ -133,6 +135,7 @@ public class PayoutCommand implements JediStarBotCommand {
 		SQL_ERROR = errorMessages.getString(JSON_PAYOUT_ERRORS_SQL);
 		ERROR_NO_CHANNEL = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_CHANNEL);
 		ERROR_USER_NOT_FOUND = errorMessages.getString(JSON_PAYOUT_ERRORS_USER_NOT_FOUND);
+		ERROR_NO_USER_IN_CHAN = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_USER_IN_CHAN);
 	}
 	
 	@Override
@@ -175,6 +178,8 @@ public class PayoutCommand implements JediStarBotCommand {
 	private CommandAnswer formatPayouts(String channelID) {
 		
 		String[] embedContent = new String[24];
+		String[] embedTitles = new String[24];
+
 		
 		TimeZone utc = TimeZone.getTimeZone("UTC");
 		Calendar now = getCalendarWithoutDate(utc);
@@ -182,6 +187,7 @@ public class PayoutCommand implements JediStarBotCommand {
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setThumbnail(CLOCK_IMG_URL);
 		embed.setColor(EMBED_COLOR);
+		embed.setTitle(EMBED_TITLE);
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -197,7 +203,11 @@ public class PayoutCommand implements JediStarBotCommand {
 			logger.info("executingQuery "+stmt.toString());
 			rs = stmt.executeQuery();
 			
+			boolean hasAnswer = false;
+			
 			while(rs.next()) {
+				hasAnswer = true;
+				
 				String userName = rs.getString("userName");
 				Calendar payoutTime = Calendar.getInstance(utc);
 				payoutTime.setTime(rs.getTime("payoutTime"));
@@ -219,11 +229,12 @@ public class PayoutCommand implements JediStarBotCommand {
 				
 				if(contentLine == null) {
 					
+					contentLine = "";
 					
 					String strHours = StringUtils.leftPad(hoursDifference.toString(), 2, "0");
 					String strMinutes = StringUtils.leftPad(minutesDifference.toString(), 2, "0");
 					
-					contentLine = "`"+strHours+":"+strMinutes+"` ";
+					embedTitles[index] = strHours+":"+strMinutes;
 				}
 				
 				boolean hasLink = StringUtils.isNotBlank(swgohggLink);
@@ -245,15 +256,18 @@ public class PayoutCommand implements JediStarBotCommand {
 				embedContent[index] =  contentLine;
 			}
 			
-			String content = "";
-			for(String contentLine : embedContent) {
-				if(StringUtils.isNotBlank(contentLine)) {
-					content += contentLine + "\r\n";
-				}
+			if(!hasAnswer) {
+				return new CommandAnswer(ERROR_NO_USER_IN_CHAN,null);
 			}
 			
-			embed.addField(EMBED_TITLE, content,false);
-			
+			for(int i = 0 ; i < 24 ; i++) {
+				String contentLine = embedContent[i];
+				String contentTitle = embedTitles[i];
+				if(StringUtils.isNotBlank(contentLine)) {
+					embed.addField(contentTitle,contentLine,false);
+				}
+			}
+						
 			return new CommandAnswer(null,embed);
 		}
 		catch(SQLException e) {
