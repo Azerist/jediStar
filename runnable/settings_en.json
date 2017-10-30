@@ -267,14 +267,14 @@
 			"deleteConfirmation":"Are you sure you want to remove this user ?",
 			"deleteSuccess":"User successfully deleted."
 		},
-		
-		"errorMessages":{
-			"forbidden":"You may not execute this command.\r\nYou must be part of the «botAdmins» Discord group to administrate the bot.",
-			"unrecognizedCommand":"I didn't understand your command",
-			"timeFormat":"The time format is incorrect. Please use HH:MM format (for instance 08:30)",
-			"sqlError":"An error occurred while accessing the database.",
-			"noChannel":"This command must be used from a Discord channel (no private messages)",
-			"noUserFound":"This user isn't registered for the %payouts in this channel"
+		"errorMessages": {
+			"forbidden": "You may not execute this command.\r\nYou must be part of the «botAdmins» Discord group to administrate the bot.",
+			"unrecognizedCommand": "I didn't understand your command",
+			"timeFormat": "The time format is incorrect. Please use HH:MM format (for instance 08:30)",
+			"sqlError": "An error occurred while accessing the database.",
+			"noChannel": "This command must be used from a Discord channel (no private messages)",
+			"noUserFound": "This user isn't registered for the %payouts in this channel",
+			"noUsersInThisChan": "No user has been registered in this channel. Please use **%payouts add**"
 		}
 	}
 }
