@@ -62,6 +62,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final String SQL_ERROR;
 	private final String ERROR_NO_CHANNEL;
 	private final String ERROR_USER_NOT_FOUND;
+	private final String ERROR_NO_USER_IN_CHAN;
 
 	private final static Color EMBED_COLOR = Color.YELLOW;
 	private final static String CLOCK_IMG_URL = "http://37.187.39.193/swgoh/clock.png";
@@ -100,6 +101,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final static String JSON_PAYOUT_ERRORS_SQL = "sqlError";
 	private final static String JSON_PAYOUT_ERRORS_NO_CHANNEL = "noChannel";
 	private final static String JSON_PAYOUT_ERRORS_USER_NOT_FOUND = "noUserFound";
+	private final static String JSON_PAYOUT_ERRORS_NO_USER_IN_CHAN = "noUsersInThisChan";
 
 
 	public PayoutCommand() {
@@ -133,6 +135,7 @@ public class PayoutCommand implements JediStarBotCommand {
 		SQL_ERROR = errorMessages.getString(JSON_PAYOUT_ERRORS_SQL);
 		ERROR_NO_CHANNEL = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_CHANNEL);
 		ERROR_USER_NOT_FOUND = errorMessages.getString(JSON_PAYOUT_ERRORS_USER_NOT_FOUND);
+		ERROR_NO_USER_IN_CHAN = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_USER_IN_CHAN);
 	}
 	
 	@Override
@@ -175,12 +178,16 @@ public class PayoutCommand implements JediStarBotCommand {
 	private CommandAnswer formatPayouts(String channelID) {
 		
 		String[] embedContent = new String[24];
+		String[] embedTitles = new String[24];
+
 		
-		Calendar now = getCalendarWithoutDate();
+		TimeZone utc = TimeZone.getTimeZone("UTC");
+		Calendar now = getCalendarWithoutDate(utc);
 		
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setThumbnail(CLOCK_IMG_URL);
 		embed.setColor(EMBED_COLOR);
+		embed.setTitle(EMBED_TITLE);
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -196,9 +203,13 @@ public class PayoutCommand implements JediStarBotCommand {
 			logger.info("executingQuery "+stmt.toString());
 			rs = stmt.executeQuery();
 			
+			boolean hasAnswer = false;
+			
 			while(rs.next()) {
+				hasAnswer = true;
+				
 				String userName = rs.getString("userName");
-				Calendar payoutTime = Calendar.getInstance();
+				Calendar payoutTime = Calendar.getInstance(utc);
 				payoutTime.setTime(rs.getTime("payoutTime"));
 				String flag = rs.getString("flag");
 				String swgohggLink = rs.getString("swgohggLink");
@@ -218,11 +229,12 @@ public class PayoutCommand implements JediStarBotCommand {
 				
 				if(contentLine == null) {
 					
+					contentLine = "";
 					
 					String strHours = StringUtils.leftPad(hoursDifference.toString(), 2, "0");
 					String strMinutes = StringUtils.leftPad(minutesDifference.toString(), 2, "0");
 					
-					contentLine = "`"+strHours+":"+strMinutes+"` ";
+					embedTitles[index] = strHours+":"+strMinutes;
 				}
 				
 				boolean hasLink = StringUtils.isNotBlank(swgohggLink);
@@ -244,15 +256,18 @@ public class PayoutCommand implements JediStarBotCommand {
 				embedContent[index] =  contentLine;
 			}
 			
-			String content = "";
-			for(String contentLine : embedContent) {
-				if(StringUtils.isNotBlank(contentLine)) {
-					content += contentLine + "\r\n";
-				}
+			if(!hasAnswer) {
+				return new CommandAnswer(ERROR_NO_USER_IN_CHAN,null);
 			}
 			
-			embed.addField(EMBED_TITLE, content,false);
-			
+			for(int i = 0 ; i < 24 ; i++) {
+				String contentLine = embedContent[i];
+				String contentTitle = embedTitles[i];
+				if(StringUtils.isNotBlank(contentLine)) {
+					embed.addField(contentTitle,contentLine,false);
+				}
+			}
+						
 			return new CommandAnswer(null,embed);
 		}
 		catch(SQLException e) {
@@ -472,9 +487,11 @@ public class PayoutCommand implements JediStarBotCommand {
 		String emojiX = EmojiManager.getForAlias("x").getUnicode();
 		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
 			
-		Calendar now = getCalendarWithoutDate();		
+		TimeZone timezone = TimeZone.getTimeZone(timezoneName);
 		
-		Calendar payoutCalendar = getPayoutTime(payoutTime,timezoneName);
+		Calendar now = getCalendarWithoutDate(timezone);		
+		
+		Calendar payoutCalendar = getPayoutTime(payoutTime,timezone);
 		
 		GregorianCalendar payoutCalendar2 = new GregorianCalendar(payoutCalendar.getTimeZone());
 		payoutCalendar2.setTimeInMillis(payoutCalendar.getTimeInMillis());
@@ -501,6 +518,10 @@ public class PayoutCommand implements JediStarBotCommand {
 		
 		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
 		
+		long timeMillisUTC = (long) payoutCalendar.get(Calendar.HOUR_OF_DAY) * 60 * 60 * 1000;
+		timeMillisUTC = timeMillisUTC + (long) payoutCalendar.get(Calendar.MINUTE) * 60 * 1000;
+		timeMillisUTC = timeMillisUTC - (long) payoutCalendar.getTimeZone().getOffset(System.currentTimeMillis());
+		
 		if(!emojiV.equals(react.getUnicodeEmoji())) {
 			return MESSAGE_CANCEL;
 		}
@@ -515,7 +536,7 @@ public class PayoutCommand implements JediStarBotCommand {
 			
 			stmt.setString(1,channelID);
 			stmt.setString(2,userName);
-			stmt.setTime(3, new Time(payoutCalendar.getTimeInMillis()));
+			stmt.setTime(3, new Time(timeMillisUTC));
 			stmt.setString(4, ":"+flag+":");
 			stmt.setString(5, swgohggLink);
 			
@@ -546,7 +567,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	 * @param string
 	 * @return
 	 */
-	private Calendar getPayoutTime(String string,String timezoneName) {
+	private Calendar getPayoutTime(String string,TimeZone timezone) {
 		
 		Pattern pattern = Pattern.compile("[0-9]{2}:[0-9]{2}");
 		Matcher matcher = pattern.matcher(string);
@@ -559,11 +580,8 @@ public class PayoutCommand implements JediStarBotCommand {
 		
 		Integer hours = Integer.parseInt(split[0]);
 		Integer	minutes = Integer.parseInt(split[1]);
-		
-		TimeZone timezone = TimeZone.getTimeZone(timezoneName);
-		TimeZone utc = TimeZone.getTimeZone("UTC");
-		
-		Calendar calendar = Calendar.getInstance(utc);
+				
+		Calendar calendar = Calendar.getInstance(timezone);
 		
 		calendar.setTimeInMillis(0);
 		
@@ -581,11 +599,9 @@ public class PayoutCommand implements JediStarBotCommand {
 	 * Instanciates a Calendar object with all the fields other than hour and minutes set to zero with the UTC timeZone
 	 * @return
 	 */
-	private GregorianCalendar getCalendarWithoutDate() {
+	private GregorianCalendar getCalendarWithoutDate(TimeZone tz) {
 
-		TimeZone utc = TimeZone.getTimeZone("UTC");
-
-		GregorianCalendar calendar = new GregorianCalendar();
+		GregorianCalendar calendar = new GregorianCalendar(tz);
 
 		Integer hours = calendar.get(Calendar.HOUR_OF_DAY);
 		Integer minutes = calendar.get(Calendar.MINUTE);
