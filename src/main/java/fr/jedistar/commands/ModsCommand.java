@@ -314,24 +314,9 @@ public class ModsCommand implements JediStarBotCommand {
 	 */
 	private JSONObject getHttpJsonFile() throws MalformedURLException, IOException, UnsupportedEncodingException {
 				
-		URL url = new URL(JSON_URI);
-		URLConnection connection = url.openConnection();
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-		connection.connect();
-
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-			String json = in.readLine();
-			
-			return new JSONObject(json);
-		}
-		finally {
-			if(in != null) {
-				in.close();
-			}
-		}
+		String json = GuildUnitsSWGOHGGDataParser.retrieveJSONfromURL(JSON_URI);
+		return new JSONObject(json);
+		
 	}
 	
 	/**

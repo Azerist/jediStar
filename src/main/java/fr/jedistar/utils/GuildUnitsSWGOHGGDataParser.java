@@ -40,13 +40,27 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 	private final static String SHIPS_URI = "https://swgoh.gg/api/ships/?format=json";
 	private final static String GUILD_UNITS_URI = "https://swgoh.gg/api/guilds/%d/units/";
 
+	public static String retrieveJSONfromURL(String urlJSON) throws MalformedURLException, IOException {
+		BufferedReader in;
+		URL url = new URL(urlJSON);
+		URLConnection connection = url.openConnection();
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+		connection.connect();
+
+		in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+		String json = in.readLine();
+		if(in != null) {
+			in.close();
+		}
+		return json;
+	}
+	
 	public static boolean parseCharacters() throws IOException {
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		BufferedReader in = null;
-		
 		try {
 			//Vérifier si une màj est nécessaire
 			conn = StaticVars.getJdbcConnection();
@@ -73,14 +87,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 			stmt.close();
 			
 			//Charger l'API swgoh.gg
-			URL url = new URL(CHARS_URI);
-			URLConnection connection = url.openConnection();
-			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-			connection.connect();
-
-			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-			String json = in.readLine();
+			String json = retrieveJSONfromURL(CHARS_URI);
 
 			JSONArray charsJson = new JSONArray(json);
 			
@@ -135,14 +142,14 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 		
 		return true;
 	}
+
+
 	
 public static boolean parseShips() throws IOException {
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		BufferedReader in = null;
-		
 		try {
 			conn = StaticVars.getJdbcConnection();
 
@@ -169,14 +176,8 @@ public static boolean parseShips() throws IOException {
 			stmt.close();
 			
 			//Charger l'API swgoh.gg
-			URL url = new URL(SHIPS_URI);
-			URLConnection connection = url.openConnection();
-			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-			connection.connect();
 
-			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-			String json = in.readLine();
+			String json = retrieveJSONfromURL(SHIPS_URI);
 
 			JSONArray charsJson = new JSONArray(json);
 			
@@ -241,8 +242,6 @@ public static boolean parseGuildUnits(Integer guildID) throws IOException {
 	Connection conn = null;
 	PreparedStatement stmt = null;
 	ResultSet rs = null;
-	BufferedReader in = null;
-	
 	try {
 		conn = StaticVars.getJdbcConnection();
 
@@ -271,14 +270,7 @@ public static boolean parseGuildUnits(Integer guildID) throws IOException {
 		
 		//Charger l'API swgoh.gg
 		String uri = String.format(GUILD_UNITS_URI, guildID);
-		URL url = new URL(uri);
-		URLConnection connection = url.openConnection();
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-		connection.connect();
-
-		in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-		String json = in.readLine();
+		String json =retrieveJSONfromURL(uri);
 
 		JSONObject unitsJson = new JSONObject(json);
 		
