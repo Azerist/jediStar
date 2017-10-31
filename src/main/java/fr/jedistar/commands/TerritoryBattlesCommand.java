@@ -23,6 +23,7 @@ import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 import fr.jedistar.commands.helper.GalaticPowerToStars;
+import fr.jedistar.commands.helper.StringFormating;
 import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.utils.GuildUnitsSWGOHGGDataParser;
 
@@ -193,7 +194,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 					strategyText =strat.minStrategy;
 					title =MIN_STARS_FROM_GP_TITLE;
 				}
-				String result = String.format(MAX_STARS_FROM_GP,CharacterGP/1000000, ShipGP/1000000,(ShipGP+CharacterGP)/1000000,starFromAir,starFromGround,starFromAir+starFromGround)+strategyText;
+				String result = String.format(MAX_STARS_FROM_GP,StringFormating.formatNumber(CharacterGP), StringFormating.formatNumber(ShipGP),StringFormating.formatNumber(ShipGP+CharacterGP),starFromAir,starFromGround,starFromAir+starFromGround)+strategyText;
 				embed.addField(title, result, true);
 				return new CommandAnswer(null,embed);
 				

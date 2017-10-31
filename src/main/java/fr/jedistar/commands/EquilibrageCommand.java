@@ -39,6 +39,7 @@ import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import de.btobastian.javacord.entities.message.impl.ImplReaction;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
+import fr.jedistar.commands.helper.StringFormating;
 import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.formats.PendingAction;
 import fr.jedistar.listener.JediStarBotReactionAddListener;
@@ -1193,32 +1194,17 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			this.highDamage = highDamage;
 		}
 		
-		private String formatNumber(Integer value)
-		{
-			String result;
-			if(value>999999) {
-				 result = String.format("%.1fM", value/1000000.);
-			}
-			else if(value>999) {
-				 result = String.format("%dK", value/1000);
-			}
-			else {
-				 result = String.format("%d", value);
-			}
-			return result;
-			
-			
-		}
+		
 		
 		public String getDamageRange()
 		{
 			if(lowDamage == highDamage)
 			{
-				return "à "+formatNumber(lowDamage);
+				return "à "+StringFormating.formatNumber(lowDamage);
 			}
 			else
 			{
-				return "entre "+formatNumber(lowDamage)+" et "+formatNumber(highDamage);
+				return "entre "+StringFormating.formatNumber(lowDamage)+" et "+StringFormating.formatNumber(highDamage);
 			}
 		}
 	}

@@ -182,7 +182,7 @@
 		"messages":{
 			"displayedResults":"Liste des 15 plus faibles (total %d)",
 			"noUnitFound":"Aucun membre n'a cette unité au niveau de rareté demandé dans votre guilde",
-			"maxStarResult" : "GP Personnages : %d M\r\nGP Vaisseaux : %d M\r\nTOTAL GP : %d M\r\n------\r\nMaximum possible pour l'aérien : %d :star:\r\nMaximum possible pour les terrestres : %d :star:\r\nTOTAL : %d :star:\r\n",
+			"maxStarResult" : "GP Personnages : %s\r\nGP Vaisseaux : %s\r\nTOTAL GP : %s\r\n------\r\nMaximum possible pour l'aérien : %d :star:\r\nMaximum possible pour les terrestres : %d :star:\r\nTOTAL : %d :star:\r\n",
 			"maxStarTitle" : "Maximum possible avec l'ensembles des pelotons complets et les missions de combats intégralement réussies par 50 membres.",
 			"minStarTitle" : "Minimum possible avec l'ensembles des pelotons vides et aucunes missions de combats effectués"
 		},
