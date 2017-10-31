@@ -1,8 +1,6 @@
 {
 	"discordToken": "Insérer ICI le token Discord de votre bot",
-
 	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json",
-
 	"botAdmins": {
 		"groups": [
 			"conseil"
@@ -11,182 +9,160 @@
 			8591
 		]
 	},
-	
-	"database":{
-		"url":"jdbc:mysql://localhost/jedistar?characterEncoding=utf8",
-		"user":"jedistar",
-		"pwd":"JeDiStArBoT"
+	"database": {
+		"url": "jdbc:mysql://localhost/jedistar?characterEncoding=utf8",
+		"user": "jedistar",
+		"pwd": "JeDiStArBoT"
 	},
-
-	"baseMessage":"Bonjour %s,\r%s",
-	"errorMessage":"Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n",
-
-	"raidCommandParameters":{
-	
-		"command":"raid",
-		
-		"messages":{
-			"percentDifference":"De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, votre équipe a fait **%s** dégâts.",
-			"percentDifferencePhaseChange":"De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, si mon interprétation est correcte, vous avez changé de phase.\r\nSi c'est bien cela, votre équipe a fait **%s** dégâts.",
-			"damages":"Sur le **%s** en *phase %d*, *%s* dégâts correspondent à **%.1f%%**",
-			"percent":"Sur le **%s** en *phase %d*, *%s* correspondent à **%s** dégâts",
-			"target":"Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour atteindre votre objectif de *%s* dégâts, vous devez vous arrêter en **phase %d à %.1f%%**",
-			"help":"Voici des exemples de commandes disponibles pour déterminer vos résultats de raid :\r\n\r\n- **%raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **%raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** %raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** %raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** %raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
-			"targetRange":"Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour être dans la tranche *%s-%s* dégâts, vous devez vous arrêter entre \n **phase %d à %.1f%%** \n et \n **phase %d à %.1f%%**"
+	"baseMessage": "Bonjour %s,\r%s",
+	"errorMessage": "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n",
+	"raidCommandParameters": {
+		"command": "raid",
+		"messages": {
+			"percentDifference": "De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, votre équipe a fait **%s** dégâts.",
+			"percentDifferencePhaseChange": "De *%.1f%%* à *%.1f%%* sur le **%s** en *phase %d*, si mon interprétation est correcte, vous avez changé de phase.\r\nSi c'est bien cela, votre équipe a fait **%s** dégâts.",
+			"damages": "Sur le **%s** en *phase %d*, *%s* dégâts correspondent à **%.1f%%**",
+			"percent": "Sur le **%s** en *phase %d*, *%s* correspondent à **%s** dégâts",
+			"target": "Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour atteindre votre objectif de *%s* dégâts, vous devez vous arrêter en **phase %d à %.1f%%**",
+			"help": "Voici des exemples de commandes disponibles pour déterminer vos résultats de raid :\r\n\r\n- **%raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **%raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** %raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** %raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** %raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
+			"targetRange": "Sur le **%s**, en commençant en *phase %d à %.1f%%* :\r\nPour être dans la tranche *%s-%s* dégâts, vous devez vous arrêter entre \n **phase %d à %.1f%%** \n et \n **phase %d à %.1f%%**"
 		},
-		
-		"errorMessages":{
-			"overRaidEnd":"Votre objectif dépasse la fin du raid",
-			"overRaidEndSecond":"\nEt votre deuxième objectif dépasse la fin du raid",
-			"incoherentParams":"Les deux derniers paramètres entrés ne sont pas cohérents",
-			"incorrectNumber":"Un nombre entré n'a pas été reconnu correctement",
-			"phaseNotFound":"Nom de la phase non reconnu",
-			"incorrectParamsNumber":"Nombre de paramètres incorrect",
-			"raidNotFound":"raid non trouvé"
+		"errorMessages": {
+			"overRaidEnd": "Votre objectif dépasse la fin du raid",
+			"overRaidEndSecond": "\nEt votre deuxième objectif dépasse la fin du raid",
+			"incoherentParams": "Les deux derniers paramètres entrés ne sont pas cohérents",
+			"incorrectNumber": "Un nombre entré n'a pas été reconnu correctement",
+			"phaseNotFound": "Nom de la phase non reconnu",
+			"incorrectParamsNumber": "Nombre de paramètres incorrect",
+			"raidNotFound": "raid non trouvé"
 		},
-		
-		"raids":[
+		"raids": [
 			{
-				"name":"rancor",
-				"aliases":[],
-				"phases":[
+				"name": "rancor",
+				"aliases": [],
+				"phases": [
 					{
-						"number":1,
-						"damage1percent":18730
+						"number": 1,
+						"damage1percent": 18730
 					},
 					{
-						"number":2,
-						"damage1percent":30550
+						"number": 2,
+						"damage1percent": 30550
 					},
 					{
-						"number":3,
-						"damage1percent":33000
+						"number": 3,
+						"damage1percent": 33000
 					},
 					{
-						"number":4,
-						"damage1percent":21080
+						"number": 4,
+						"damage1percent": 21080
 					}
 				]
 			},
 			{
-				"name":"tank",
-				"aliases":["haat","aat"],
-				"phases":[
+				"name": "tank",
+				"aliases": [
+					"haat",
+					"aat"
+				],
+				"phases": [
 					{
-						"number":1,
-						"damage1percent":43000
+						"number": 1,
+						"damage1percent": 43000
 					},
 					{
-						"number":2,
-						"damage1percent":191500
+						"number": 2,
+						"damage1percent": 191500
 					},
 					{
-						"number":3,
-						"damage1percent":127000
+						"number": 3,
+						"damage1percent": 127000
 					},
 					{
-						"number":4,
-						"damage1percent":124500
+						"number": 4,
+						"damage1percent": 124500
 					}
 				]
 			}
 		]
 	},
-	
-	"modsCommandParameters":{
-	
-		"command":"mods",
-		
-		"messages":{
-			"approxMatches":"\r\n**Voici des personnages qui ressemblent à votre recherche :**\r\n\r\n",
-			"characterMods":"**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **☐** : %s\r\n  **➚** : %s\r\n  **◆** : %s\r\n  **Δ** : %s\r\n  **O** : %s\r\n  **✙** : %s\r\n  ",
-			"help":"Cette commande vous permet de connaître les mods recommandés pour un personnage.\r\n\r\n**Exemple d'appel**\r\n%mods anakin"
+	"modsCommandParameters": {
+		"command": "mods",
+		"messages": {
+			"approxMatches": "\r\n**Voici des personnages qui ressemblent à votre recherche :**\r\n\r\n",
+			"characterMods": "**  Set 1** : %s\r\n  **Set 2** : %s\r\n  **Set 3** : %s\r\n\r\n  **☐** : %s\r\n  **➚** : %s\r\n  **◆** : %s\r\n  **Δ** : %s\r\n  **O** : %s\r\n  **✙** : %s\r\n  ",
+			"help": "Cette commande vous permet de connaître les mods recommandés pour un personnage.\r\n\r\n**Exemple d'appel**\r\n%mods anakin"
 		},
-		
-		"errorMessages":{
-			"paramsError":"L'API de mods n'est pas correctement configurée. Impossible d'utiliser cette fonction.",
-			"accessError":"Impossible d'accéder à l'API de mods. Impossible d'utiliser cette fonction.",
-			"jsonError":"L'API de mods a renvoyé une réponse mal formatée. Impossible d'utiliser cette fonction.",
-			"tooLong":"**La réponse détaillée est trop longue pour être affichée sur Discord.\r\nVoici la liste des personnages correspondant à votre recherche :**\r\n"
+		"errorMessages": {
+			"paramsError": "L'API de mods n'est pas correctement configurée. Impossible d'utiliser cette fonction.",
+			"accessError": "Impossible d'accéder à l'API de mods. Impossible d'utiliser cette fonction.",
+			"jsonError": "L'API de mods a renvoyé une réponse mal formatée. Impossible d'utiliser cette fonction.",
+			"tooLong": "**La réponse détaillée est trop longue pour être affichée sur Discord.\r\nVoici la liste des personnages correspondant à votre recherche :**\r\n"
 		}
 	},
-	
-	"balancingCommandParameters":{
-	
-		"commands":{
-			"command":"equilibrage",
-			"update":"maj",
-			"launchRaid":"lancer",
-			"endRaid":"terminer",
-			"report":"rapport",
-			"delete":"supprimer",
-			"add":"ajouter",
-			"adjust":"ajuster"
+	"balancingCommandParameters": {
+		"commands": {
+			"command": "equilibrage",
+			"update": "maj",
+			"launchRaid": "lancer",
+			"endRaid": "terminer",
+			"report": "rapport",
+			"delete": "supprimer",
+			"add": "ajouter",
+			"adjust": "ajuster"
 		},
-		
-		"help":"Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n%equilibrage rancor\r\n**Commandes pour les officiers :**\r\n%equilibrage maj\r\n%equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n%equilibrage ajouter @user\r\n%equilibrage supprimer @user\r\n%equlibrage supprimer XXXX\r\n%equilibrage terminer tank\r\n%equilibrage lancer tank podium-auto @exclusDuTop10\r\n%equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10\r\n%equilibrage ajuster tank podium +1 @user1 @user2\r\n%equilibrage ajuster tank 2 -1 @user1 @user2",
-		
-		"messages":{
-			"embedTitle":"Équilibrage de %s",
-			"embedLine":"**Tranche %s** : %d\r\n",
-			"currentRaidsTitle":"Objectif pour les raids en cours :\r\n",
-			"currentRaidRange":"**%S **: Tranche %s %s dégâts\r\n",
-			"currentRaidPodium":"**%S **: Podium\r\n",
-			"podiumText":"**+--- Podium ---+**\r\n",
-			"podiumEnd":"**+--------------+**\r\n\r\n",
-			"confirmDelete":"Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible !"
+		"help": "Cette commande vous permet de connaître votre équilibrage sur un raid.\r\n\r\n**Exemple d'appel**\r\n%equilibrage rancor\r\n**Commandes pour les officiers :**\r\n%equilibrage maj\r\n%equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n%equilibrage ajouter @user\r\n%equilibrage supprimer @user\r\n%equlibrage supprimer XXXX\r\n%equilibrage terminer tank\r\n%equilibrage lancer tank podium-auto @exclusDuTop10\r\n%equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10\r\n%equilibrage ajuster tank podium +1 @user1 @user2\r\n%equilibrage ajuster tank 2 -1 @user1 @user2",
+		"messages": {
+			"embedTitle": "Équilibrage de %s",
+			"embedLine": "**Tranche %s** : %d\r\n",
+			"currentRaidsTitle": "Objectif pour les raids en cours :\r\n",
+			"currentRaidRange": "**%S **: Tranche %s %s dégâts\r\n",
+			"currentRaidPodium": "**%S **: Podium\r\n",
+			"podiumText": "**+--- Podium ---+**\r\n",
+			"podiumEnd": "**+--------------+**\r\n\r\n",
+			"confirmDelete": "Êtes-vous sûr de vouloir supprimer l'utilisateur %s ?\r\n:warning: Cette action est irréversible !"
 		},
-		
-		"errorMessages":{
-			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande",
-			"writeJson":"Erreur lors de l'écriture du fichier JSON",
-			"archiveJson":"Erreur lors de l'archivage du fichier JSON",
-			"readJson":"Erreur lors de la lecture du fichier JSON",
-			"numberProblem":"Un nombre entré n'a pas été reconnu"
+		"errorMessages": {
+			"forbidden": "Vous n'avez pas le droit d'exécuter cette commande",
+			"writeJson": "Erreur lors de l'écriture du fichier JSON",
+			"archiveJson": "Erreur lors de l'archivage du fichier JSON",
+			"readJson": "Erreur lors de la lecture du fichier JSON",
+			"numberProblem": "Un nombre entré n'a pas été reconnu"
 		}
 	},
-	
-	"arenaCommandParameters":{
-		
-		"command":"arene",
-		
-		"messages":{
-			"fastestPath":"Le meilleur classement peut être atteint en suivant la progression :\r\n **%s** \r\n",
-			"help":"Cette commande donne le plus haut rang d'arène accessible en 5 combats.\r\n\r\n**Exemple d'appel**\r\n%arene 26",
-			"helpUs":"Attention ce résultat est approximatif par manque de données. N'hésitez pas à nous aider en nous contactant sur Discord (<https://jedistar.jimdo.com/jedistar-bot/>).\r\n",
-			"fastestPathTitle":"Sans dépenser de cristaux à partir du rang %d",
-			"helpUsTitle":"Attention"
+	"arenaCommandParameters": {
+		"command": "arene",
+		"messages": {
+			"fastestPath": "Le meilleur classement peut être atteint en suivant la progression :\r\n **%s** \r\n",
+			"help": "Cette commande donne le plus haut rang d'arène accessible en 5 combats.\r\n\r\n**Exemple d'appel**\r\n%arene 26",
+			"helpUs": "Attention ce résultat est approximatif par manque de données. N'hésitez pas à nous aider en nous contactant sur Discord (<https://jedistar.jimdo.com/jedistar-bot/>).\r\n",
+			"fastestPathTitle": "Sans dépenser de cristaux à partir du rang %d",
+			"helpUsTitle": "Attention"
 		},
-		
-		"errorMessages":{
-			"incoherentParams":"Un seul paramètre est nécessaire, le rang d'arène de départ",
-			"invalidRank":"Ce rang d'arène n'est pas valide",
-			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement"
+		"errorMessages": {
+			"incoherentParams": "Un seul paramètre est nécessaire, le rang d'arène de départ",
+			"invalidRank": "Ce rang d'arène n'est pas valide",
+			"incorrectNumber": "Le nombre entré n'a pas été reconnu correctement"
 		}
 	},
-	
-	"setUpCommandParameters":{
-		
-		"commands":{
-			"base":"parametrage",
-			"guildNumber":"numeroGuilde"
+	"setUpCommandParameters": {
+		"commands": {
+			"base": "parametrage",
+			"guildNumber": "numeroGuilde"
 		},
-		
-		"help":"Cette commande vous permet de paramétrer le bot.\r\nCommandes possibles :\r\n%parametrage numeroGuilde XXX\r\nVous trouverez votre numéro de guilde sur swgoh.gg, dans l'adresse de votre page de guilde.",
-		
-		"messages":{
-			"confirmUpdateGuild":"Ce salon Discord est déjà associé avec l'id de guilde %d, êtes-vous sûr de vouloir changer l'association ?",
-			"guildSetupOK":"Configuration du numéro de guilde réussie",
-			"cancelAction":"OK, j'annule la demande."
+		"help": "Cette commande vous permet de paramétrer le bot.\r\nCommandes possibles :\r\n%parametrage numeroGuilde XXX\r\nVous trouverez votre numéro de guilde sur swgoh.gg, dans l'adresse de votre page de guilde.",
+		"messages": {
+			"confirmUpdateGuild": "Ce salon Discord est déjà associé avec l'id de guilde %d, êtes-vous sûr de vouloir changer l'association ?",
+			"guildSetupOK": "Configuration du numéro de guilde réussie",
+			"cancelAction": "OK, j'annule la demande."
 		},
-		
-		"errorMessages":{
-			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande.\r\nVous devez faire partie du groupe Discord «botadmins» pour administrer le bot.",
-			"paramsNummber":"Pas suffisamment de paramètres",
-			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement",
-			"noChannel":"Cette commande doit être appelée depuis un serveur (pas de MP)",
-			"sqlError":"Une erreur est survenue lors de l'accès à la base de données",
-			"noCommandFound":"Commande non reconnue"
+		"errorMessages": {
+			"forbidden": "Vous n'avez pas le droit d'exécuter cette commande.\r\nVous devez faire partie du groupe Discord «botadmins» pour administrer le bot.",
+			"paramsNummber": "Pas suffisamment de paramètres",
+			"incorrectNumber": "Le nombre entré n'a pas été reconnu correctement",
+			"noChannel": "Cette commande doit être appelée depuis un serveur (pas de MP)",
+			"sqlError": "Une erreur est survenue lors de l'accès à la base de données",
+			"noCommandFound": "Commande non reconnue"
 		}
 	},
 	
@@ -210,72 +186,65 @@
 			"maxStarTitle" : "Maximum possible avec l'ensembles des pelotons complets et les missions de combats intégralement réussies par 50 membres.",
 			"minStarTitle" : "Minimum possible avec l'ensembles des pelotons vides et aucunes missions de combats effectués"
 		},
-		
-		"errorMessages":{
-			"noChannel":"Cette commande doit être appelée depuis un serveur (pas de MP)",
-			"sqlError":"Une erreur est survenue lors de l'accès à la base de données",
-			"noGuildNumber":"Aucune guilde n'est associée avec ce salon Discord. Veuillez demander à un administrateur du bot d'utiliser la commande %parametrage",
-			"commandError":"Cette commande n'existe pas",
-			"paramsNumber":"Pas suffisamment de paramètres",
-			"incorrectNumber":"Le nombre entré n'a pas été reconnu correctement",
-			"dbUpdateError":"Erreur lors de la mise à jour de la base de données",
-			"tooMuchResults":"Trop de résultats, voici les personnages correspondant à votre recherche\r\n",
-			"swgohGGblocker":"swgoh.gg a refusé de nous envoyer des informations sur votre guilde.\r\nCeci est probablement dû à une trop forte activité sur la commande %tb actuellement.\r\nMerci de réessayer dans quelques minutes."
+		"errorMessages": {
+			"noChannel": "Cette commande doit être appelée depuis un serveur (pas de MP)",
+			"sqlError": "Une erreur est survenue lors de l'accès à la base de données",
+			"noGuildNumber": "Aucune guilde n'est associée avec ce salon Discord. Veuillez demander à un administrateur du bot d'utiliser la commande %parametrage",
+			"commandError": "Cette commande n'existe pas",
+			"paramsNumber": "Pas suffisamment de paramètres",
+			"incorrectNumber": "Le nombre entré n'a pas été reconnu correctement",
+			"dbUpdateError": "Erreur lors de la mise à jour de la base de données",
+			"tooMuchResults": "Trop de résultats, voici les personnages correspondant à votre recherche\r\n",
+			"swgohGGblocker": "swgoh.gg a refusé de nous envoyer des informations sur votre guilde.\r\nCeci est probablement dû à une trop forte activité sur la commande %tb actuellement.\r\nMerci de réessayer dans quelques minutes."
 		}
 	},
-	"helpCommandParameters":{
-
-		"command":"help",
-
-		"messages":{
-			"introMessage":"Pour une aide détaillée, consulter : <https://jedistar.jimdo.com/jedistar-bot/>\r\nVoici un petit aperçu de ce que je peux faire pour vous :",
-            "smallModsMessage":"- %help mods : pour en savoir plus sur la commande mods",
-            "smallRaidMessage":"- %help raid : pour en savoir plus sur la commande raid",
-            "smallEquilibrageMessage":"- %help equilibrage : pour en savoir plus sur la commande equilibrage",
-            "smallArenaMessage":"- %help arene : pour en savoir plus sur la commande arene",
-            "smallTbMessage":"- %help tb : pour en savoir plus sur la commande tb",
-            "smallPayoutsMessage":"- %help payouts : pour en savoir plus sur la fonction payouts",
-			"modsMessage":"**Cette commande vous permet de connaître les mods recommandés pour un personnage.**\r\n\r\n**Exemple d'appel**\r\n%mods anakin",
-			"raidMessage":"**Voici des exemples de commandes disponibles pour déterminer vos résultats de raid** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **%raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** %raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** %raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** %raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
-			"equilibrageMessage":"**Cette commande vous permet de connaître votre équilibrage sur un raid.**\r\n\r\n**Exemple d'appel**\r\n%equilibrage rancor\r\n**Commandes pour les officiers :**\r\n%equilibrage maj\r\n%equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n%equilibrage ajouter @user\r\n%equilibrage supprimer @user\r\n%equlibrage supprimer XXXX\r\n%equilibrage terminer tank\r\n%equilibrage lancer tank podium-auto @exclusDuTop10\r\n%equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10",
-			"arenaMessage":"**Cette commande donne le plus haut rang d'arène accessible en 5 combats.**\r\n\r\n**Exemple d'appel**\r\n%arene 26",
-			"tbMessage":"**Commandes possibles** :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp",
-			"payoutsMessage":"Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user"
+	"helpCommandParameters": {
+		"command": "help",
+		"messages": {
+			"introMessage": "Pour une aide détaillée, consulter : <https://jedistar.jimdo.com/jedistar-bot/>\r\nVoici un petit aperçu de ce que je peux faire pour vous :",
+			"smallModsMessage": "- %help mods : pour en savoir plus sur la commande mods",
+			"smallRaidMessage": "- %help raid : pour en savoir plus sur la commande raid",
+			"smallEquilibrageMessage": "- %help equilibrage : pour en savoir plus sur la commande equilibrage",
+			"smallArenaMessage": "- %help arene : pour en savoir plus sur la commande arene",
+			"smallTbMessage": "- %help tb : pour en savoir plus sur la commande tb",
+			"smallPayoutsMessage": "- %help payouts : pour en savoir plus sur la fonction payouts",
+			"modsMessage": "**Cette commande vous permet de connaître les mods recommandés pour un personnage.**\r\n\r\n**Exemple d'appel**\r\n%mods anakin",
+			"raidMessage": "**Voici des exemples de commandes disponibles pour déterminer vos résultats de raid** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **%raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** %raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** %raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** %raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
+			"equilibrageMessage": "**Cette commande vous permet de connaître votre équilibrage sur un raid.**\r\n\r\n**Exemple d'appel**\r\n%equilibrage rancor\r\n**Commandes pour les officiers :**\r\n%equilibrage maj\r\n%equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n%equilibrage ajouter @user\r\n%equilibrage supprimer @user\r\n%equlibrage supprimer XXXX\r\n%equilibrage terminer tank\r\n%equilibrage lancer tank podium-auto @exclusDuTop10\r\n%equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10",
+			"arenaMessage": "**Cette commande donne le plus haut rang d'arène accessible en 5 combats.**\r\n\r\n**Exemple d'appel**\r\n%arene 26",
+			"tbMessage": "**Commandes possibles** :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp",
+			"payoutsMessage": "Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user"
 		},
-
-		"errorMessages":{
-			"paramsError":"la commande que vous demandez n'est pas connu, merci d'utiliser les notations suivantes : \r\n\r\n - %help : pour avoir accès à toutes l'aide \r\n - %help mods : pour une aide sur la fonctionnalité des mods \r\n - %help raid : pour une aide sur la fonctionnalité des raids \r\n - %help equilibrage : pour une aide sur la fonctionnalité d'équilibrage",
+		"errorMessages": {
+			"paramsError": "la commande que vous demandez n'est pas connu, merci d'utiliser les notations suivantes : \r\n\r\n - %help : pour avoir accès à toutes l'aide \r\n - %help mods : pour une aide sur la fonctionnalité des mods \r\n - %help raid : pour une aide sur la fonctionnalité des raids \r\n - %help equilibrage : pour une aide sur la fonctionnalité d'équilibrage",
 			"technicalError": "une erreur technique est survenu, veuillez contacter votre administrateur Discord"
 		}
 	},
-	
-	"payoutCommandParameters":{
-		"commands":{
-			"main":"payouts",
-			"add":"ajouter",
-			"delete":"supprimer"
+	"payoutCommandParameters": {
+		"commands": {
+			"main": "payouts",
+			"add": "ajouter",
+			"delete": "supprimer"
 		},
-		
-		"help":"Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user",
-		
-		"messages":{
-			"embedTitle":"Temps avant le prochain payout :",
-			"timezoneConfirmation":"En utilisant le fuseau horaire **%s**, je calcule que le payout de cet utilisateur aura lieu dans **%02d:%02d** heures.\r\nEst-ce correct ?",
-			"timezoneChoice":"Les fuseaux horaires suivants correspondent à votre saisie :",
-			"noTimezoneFound":"Aucun fuseau horaire trouvé. Voici un fichier texte contenant la liste des fuseaux possibles.",
-			"cancel":"OK, j'annule.",
-			"addUserSuccess":"Utilisateur ajouté avec succès",
-			"deleteConfirmation":"Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
-			"deleteSuccess":"Supression de l'utilisateur réussie"
+		"help": "Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user",
+		"messages": {
+			"embedTitle": "Temps avant le prochain payout :",
+			"timezoneConfirmation": "En utilisant le fuseau horaire **%s**, je calcule que le payout de cet utilisateur aura lieu dans **%02d:%02d** heures.\r\nEst-ce correct ?",
+			"timezoneChoice": "Les fuseaux horaires suivants correspondent à votre saisie :",
+			"noTimezoneFound": "Aucun fuseau horaire trouvé. Voici un fichier texte contenant la liste des fuseaux possibles.",
+			"cancel": "OK, j'annule.",
+			"addUserSuccess": "Utilisateur ajouté avec succès",
+			"deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
+			"deleteSuccess": "Supression de l'utilisateur réussie"
 		},
-		
-		"errorMessages":{
-			"forbidden":"Vous n'avez pas le droit d'exécuter cette commande.\r\nVous devez faire partie du groupe Discord «botadmins» pour administrer le bot.",
-			"unrecognizedCommand":"Commande non reconnue",
-			"timeFormat":"L'heure est mal formatée. Merci d'utiliser le format HH:MM (par exemple 08:30)",
-			"sqlError":"Une erreur est survenue lors de l'accès à la base de données",
-			"noChannel":"Cette commande doit être utilisée depuis un salon Discord (pas de message privé)",
-			"noUserFound":"Cet utilisateur n'est pas enregistré dans la commande %payouts dans ce salon"
+		"errorMessages": {
+			"forbidden": "Vous n'avez pas le droit d'exécuter cette commande.\r\nVous devez faire partie du groupe Discord «botadmins» pour administrer le bot.",
+			"unrecognizedCommand": "Commande non reconnue",
+			"timeFormat": "L'heure est mal formatée. Merci d'utiliser le format HH:MM (par exemple 08:30)",
+			"sqlError": "Une erreur est survenue lors de l'accès à la base de données",
+			"noChannel": "Cette commande doit être utilisée depuis un salon Discord (pas de message privé)",
+			"noUserFound": "Cet utilisateur n'est pas enregistré dans la commande %payouts dans ce salon",
+			"noUsersInThisChan": "Aucun utilisateur n'a été enregistré dans ce salon. Utilisez la commande **%payouts ajouter**"
 		}
 	}
 }
