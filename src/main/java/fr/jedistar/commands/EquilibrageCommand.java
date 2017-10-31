@@ -56,6 +56,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 	private final String PODIUM = "podium";
 	private final Integer PODIUM_VALUE = -100;
+	private final Integer IGNORE_VALUE = 10000;
 	
 	private final String EMBED_TITLE;
 	private final Color EMBED_COLOR = Color.BLUE;
@@ -141,10 +142,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		//AJOUTER DE NOUVEAUX RAIDS ICI
 		rankingsPerRaid = new HashMap<String,List<Ranking>>();
 		rankingsPerRaid.put(RANCOR,Arrays.asList(new Ranking("1-10",1,7,400000,600000),new Ranking("11-30",2,20,100000,300000),new Ranking("31+",2,20,0,0)));
-		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7,1100000,1300000),new Ranking("11-30",2,20,800000,1000000),new Ranking("31+",2,20,500000,700000)));
+		rankingsPerRaid.put(TANK,Arrays.asList(new Ranking("1-10",1,7,1100000,1300000),new Ranking("11-30",2,20,800000,1000000),new Ranking("31+",2,20,0,700000)));
 		
 		rulesPerRaid = new HashMap<String,String>();
-		rulesPerRaid.put(RANCOR, "@everyone \r\n"
+		rulesPerRaid.put(RANCOR, "<@&340958486420520970> \r\n"
 				+ ":round_pushpin: Raid **RANCOR** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à 800k pour se placer\r\n" + 
 				":white_small_square: Tranche 4-10 entre 400K et 600K\r\n" + 
@@ -152,12 +153,12 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				":white_small_square: Tranche 31+ à 0\r\n" + 
 				":clock2: Au bout de **24h**, le podium finit le raid\r\n" + 
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
-		rulesPerRaid.put(TANK, "@everyone \r\n"
+		rulesPerRaid.put(TANK, "<@&340958486420520970> \r\n"
 				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
 				":white_small_square: Podium à 1M5 pour se placer\r\n" + 
 				":white_small_square: Tranche 4-10 entre 1,1M et 1,3M\r\n" + 
 				":white_small_square: Tranche 11-30 entre 800K et 1M\r\n" + 
-				":white_small_square: Tranche 31+ entre 500K et 700K\r\n" + 
+				":white_small_square: Tranche 31+ entre 0 et 700K\r\n" + 
 				":clock2: Au bout de **36h**, le podium finit le raid\r\n" +
 				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts :warning:");
 		
@@ -543,22 +544,24 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 		Set<Integer> podium = new HashSet<Integer>();
 		
-		//Cr�er une liste de membres
+		//Créer une liste de membres
 		List<PodiumUserScore> usersList = new ArrayList<PodiumUserScore>();
 		for(Integer userId : valuesPerUser.keySet()) {
 			HashMap<String,List<Integer>> valuesForThisUser = valuesPerUser.get(userId);
 			
-			//R�cup�rer les valeurs relatives aux podiums
+			//Récupérer les valeurs relatives aux podiums
 			Integer nbPodiums = valuesForThisUser.get(KEY_PODIUMS).get(0);
 			Integer nbRaidsWithoutPodium = valuesForThisUser.get(KEY_WITHOUT_PODIUM).get(0);
 			
 			//calculer le nombre total de participations
 			Integer totalNbRaids = 0;
 			for(Integer nbRaids : valuesForThisUser.get(KEY_VALUES)) {
-				totalNbRaids += nbRaids;
+				if(nbRaids < IGNORE_VALUE) {
+					totalNbRaids += nbRaids;
+				}
 			}
 			
-			//Les utilisateurs ayant moins du minimum de participation sont ignor�s
+			//Les utilisateurs ayant moins du minimum de participation sont ignorés
 			if(totalNbRaids > MIN_RAIDS_FOR_PODIUM) {
 				PodiumUserScore userScore = new PodiumUserScore(userId,nbPodiums, totalNbRaids, nbRaidsWithoutPodium);
 				usersList.add(userScore);
@@ -756,6 +759,10 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			try {
 				Ranking ranking = possibleRankings.get(i);
 				Integer value = values.get(i);
+				
+				if(value > IGNORE_VALUE) {
+					value -= IGNORE_VALUE;
+				}
 				
 				returnMessage += String.format(MESSAGE_LINE,ranking.name,value);
 			}
@@ -1116,6 +1123,9 @@ public class EquilibrageCommand implements JediStarBotCommand {
 				colCursor = 4;
 				
 				for(Integer nbTimesInThisRank : userValues.getValue().get(KEY_VALUES)) {
+					if(nbTimesInThisRank > IGNORE_VALUE) {
+						nbTimesInThisRank -= IGNORE_VALUE;
+					}
 					curRow.createCell(colCursor).setCellValue(nbTimesInThisRank);
 					colCursor ++;
 				}
