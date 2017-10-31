@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS payoutTime
 	channelID varchar(64),
 	userName varchar(64),
 	payoutTime TIME,
-	flag varchar(16),
+	flag varchar(32),
 	swgohggLink varchar(256),
 	PRIMARY KEY (channelID,userName)
 );
