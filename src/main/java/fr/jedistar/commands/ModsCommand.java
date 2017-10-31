@@ -8,6 +8,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +31,7 @@ import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 import fr.jedistar.formats.CommandAnswer;
+import fr.jedistar.utils.GuildUnitsSWGOHGGDataParser;
 import fr.jedistar.utils.JaroWinklerDistance;
 
 
@@ -54,9 +59,6 @@ public class ModsCommand implements JediStarBotCommand {
 	
 	private static String CHARACTERS_URL="http://swgoh.gg/characters/%s/";
 	private static String CHARACTERS_SEPARATOR="-";
-
-	private static String CHARACTERS_PORTRAIT_URL = "http://jeremiebellionjourdan.fr/swgoh/portraits/%s.png";
-	private static String CHARACTERS_PORTRAIT_SEPARATOR = "-";
 
 	//Nom des �l�ments dans le JSON de mods
 	private final static String JSON_DATA = "data";
@@ -90,6 +92,8 @@ public class ModsCommand implements JediStarBotCommand {
 	private final static String JSON_MODS_ERROR_MESSAGES_ACCESS = "accessError";
 	private final static String JSON_MODS_ERROR_MESSAGES_JSON = "jsonError";
 	private final static String JSON_MODS_ERROR_MESSAGES_TOO_LONG = "tooLong";
+	
+	private final static String SQL_FIND_CHARS = "SELECT image FROM characters WHERE name='%s'";
 
 	public static void setJsonUri(String uri) {
 		JSON_URI = uri;
@@ -141,6 +145,8 @@ public class ModsCommand implements JediStarBotCommand {
 				
 			String currentMatchCharName = null;
 			boolean singleMatch = true;
+			
+			GuildUnitsSWGOHGGDataParser.parseCharacters();
 			
 			//Itérer sur les personnages présents dans le json
 			for(int i=0;i<dataArray.length();i++) {
@@ -352,7 +358,46 @@ public class ModsCommand implements JediStarBotCommand {
 	}
 	
 	private String getCharacterPortraitURL(String charName) {
-		return String.format(CHARACTERS_PORTRAIT_URL, charName.replace(" ", CHARACTERS_PORTRAIT_SEPARATOR).toLowerCase());
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = StaticVars.getJdbcConnection();
+
+			String query = String.format(SQL_FIND_CHARS,charName);
+
+			stmt = conn.prepareStatement(query);
+			
+			logger.debug("Executing query : "+stmt.toString());
+
+			rs = stmt.executeQuery();
+
+			while(rs.next()) 
+			{
+				return rs.getString(1);
+			}
+			
+			
+		}
+		catch(SQLException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				if(stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+		}
+		return null;
 	}
 
 	private CommandAnswer error(String errorMessage) {
