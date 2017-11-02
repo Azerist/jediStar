@@ -24,6 +24,7 @@ import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 import fr.jedistar.commands.helper.GalaticPowerToStars;
 import fr.jedistar.commands.helper.StringFormating;
+import fr.jedistar.commands.helper.StringMatcher;
 import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.utils.GuildUnitsSWGOHGGDataParser;
 
@@ -58,7 +59,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String ERROR_SWGOHGG_BLOCKER;
 
 	private final static String SQL_GUILD_ID = "SELECT guildID FROM guild WHERE channelID=?;";
-	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE name LIKE ?";
+	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE";
 	private final static String SQL_FIND_GUILD_UNITS = "SELECT * FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=? ORDER BY power LIMIT 15";
 	private final static String SQL_COUNT_GUILD_UNITS = "SELECT COUNT(*) as count FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=?";
 	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
@@ -530,15 +531,38 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
+		List<String> potentialMatches = null;
+		if(mode.equals(SHIP_MODE))
+		{
+			potentialMatches =GuildUnitsSWGOHGGDataParser.shipsNames;
+		}
+		else if (mode.equals(CHAR_MODE))
+		{
+			potentialMatches =GuildUnitsSWGOHGGDataParser.charactersNames;
+		}
+		String query = String.format(SQL_FIND_CHARS,mode);
+		List<StringMatcher.Match> potentialNames = StringMatcher.GetMatch(charName,potentialMatches);
+		if(potentialNames.isEmpty())
+		{
+			return charList;
+		}
+		for (StringMatcher.Match match : potentialNames)
+		{
+			query += " name=? OR";
+		}
+		query = query.substring(0, query.length() -2);
 
 		try {
 			conn = StaticVars.getJdbcConnection();
 
-			String query = String.format(SQL_FIND_CHARS,mode);
-
 			stmt = conn.prepareStatement(query);
 
-			stmt.setString(1, "%"+charName+"%");
+			int i =1;
+			for (StringMatcher.Match match : potentialNames)
+			{
+				stmt.setString(i, match.potentialMatch);
+				i++;
+			}
 			
 			logger.debug("Executing query : "+stmt.toString());
 

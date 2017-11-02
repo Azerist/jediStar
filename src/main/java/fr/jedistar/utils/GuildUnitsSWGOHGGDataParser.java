@@ -11,9 +11,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,6 +41,9 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 	private final static String CHARS_URI = "https://swgoh.gg/api/characters/?format=json";
 	private final static String SHIPS_URI = "https://swgoh.gg/api/ships/?format=json";
 	private final static String GUILD_UNITS_URI = "https://swgoh.gg/api/guilds/%d/units/";
+	
+	public static List<String> shipsNames = new ArrayList<String>();
+	public static List<String> charactersNames = new ArrayList<String>();
 
 	public static String retrieveJSONfromURL(String urlJSON) throws MalformedURLException, IOException {
 		BufferedReader in;
@@ -79,7 +84,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 				}
 			}
 			
-			if(!updateNeeded) {
+			if(!updateNeeded&&!charactersNames.isEmpty()) {
 				return true;
 			}
 			
@@ -99,10 +104,13 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 			expirationCal.add(Calendar.DAY_OF_MONTH, 1);
 			java.sql.Timestamp expiration = new Timestamp(expirationCal.getTimeInMillis());
 			
+			charactersNames.clear();
+	
 			for(int i=0;i<charsJson.length();i++) {
 				JSONObject character = charsJson.getJSONObject(i);
-				
-				stmt.setString(1,character.getString("name"));
+				String tempName = character.getString("name");
+				charactersNames.add(tempName);
+				stmt.setString(1,tempName);
 				stmt.setString(2, character.getString("base_id"));
 				stmt.setString(3, character.getString("url"));
 				stmt.setString(4, character.getString("image"));
@@ -168,7 +176,7 @@ public static boolean parseShips() throws IOException {
 				}
 			}
 			
-			if(!updateNeeded) {
+			if(!updateNeeded&&!shipsNames.isEmpty()) {
 				return true;
 			}
 			
@@ -189,10 +197,13 @@ public static boolean parseShips() throws IOException {
 			expirationCal.add(Calendar.DAY_OF_MONTH, 1);
 			java.sql.Timestamp expiration = new Timestamp(expirationCal.getTimeInMillis());
 			
+			shipsNames.clear();
+			
 			for(int i=0;i<charsJson.length();i++) {
 				JSONObject character = charsJson.getJSONObject(i);
-				
-				stmt.setString(1,character.getString("name"));
+				String tempName = character.getString("name");
+				shipsNames.add(tempName);
+				stmt.setString(1,tempName);
 				stmt.setString(2, character.getString("base_id"));
 				stmt.setString(3, character.getString("url"));
 				stmt.setString(4, character.getString("image"));
