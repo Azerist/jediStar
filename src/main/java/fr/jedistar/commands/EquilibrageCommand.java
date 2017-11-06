@@ -1198,7 +1198,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		
 		public String getDamageRange()
 		{
-			if(lowDamage == highDamage)
+			if(lowDamage.equals(highDamage))
 			{
 				return "à "+StringFormating.formatNumber(lowDamage);
 			}

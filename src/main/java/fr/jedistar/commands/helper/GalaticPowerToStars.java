@@ -46,8 +46,8 @@ public class GalaticPowerToStars {
 		    	put(6350000	, 	new TerritoryBattleStrategy(20,new String[] {"2","2/2","2/2","2/2","1/2","1/2"}));
 		    	put(12570000, 	new TerritoryBattleStrategy(21,new String[] {"2","2/3","2/2","2/2","1/2","1/2"}));
 		    	put(12680000, 	new TerritoryBattleStrategy(22,new String[] {"2","2/3","2/2","2/2","1/3","1/2"}));
-		    	put(22040000, 	new TerritoryBattleStrategy(23,new String[] {"2","2/3","2/3","2/2","1/3","1/2"}));
-		    	put(26300000, 	new TerritoryBattleStrategy(24,new String[] {"3","2/3","2/3","2/2","1/3","1/2"}));
+		    	put(15800000, 	new TerritoryBattleStrategy(24,new String[] {"3","2/3","2/2","2/2","1/3","1/2"}));
+		    	put(22040000, 	new TerritoryBattleStrategy(23,new String[] {"3","2/3","2/3","2/2","1/3","1/2"}));
 		    	put(28550000, 	new TerritoryBattleStrategy(25,new String[] {"3","2/3","2/3","2/2","1/3","1/3"}));
 		    	put(31610000, 	new TerritoryBattleStrategy(26,new String[] {"3","2/3","2/3","2/3","1/3","1/3"}));
 		    	put(47770000, 	new TerritoryBattleStrategy(27,new String[] {"3","3/3","2/3","2/3","1/3","1/3"}));
