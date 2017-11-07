@@ -1,13 +1,13 @@
 # Discord Bot JediStar
 
-##Inviting the public bot to your Discord server
+## Inviting the public bot to your Discord server
 
 Detailed instructions are available here : https://jedistar.jimdo.com/jedistar-bot/
 
 ## Contact
 If you have any question, problem or suggestion, please feel free to join this Discord Server : https://discord.gg/nyWgbU3
 
-##Installing your own custom version of the bot
+## Installing your own custom version of the bot
 ### Requirements
 
 All you'll need is a computer connected to the Internet. Any OS that can run Java will do.
