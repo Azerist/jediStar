@@ -152,5 +152,38 @@ public class JaroWinklerDistance {
         }
         return new int[] { matches, transpositions / 2, prefix, max.length() };
     }
+    
+    public Double applyWithSubString(String left, String right) {
+       Double result = 0.0;
+       Boolean leftIsPhrase = left.contains(" ");
+       Boolean rightIsPhrase= right.contains(" ");
+       String upperLeft = left.toUpperCase(); 
+       String upperRight = right.toUpperCase();
+       if(leftIsPhrase==rightIsPhrase)
+       {
+    	   result = apply(upperLeft,upperRight);
+       }
+       else
+       {
+    	   String [] words;
+    	   String singleWord;
+    	   if(leftIsPhrase)
+    	   {
+    		   words = upperLeft.split(" ");
+    		   singleWord =upperRight;
+    	   }
+    	   else
+    	   {
+    		   words = upperRight.split(" ");
+    		   singleWord =upperLeft;
+    	   }
+    	   for(String word : words)
+    	   {
+    		   result= Double.max(apply(singleWord,word), result);
+    	   }
+       }
+       
+       return result;
+    }
 
 }

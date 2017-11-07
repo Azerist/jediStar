@@ -23,6 +23,8 @@ import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 import fr.jedistar.commands.helper.GalaticPowerToStars;
+import fr.jedistar.commands.helper.StringFormating;
+import fr.jedistar.commands.helper.StringMatcher;
 import fr.jedistar.formats.CommandAnswer;
 import fr.jedistar.utils.GuildUnitsSWGOHGGDataParser;
 
@@ -35,12 +37,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String COMMAND_CHARS;
 	private final String COMMAND_SHIPS;
 	private final String COMMAND_STRATEGY;
+	private final String COMMAND_MIN_STRATEGY;
 
 	private final String HELP;
 
 	private final String DISPLAYED_RESULTS;
 	private final String NO_UNIT_FOUND;
 	private final String MAX_STARS_FROM_GP_TITLE;
+	private final String MIN_STARS_FROM_GP_TITLE;
 	private final String MAX_STARS_FROM_GP;
 	
 	private final String ERROR_MESSAGE;
@@ -55,7 +59,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String ERROR_SWGOHGG_BLOCKER;
 
 	private final static String SQL_GUILD_ID = "SELECT guildID FROM guild WHERE channelID=?;";
-	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE name LIKE ?";
+	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE";
 	private final static String SQL_FIND_GUILD_UNITS = "SELECT * FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=? ORDER BY power LIMIT 15";
 	private final static String SQL_COUNT_GUILD_UNITS = "SELECT COUNT(*) as count FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=?";
 	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
@@ -81,12 +85,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_COMMANDS_CHARS = "characters";
 	private final static String JSON_TB_COMMANDS_SHIPS = "ships";
 	private final static String JSON_TB_COMMANDS_STRATEGY = "strategy";
+	private final static String JSON_TB_COMMANDS_MIN_STRATEGY = "strategyMin";
 	
 	private final static String JSON_TB_MESSAGES = "messages";
 	private final static String JSON_TB_MESSAGES_DISPLAYED_RESULTS = "displayedResults";
 	private final static String JSON_TB_MESSAGES_NO_UNTI_FOUND = "noUnitFound";
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP = "maxStarResult";
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE = "maxStarTitle";
+	private final static String JSON_TB_MESSAGES_MIN_STARS_FROM_GP_TITLE = "minStarTitle";
 
 	private final static String JSON_TB_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_TB_ERROR_MESSAGES_SQL = "sqlError";
@@ -115,12 +121,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		COMMAND_CHARS = commands.getString(JSON_TB_COMMANDS_CHARS);
 		COMMAND_SHIPS = commands.getString(JSON_TB_COMMANDS_SHIPS);
 		COMMAND_STRATEGY = commands.getString(JSON_TB_COMMANDS_STRATEGY);
+		COMMAND_MIN_STRATEGY = commands.getString(JSON_TB_COMMANDS_MIN_STRATEGY);
 
 		JSONObject messages = tbParams.getJSONObject(JSON_TB_MESSAGES);
 		DISPLAYED_RESULTS = messages.getString(JSON_TB_MESSAGES_DISPLAYED_RESULTS);
 		NO_UNIT_FOUND = messages.getString(JSON_TB_MESSAGES_NO_UNTI_FOUND);
 		MAX_STARS_FROM_GP = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP);
 		MAX_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE);
+		MIN_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MIN_STARS_FROM_GP_TITLE);
 		
 		JSONObject errorMessages = tbParams.getJSONObject(JSON_TB_ERROR_MESSAGES);
 		ERROR_MESSAGE_SQL = errorMessages.getString(JSON_TB_ERROR_MESSAGES_SQL);
@@ -148,8 +156,8 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 		if(COMMAND_STRATEGY.equals(params.get(0))) {
 			
-			if(params.size() !=  1) {
-				return new CommandAnswer(ERROR_MESSAGE_PARAMS_NUMBER,null);
+			if(params.size() >  2 ) {
+				return new CommandAnswer(ERROR_COMMAND,null);
 			}
 			
 			try {
@@ -175,8 +183,20 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				}
 				
 				GalaticPowerToStars strat = new GalaticPowerToStars(CharacterGP,ShipGP);
-				String result = String.format(MAX_STARS_FROM_GP,CharacterGP/1000000, ShipGP/1000000,(ShipGP+CharacterGP)/1000000,strat.starFromShip,strat.starFromCharacter,strat.starFromShip+strat.starFromCharacter)+strat.strategy;
-				embed.addField(MAX_STARS_FROM_GP_TITLE, result, true);
+				Integer starFromAir = strat.starFromShip;
+				Integer starFromGround =strat.starFromCharacter;
+				String 	strategyText =strat.strategy;
+				String 	title =MAX_STARS_FROM_GP_TITLE;
+				
+				if(params.size() == 2 && COMMAND_MIN_STRATEGY.equals(params.get(1)))
+				{
+					starFromAir = strat.minStarFromShip;
+					starFromGround =strat.minStarFromCharacter;
+					strategyText =strat.minStrategy;
+					title =MIN_STARS_FROM_GP_TITLE;
+				}
+				String result = String.format(MAX_STARS_FROM_GP,StringFormating.formatNumber(CharacterGP), StringFormating.formatNumber(ShipGP),StringFormating.formatNumber(ShipGP+CharacterGP),starFromAir,starFromGround,starFromAir+starFromGround)+strategyText;
+				embed.addField(title, result, true);
 				return new CommandAnswer(null,embed);
 				
 			}
@@ -511,15 +531,38 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
+		List<String> potentialMatches = null;
+		if(mode.equals(SHIP_MODE))
+		{
+			potentialMatches =GuildUnitsSWGOHGGDataParser.shipsNames;
+		}
+		else if (mode.equals(CHAR_MODE))
+		{
+			potentialMatches =GuildUnitsSWGOHGGDataParser.charactersNames;
+		}
+		String query = String.format(SQL_FIND_CHARS,mode);
+		List<StringMatcher.Match> potentialNames = StringMatcher.getMatch(charName,potentialMatches);
+		if(potentialNames.isEmpty())
+		{
+			return charList;
+		}
+		for (StringMatcher.Match match : potentialNames)
+		{
+			query += " name=? OR";
+		}
+		query = query.substring(0, query.length() -2);
 
 		try {
 			conn = StaticVars.getJdbcConnection();
 
-			String query = String.format(SQL_FIND_CHARS,mode);
-
 			stmt = conn.prepareStatement(query);
 
-			stmt.setString(1, "%"+charName+"%");
+			int i =1;
+			for (StringMatcher.Match match : potentialNames)
+			{
+				stmt.setString(i, match.potentialMatch);
+				i++;
+			}
 			
 			logger.debug("Executing query : "+stmt.toString());
 
