@@ -3,7 +3,8 @@
 	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json",
 	"botAdmins": {
 		"groups": [
-			"botadmins"
+			"botadmins",
+			"botAdmins"
 		],
 		"users": [
 			8591
