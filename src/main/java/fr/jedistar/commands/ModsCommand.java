@@ -93,7 +93,7 @@ public class ModsCommand implements JediStarBotCommand {
 	private final static String JSON_MODS_ERROR_MESSAGES_JSON = "jsonError";
 	private final static String JSON_MODS_ERROR_MESSAGES_TOO_LONG = "tooLong";
 	
-	private final static String SQL_FIND_CHARS = "SELECT image FROM characters WHERE name='%s'";
+	private final static String SQL_FIND_CHARS = "SELECT image FROM characters WHERE name=?";
 
 	public static void setJsonUri(String uri) {
 		JSON_URI = uri;
@@ -350,20 +350,20 @@ public class ModsCommand implements JediStarBotCommand {
 		try {
 			conn = StaticVars.getJdbcConnection();
 
-			String query = String.format(SQL_FIND_CHARS,charName);
-
-			stmt = conn.prepareStatement(query);
+			stmt = conn.prepareStatement(SQL_FIND_CHARS);
+			
+			stmt.setString(1, charName);
 			
 			logger.debug("Executing query : "+stmt.toString());
 
 			rs = stmt.executeQuery();
 
-			while(rs.next()) 
+			if(rs.next()) 
 			{
 				return rs.getString(1);
 			}
 			
-			
+			return null;
 		}
 		catch(SQLException e) {
 			logger.error(e.getMessage());
@@ -382,7 +382,6 @@ public class ModsCommand implements JediStarBotCommand {
 				logger.error(e.getMessage());
 			}
 		}
-		return null;
 	}
 
 	private CommandAnswer error(String errorMessage) {

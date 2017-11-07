@@ -25,7 +25,7 @@ public class StringMatcher {
 		
 	}
 	
-	public static List<Match> GetMatch (String textToMatch, List<String> potentialMatchs)
+	public static List<Match> getMatch (String textToMatch, List<String> potentialMatchs)
 	{
 		List<Match> returnedMatches = new ArrayList<Match>();
 		Double currentMaxScore = 0.8;

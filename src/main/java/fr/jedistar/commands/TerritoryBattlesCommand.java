@@ -541,7 +541,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			potentialMatches =GuildUnitsSWGOHGGDataParser.charactersNames;
 		}
 		String query = String.format(SQL_FIND_CHARS,mode);
-		List<StringMatcher.Match> potentialNames = StringMatcher.GetMatch(charName,potentialMatches);
+		List<StringMatcher.Match> potentialNames = StringMatcher.getMatch(charName,potentialMatches);
 		if(potentialNames.isEmpty())
 		{
 			return charList;
