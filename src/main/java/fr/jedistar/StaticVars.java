@@ -9,6 +9,7 @@ import org.json.JSONObject;
 public abstract class StaticVars {
 
 	public static JSONObject jsonSettings;
+	public static JSONObject jsonMessages;
 
 	private static Connection jdbcConnection;
 	private static String jdbcUrl;

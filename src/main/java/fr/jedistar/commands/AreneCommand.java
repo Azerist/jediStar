@@ -72,7 +72,7 @@ public class AreneCommand implements JediStarBotCommand {
 	public AreneCommand() {
 		super();
 
-		JSONObject parameters = StaticVars.jsonSettings;
+		JSONObject parameters = StaticVars.jsonMessages;
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 
 		//Param�tres propres � l'�quilibrage

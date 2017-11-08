@@ -92,7 +92,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 			JSONObject parameters = StaticVars.jsonSettings;
 
 			//message de base
-			MESSAGE = parameters.getString(JSON_BASE_MESSAGE);
+			MESSAGE = StaticVars.jsonMessages.getString(JSON_BASE_MESSAGE);
 			
 			//admins
 			JSONObject jsonAdmins = parameters.getJSONObject(JSON_ADMINS);	

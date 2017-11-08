@@ -107,7 +107,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 
 	public TerritoryBattlesCommand() {
 
-		JSONObject parameters = StaticVars.jsonSettings;
+		JSONObject parameters = StaticVars.jsonMessages;
 
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 

@@ -23,9 +23,12 @@ public class Main {
 	private static final String PARAM_DB_URL = "url";
 	private static final String PARAM_DB_USER = "user";
 	private static final String PARAM_DB_PWD = "pwd";
+	private static final String PARAM_MESSAGES = "messages";
 
 	private static final String DEFAULT_PARAMETERS_FILE = "settings.json";
-
+	private static final String DEFAULT_MESSAGE_FILE_NAME = "messages_";
+	private static final String DEFAULT_MESSAGE_FILE_EXT = ".json";
+	
 	private static String url;
 	private static String user;
 	private static String passwd;
@@ -33,6 +36,7 @@ public class Main {
 	public static void main(String... args) {
 
 		String parametersFilePath = "";
+		String messagesFilePath =DEFAULT_MESSAGE_FILE_NAME ;
 
 		// Si un argument, on l'utilise comme chemin au fichier de param�tres
 		if (args.length != 0) {
@@ -68,6 +72,29 @@ public class Main {
 			url = dbParams.getString(PARAM_DB_URL);
 			user = dbParams.getString(PARAM_DB_USER);
 			passwd = dbParams.getString(PARAM_DB_PWD);
+			
+			messagesFilePath+=parameters.getString(PARAM_MESSAGES)+DEFAULT_MESSAGE_FILE_EXT;
+			
+
+		} catch (IOException e) {
+			logger.error("Cannot read the parameters file " + parametersFilePath);
+			e.printStackTrace();
+			return;
+		} catch (JSONException e) {
+			logger.error("JSON parameters file is incorrectly formatted");
+			e.printStackTrace();
+		}
+		
+		try {
+			// Lecture du fichier
+			
+			byte[] encoded = Files.readAllBytes(Paths.get(messagesFilePath));
+			String messagesJson = new String(encoded, "utf-8");
+
+			// D�codage du json
+			JSONObject messages = new JSONObject(messagesJson);
+
+			StaticVars.jsonMessages = messages;
 
 		} catch (IOException e) {
 			logger.error("Cannot read the parameters file " + parametersFilePath);
