@@ -30,7 +30,7 @@ public class AreneCommand implements JediStarBotCommand {
 		        put(18, 5);
 		        put(24, 6);
 		        put(32, 7);
-		        put(40, 8);
+		        put(39, 8);
 		        put(55, 9);
 		    }});
 	
