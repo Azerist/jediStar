@@ -105,7 +105,7 @@ public class PayoutCommand implements JediStarBotCommand {
 
 
 	public PayoutCommand() {
-		JSONObject parameters = StaticVars.jsonSettings;
+		JSONObject parameters = StaticVars.jsonMessages;
 
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
 		

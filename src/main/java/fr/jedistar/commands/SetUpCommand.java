@@ -80,7 +80,7 @@ public class SetUpCommand implements JediStarBotCommand {
 
 	public SetUpCommand() {
 		//Lecture du JSON
-		JSONObject params = StaticVars.jsonSettings;
+		JSONObject params = StaticVars.jsonMessages;
 
 		ERROR_MESSAGE = params.getString(JSON_ERROR_MESSAGE);
 

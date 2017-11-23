@@ -1,19 +1,4 @@
 {
-	"discordToken": "Insérer ICI le token Discord de votre bot",
-	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json",
-	"botAdmins": {
-		"groups": [
-			"conseil"
-		],
-		"users": [
-			8591
-		]
-	},
-	"database": {
-		"url": "jdbc:mysql://localhost/jedistar?characterEncoding=utf8",
-		"user": "jedistar",
-		"pwd": "JeDiStArBoT"
-	},
 	"baseMessage": "Bonjour %s,\r%s",
 	"errorMessage": "Merci de faire appel à moi, mais je ne peux pas te répondre pour la raison suivante :\r\n",
 	"raidCommandParameters": {

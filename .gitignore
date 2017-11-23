@@ -8,3 +8,5 @@
 /reports/
 *.iml//src/main/java/logback.xml
 /timezones.txt
+/messages_en.json
+/messages_fr.json

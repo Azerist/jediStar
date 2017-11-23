@@ -1,0 +1,19 @@
+{
+	"discordToken": "Insert HERE the discord token of your bot",
+	"modsJsonURI": "http://apps.crouchingrancor.com/mods/advisor.json",
+	"botAdmins": {
+		"groups": [
+			"botadmins",
+			"botAdmins"
+		],
+		"users": [
+			8591,8431
+		]
+	},
+	"database": {
+		"url": "jdbc:mysql://localhost/jedistar?characterEncoding=utf8",
+		"user": "jedistar",
+		"pwd": "JeDiStArBoT"
+	},
+	"messages": "en"
+}

@@ -18,12 +18,12 @@ public class HelpCommand implements JediStarBotCommand {
 	private final static String JSON_ERROR_MESSAGE = "errorMessage";
 	private final static String JSON_HELP_COMMAND = "helpCommandParameters";
 	private final static String JSON_HELP_COMMAND_COMMAND = "command";
-	private static final String MODS=StaticVars.jsonSettings.getJSONObject("modsCommandParameters").getString(JSON_HELP_COMMAND_COMMAND);
-	private static final String RAID=StaticVars.jsonSettings.getJSONObject("raidCommandParameters").getString(JSON_HELP_COMMAND_COMMAND);
-	private static final String ARENE=StaticVars.jsonSettings.getJSONObject("arenaCommandParameters").getString(JSON_HELP_COMMAND_COMMAND);
-	private static final String EQUILIBRAGE=StaticVars.jsonSettings.getJSONObject("balancingCommandParameters").getJSONObject("commands").getString(JSON_HELP_COMMAND_COMMAND);
-	private static final String TB=StaticVars.jsonSettings.getJSONObject("territoryBattlesCommandParams").getJSONObject("commands").getString("base");
-	private static final String PAYOUTS=StaticVars.jsonSettings.getJSONObject("payoutCommandParameters").getJSONObject("commands").getString("main");
+	private static final String MODS=StaticVars.jsonMessages.getJSONObject("modsCommandParameters").getString(JSON_HELP_COMMAND_COMMAND);
+	private static final String RAID=StaticVars.jsonMessages.getJSONObject("raidCommandParameters").getString(JSON_HELP_COMMAND_COMMAND);
+	private static final String ARENE=StaticVars.jsonMessages.getJSONObject("arenaCommandParameters").getString(JSON_HELP_COMMAND_COMMAND);
+	private static final String EQUILIBRAGE=StaticVars.jsonMessages.getJSONObject("balancingCommandParameters").getJSONObject("commands").getString(JSON_HELP_COMMAND_COMMAND);
+	private static final String TB=StaticVars.jsonMessages.getJSONObject("territoryBattlesCommandParams").getJSONObject("commands").getString("base");
+	private static final String PAYOUTS=StaticVars.jsonMessages.getJSONObject("payoutCommandParameters").getJSONObject("commands").getString("main");
 
 	private final static String JSON_HELP_MESSAGES = "messages";
 	private static final String JSON_HELP_MESSAGE_INTRO_MESSAGE = "introMessage";
@@ -65,7 +65,7 @@ public class HelpCommand implements JediStarBotCommand {
 	public HelpCommand() {
 		super();
 
-		JSONObject parameters = StaticVars.jsonSettings;
+		JSONObject parameters = StaticVars.jsonMessages;
 
 		//messages de base
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);

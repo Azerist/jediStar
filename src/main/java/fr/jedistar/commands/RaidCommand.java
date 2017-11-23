@@ -90,7 +90,7 @@ public class RaidCommand implements JediStarBotCommand {
 		super();
 
 
-		JSONObject parameters = StaticVars.jsonSettings;
+		JSONObject parameters = StaticVars.jsonMessages;
 
 		//messages de base
 		ERROR_MESSAGE = parameters.getString(JSON_ERROR_MESSAGE);
