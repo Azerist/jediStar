@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +25,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.SimpleTimeLimiter;
+import com.google.common.util.concurrent.TimeLimiter;
 
 import fr.jedistar.StaticVars;
 
@@ -55,9 +59,19 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
 		connection.connect();
 
+		TimeLimiter timeLimiter = new SimpleTimeLimiter();
+
 		in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-		String json = in.readLine();
+		String json;
+		try {
+			json = timeLimiter.callWithTimeout(in::readLine, 10, TimeUnit.SECONDS,true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.debug(e.getMessage());
+			
+			return null;
+		}
 		if(in != null) {
 			in.close();
 		}
@@ -70,7 +84,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			//VÃ©rifier si une mÃ j est nÃ©cessaire
+			//Vérifier si une màj est nécessaire
 			conn = StaticVars.getJdbcConnection();
 
 			stmt = conn.prepareStatement(SQL_SELECT_CHARS_EXPIRATION);
@@ -99,7 +113,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 
 			JSONArray charsJson = new JSONArray(json);
 
-			//InsÃ©rer les donnï¿½es
+			//Insérer les données
 			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(SQL_INSERT_CHARS);
 
