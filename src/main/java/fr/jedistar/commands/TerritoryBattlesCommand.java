@@ -150,7 +150,6 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	@Override
 	public CommandAnswer answer(List<String> params, Message receivedMessage, boolean isAdmin) {
 
-		if(true)return new CommandAnswer("Sorry, a bug on swgoh.gg makes this function currently unusable…",null);
 		
 		if(params.size() == 0) {
 			return new CommandAnswer(ERROR_MESSAGE_PARAMS_NUMBER,null);
