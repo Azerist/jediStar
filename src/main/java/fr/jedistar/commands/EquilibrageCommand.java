@@ -85,7 +85,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final String RANCOR = "rancor";
 	private final String TANK = "tank";
 
-	//Des Map pour reprï¿½senter les tableaux...
+	//Des Map pour reprÃ©senter les tableaux...
 	private Map<String,List<Ranking>> rankingsPerRaid;
 
 	private HashMap<String,HashMap<Integer,HashMap<String,List<Integer>>>> valuesPerUserPerRaid = null ;
@@ -100,7 +100,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 	private Map<String,String> rulesPerRaid;
 
-	//Nom des champs dans le json de paramï¿½tres
+	//Nom des champs dans le json de paramÃ¨tres
 	private final static String JSON_ERROR_MESSAGE = "errorMessage";
 	private final static String JSON_BALANCING="balancingCommandParameters";
 
@@ -147,21 +147,21 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 		rulesPerRaid = new HashMap<String,String>();
 		rulesPerRaid.put(RANCOR, "<@&340958486420520970> \r\n"
-				+ ":round_pushpin: Raid **RANCOR** Lancé :round_pushpin: \r\n" + 
+				+ ":round_pushpin: Raid **RANCOR** LancÃ© :round_pushpin: \r\n" + 
 				":white_small_square: Podium Ã  800k pour se placer\r\n" + 
 				":white_small_square: Tranche 4-10 entre 400K et 600K\r\n" + 
 				":white_small_square: Tranche 11-30 entre 100K et 300K\r\n" + 
 				":white_small_square: Tranche 31+ Ã  0\r\n" + 
 				":clock2: Au bout de **24h**, le podium finit le raid\r\n" + 
-				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts. :warning:");
+				":warning: Un podium sera comptabilisÃ© pour non respect de la tranche de dÃ©gÃ¢ts. :warning:");
 		rulesPerRaid.put(TANK, "<@&340958486420520970> \r\n"
-				+ ":round_pushpin: Raid **TANK** Lancé :round_pushpin: \r\n" + 
+				+ ":round_pushpin: Raid **TANK** LancÃ© :round_pushpin: \r\n" + 
 				":white_small_square: Podium Ã  2M5 pour se placer\r\n" + 
 				":white_small_square: Tranche 4-10 entre 1,3M et 1,8M\r\n" + 
 				":white_small_square: Tranche 11-30 entre 800K et 1.2M\r\n" + 
 				":white_small_square: Tranche 31+ entre 0 et 700K\r\n" + 
 				":clock2: Au bout de **36h**, le podium finit le raid\r\n" +
-				":warning: Un podium sera comptabilisé pour non respect de la tranche de dégâts :warning:");
+				":warning: Un podium sera comptabilisÃ© pour non respect de la tranche de dÃ©gÃ¢ts :warning:");
 
 		//Lire le Json
 		JSONObject parameters = StaticVars.jsonMessages;
@@ -217,7 +217,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		Channel chan = receivedMessage.getChannelReceiver();
 
 		if(params == null || params.size() == 0) {
-			//Appel sans paramï¿½tres : retourner l'ï¿½quilibrage sur tous les raids			
+			//Appel sans paramï¿½tres : retourner l'Ã©quilibrage sur tous les raids			
 			Set<String> raids = rankingsPerRaid.keySet();
 
 			EmbedBuilder embed = new EmbedBuilder();
@@ -240,7 +240,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			return new CommandAnswer(null,embed);
 		}
 		else if(params.size() == 1) {
-			//Appel avec un paramï¿½tre
+			//Appel avec un paramÃ¨tre
 			String param = params.get(0);
 
 			if(COMMAND_UPDATE.equals(param)) {
