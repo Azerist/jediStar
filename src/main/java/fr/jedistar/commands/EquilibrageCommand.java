@@ -856,7 +856,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		embed.setColor(EMBED_COLOR);
 		boolean firstRank = true;
 
-		//Itérer sur les tranches
+		//Itï¿½rer sur les tranches
 		for(int rankCur = 0;rankCur<rankings.size();rankCur++) {
 
 			Ranking currentRanking = rankings.get(rankCur);
@@ -867,7 +867,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 			//Calculer tous les scores
 			for(UserScore user : usersList) {
-				//exclure les joueurs de la première tranche
+				//exclure les joueurs de la premiï¿½re tranche
 				if(firstRank && excludedFromFirstRank.contains(user.userId)) {
 					user.score = -10000.;
 				}
@@ -1225,11 +1225,11 @@ public class EquilibrageCommand implements JediStarBotCommand {
 		@Override
 		public int compareTo(PodiumUserScore o) {
 
-			if(this.score.equals(o.score)) {
-				return o.nbRaidsWithoutPodium - this.nbRaidsWithoutPodium;
+			if(this.nbRaidsWithoutPodium.equals(o.nbRaidsWithoutPodium)) {
+				return (int) (10000 * (this.score - o.score));
 			}
 
-			return (int) (10000 * (this.score - o.score));
+			return o.nbRaidsWithoutPodium - this.nbRaidsWithoutPodium;
 		}
 	}
 
