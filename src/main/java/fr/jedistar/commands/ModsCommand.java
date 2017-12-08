@@ -165,7 +165,7 @@ public class ModsCommand implements JediStarBotCommand {
 					match.variantName = charData.getString(JSON_NAME);		
 
 					//Correspondances exactes
-					if(requestedCharacterName.length() > 2 && (charName.contains(requestedCharacterName) || requestedCharacterName.contains(charName))) {
+					if(charName.contains(requestedCharacterName) || requestedCharacterName.contains(charName)) {
 						exactMatches.add(match);
 
 						singleMatch = singleMatch && (currentMatchCharName == null || currentMatchCharName.equals(match.charName));
