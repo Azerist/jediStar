@@ -70,3 +70,15 @@ CREATE TABLE IF NOT EXISTS payoutTime
 	swgohggLink varchar(256),
 	PRIMARY KEY (channelID,userName)
 );
+
+DELIMITER //
+
+CREATE PROCEDURE copyPayouts (IN source VARCHAR(64),IN dest VARCHAR(64))
+BEGIN
+	CREATE TEMPORARY TABLE temp AS SELECT * FROM payoutTime WHERE channelID=source;
+	UPDATE temp set channelID=dest;
+	INSERT INTO payoutTime SELECT * FROM temp;
+	DROP TABLE temp;
+END//
+
+DELIMITER ;
