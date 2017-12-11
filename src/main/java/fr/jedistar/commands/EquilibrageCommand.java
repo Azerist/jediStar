@@ -910,6 +910,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 			embed.addField("---- "+currentRanking.name+" ----", returnTextForThisRank, true);
 		}
 
+		embed.addField("---- "+"51+"+" ----", "ceth urbano", true);
 		String write = writeToJson();
 
 		if(write == null) {

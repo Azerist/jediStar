@@ -71,6 +71,8 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final static String SQL_SELECT_USER = "SELECT * FROM payoutTime WHERE channelID=? AND userName=?";
 	private final static String SQL_SELECT_CHANNEL_USERS = "SELECT * FROM payoutTime WHERE channelID=? ORDER BY payoutTime,userName";
 	private final static String SQL_DELETE_USER = "DELETE FROM payoutTime WHERE channelID=? AND userName=?";
+	private final static String SQL_COPY_CHAN = "CALL copyPayouts(?,?);";
+	private final static String SQL_CLEAR_CHAN = "DELETE FROM payoutTime WHERE channelID=?";
 
 	//Json field names
 	private final static String JSON_ERROR_MESSAGE = "errorMessage";
@@ -250,7 +252,7 @@ public class PayoutCommand implements JediStarBotCommand {
 					builder.append(swgohggLink);
 					builder.append(")");
 				}
-				builder.append(' ');
+				builder.append(" - ");
 				contentLine += builder.toString();	
 				
 				embedContent[index] =  contentLine;
@@ -263,6 +265,9 @@ public class PayoutCommand implements JediStarBotCommand {
 			for(int i = 0 ; i < 24 ; i++) {
 				String contentLine = embedContent[i];
 				String contentTitle = embedTitles[i];
+				
+				contentLine = StringUtils.removeEnd(contentLine, " - ");
+				
 				if(StringUtils.isNotBlank(contentLine)) {
 					embed.addField(contentTitle,contentLine,false);
 				}
