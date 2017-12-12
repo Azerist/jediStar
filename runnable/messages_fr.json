@@ -214,7 +214,7 @@
 		"help": "Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user",
 		"messages": {
 			"embedTitle": "Temps avant le prochain payout :",
-			"timezoneConfirmation": "En utilisant le fuseau horaire **%s**, je calcule que le payout de cet utilisateur aura lieu dans **%02d:%02d** heures.\r\nEst-ce correct ?",
+			"timezoneConfirmation": "En utilisant le fuseau horaire **%s**, je calcule que le payout de **%s** aura lieu dans **%02d:%02d** heures.\r\nEst-ce correct ?",
 			"timezoneChoice": "Les fuseaux horaires suivants correspondent à votre saisie :",
 			"noTimezoneFound": "Aucun fuseau horaire trouvé. Voici un fichier texte contenant la liste des fuseaux possibles.",
 			"cancel": "OK, j'annule.",
@@ -229,7 +229,8 @@
 			"sqlError": "Une erreur est survenue lors de l'accès à la base de données",
 			"noChannel": "Cette commande doit être utilisée depuis un salon Discord (pas de message privé)",
 			"noUserFound": "Cet utilisateur n'est pas enregistré dans la commande %payouts dans ce salon",
-			"noUsersInThisChan": "Aucun utilisateur n'a été enregistré dans ce salon. Utilisez la commande **%payouts ajouter**"
+			"noUsersInThisChan": "Aucun utilisateur n'a été enregistré dans ce salon. Utilisez la commande **%payouts ajouter**",
+			"noTimezone": "Votre commande ne contient pas de timeZone"
 		}
 	}
 }

@@ -213,7 +213,7 @@
 		"help": "This command allows you to manage your arena payouts.\r\n**Examples :** %payouts\r\n**Administration commands :**\r\n%payouts add user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts add user 12:00 EST\r\n%payouts delete user",
 		"messages": {
 			"embedTitle": "Time left before next payout :",
-			"timezoneConfirmation": "Using timezone **%s**, my guess is this user's payout is **%02d:%02d** hours from now.\r\nIs it correct ?",
+			"timezoneConfirmation": "Using timezone **%s**, my guess is **%s**'s payout is **%02d:%02d** hours from now.\r\nIs it correct ?",
 			"timezoneChoice": "The following timezones match your input :",
 			"noTimezoneFound": "No timezone found. Here is a file containing a list of all possible timezones.",
 			"cancel": "OK, cancelling.",
@@ -228,7 +228,8 @@
 			"sqlError": "An error occurred while accessing the database.",
 			"noChannel": "This command must be used from a Discord channel (no private messages)",
 			"noUserFound": "This user isn't registered for the %payouts in this channel",
-			"noUsersInThisChan": "No user has been registered in this channel. Please use **%payouts add**"
+			"noUsersInThisChan": "No user has been registered in this channel. Please use **%payouts add**",
+			"noTimezone": "No timezone was provided in your command"
 		}
 	}
 }
