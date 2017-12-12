@@ -63,6 +63,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final String ERROR_NO_CHANNEL;
 	private final String ERROR_USER_NOT_FOUND;
 	private final String ERROR_NO_USER_IN_CHAN;
+	private final String ERROR_NO_TIMEZONE;
 
 	private final static Color EMBED_COLOR = Color.YELLOW;
 	private final static String CLOCK_IMG_URL = "http://37.187.39.193/swgoh/clock.png";
@@ -104,6 +105,8 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final static String JSON_PAYOUT_ERRORS_NO_CHANNEL = "noChannel";
 	private final static String JSON_PAYOUT_ERRORS_USER_NOT_FOUND = "noUserFound";
 	private final static String JSON_PAYOUT_ERRORS_NO_USER_IN_CHAN = "noUsersInThisChan";
+	private final static String JSON_PAYOUT_ERRORS_NO_TIMEZONE = "noTimezone";
+
 
 
 	public PayoutCommand() {
@@ -138,6 +141,7 @@ public class PayoutCommand implements JediStarBotCommand {
 		ERROR_NO_CHANNEL = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_CHANNEL);
 		ERROR_USER_NOT_FOUND = errorMessages.getString(JSON_PAYOUT_ERRORS_USER_NOT_FOUND);
 		ERROR_NO_USER_IN_CHAN = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_USER_IN_CHAN);
+		ERROR_NO_TIMEZONE = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_TIMEZONE);
 	}
 	
 	@Override
@@ -156,7 +160,7 @@ public class PayoutCommand implements JediStarBotCommand {
 			return formatPayouts(receivedMessage.getChannelReceiver().getId());
 		}
 		
-		if(params.size() >=4 && params.size()<=6 && COMMAND_ADD.equals(params.get(0))) {
+		if(params.size() >=4 && COMMAND_ADD.equals(params.get(0))) {
 			if(!isAdmin) {
 				return new CommandAnswer(FORBIDDEN,null);
 			}
@@ -391,11 +395,37 @@ public class PayoutCommand implements JediStarBotCommand {
 	}
 	private CommandAnswer beforeAddUser(List<String> params,Message receivedMessage) {
 		
-		String userName = params.get(1);
+		int index = 1;
 		
-		String payoutTime = params.get(2);
+		String userName = "";
 		
 		Pattern pattern = Pattern.compile("[0-9]{2}:[0-9]{2}");
+		
+		while(index<params.size()) {
+			
+			String currParam = params.get(index);
+			
+			Matcher matcher = pattern.matcher(currParam);
+			
+			if(matcher.matches()) {
+				break;
+			}
+			
+			userName += " "+currParam;
+			
+			index++;
+		}
+		
+		if(params.size()<=index) {
+			return error(ERROR_TIME_FORMAT);
+		}
+		
+		if(params.size()<= index+1) {
+			return error(ERROR_NO_TIMEZONE);
+		}
+		
+		String payoutTime = params.get(index);
+		
 		Matcher matcher = pattern.matcher(payoutTime);
 		
 		if(!matcher.matches()) {
@@ -405,17 +435,18 @@ public class PayoutCommand implements JediStarBotCommand {
 		String flag = "";
 		String swgohggLink = "";
 		
-		if(params.size()>=5) {
-			flag = params.get(4);
+		if(params.size()>index+2) {
+			flag = params.get(index+2);
 		}
 		else {
 			flag = "flag_white";
 		}
-		if(params.size()>=6) {
-			swgohggLink = params.get(5);
+		if(params.size()>index+3) {
+			swgohggLink = params.get(index+3);
 		}
 		
-		String timezoneName = params.get(3);
+		
+		String timezoneName = params.get(index+1);
 				
 		String matchingTimeZone = null;
 		List<String> matchingTimeZones = new ArrayList<String>();
@@ -510,7 +541,7 @@ public class PayoutCommand implements JediStarBotCommand {
 		Long hoursDifference = difference / (60 * 60 * 1000) %24;
 		Long minutesDifference = difference / (60 * 1000 ) %60;
 				
-		String message = String.format(MESSAGE_CONFIRM_TIMEZONE, timezoneName,hoursDifference,minutesDifference);
+		String message = String.format(MESSAGE_CONFIRM_TIMEZONE, timezoneName,userName,hoursDifference,minutesDifference);
 		
 		PendingAction action = new PendingAction(receivedMessage.getAuthor(),"addUser",this, receivedMessage,5, userName,payoutCalendar2,flag,swgohggLink,receivedMessage.getChannelReceiver().getId());
 		JediStarBotReactionAddListener.addPendingAction(action);
