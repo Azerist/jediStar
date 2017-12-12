@@ -173,7 +173,13 @@ public class PayoutCommand implements JediStarBotCommand {
 				return new CommandAnswer(FORBIDDEN,null);
 			}
 			
-			return beforeDeleteUser(receivedMessage,params.get(1));
+			String userName = params.get(1);
+			
+			for(int i=2;i<params.size();i++) {
+				userName += " "+params.get(i);
+			}
+			
+			return beforeDeleteUser(receivedMessage,userName);
 		}
 		
 		
@@ -395,9 +401,9 @@ public class PayoutCommand implements JediStarBotCommand {
 	}
 	private CommandAnswer beforeAddUser(List<String> params,Message receivedMessage) {
 		
-		int index = 1;
+		int index = 2;
 		
-		String userName = "";
+		String userName = params.get(1);
 		
 		Pattern pattern = Pattern.compile("[0-9]{2}:[0-9]{2}");
 		
