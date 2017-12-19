@@ -185,18 +185,18 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.setColor(EMBED_COLOR);
 				
-				Integer CharacterGP = getGPSUM(guildID,SHIP_MODE);
-				Integer ShipGP =getGPSUM(guildID,CHAR_MODE);
+				Integer characterGP = getGPSUM(guildID,SHIP_MODE,true);
+				Integer shipGP = getGPSUM(guildID,CHAR_MODE,true);
 				
 				String errorMessage = "";
 				
-				if(CharacterGP == -1 || ShipGP == -1) {
+				if(characterGP == -1 || shipGP == -1) {
 					errorMessage = ERROR_MESSAGE_SQL;
 				}
-				else if(CharacterGP == -2 || ShipGP == -2) {
+				else if(characterGP == -2 || shipGP == -2) {
 					errorMessage = ERROR_SWGOHGG_BLOCKER;
 				}
-				else if(CharacterGP == -3 || ShipGP == -3) {
+				else if(characterGP == -3 || shipGP == -3) {
 					errorMessage = ERROR_SWGOHGG_BUG;
 				}
 				
@@ -216,11 +216,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 					Thread.sleep(50);
 				}
 				
-				GalaticPowerToStars strat = new GalaticPowerToStars(CharacterGP,ShipGP);
+				characterGP = getGPSUM(guildID,SHIP_MODE,false);
+				shipGP = getGPSUM(guildID,CHAR_MODE,false);
+				
+				GalaticPowerToStars strat = new GalaticPowerToStars(characterGP,shipGP);
 				Integer starFromAir = strat.starFromShip;
-				Integer starFromGround =strat.starFromCharacter;
-				String 	strategyText =strat.strategy;
-				String 	title =MAX_STARS_FROM_GP_TITLE;
+				Integer starFromGround = strat.starFromCharacter;
+				String 	strategyText = strat.strategy;
+				String 	title = MAX_STARS_FROM_GP_TITLE;
 				
 				if(params.size() == 2 && COMMAND_MIN_STRATEGY.equals(params.get(1)))
 				{
@@ -229,7 +232,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 					strategyText =strat.minStrategy;
 					title =MIN_STARS_FROM_GP_TITLE;
 				}
-				String result = String.format(MAX_STARS_FROM_GP,StringFormating.formatNumber(CharacterGP), StringFormating.formatNumber(ShipGP),StringFormating.formatNumber(ShipGP+CharacterGP),starFromAir,starFromGround,starFromAir+starFromGround)+strategyText;
+				String result = String.format(MAX_STARS_FROM_GP,StringFormating.formatNumber(characterGP), StringFormating.formatNumber(shipGP),StringFormating.formatNumber(shipGP+characterGP),starFromAir,starFromGround,starFromAir+starFromGround)+strategyText;
 				embed.addField(title, result, true);
 				return new CommandAnswer(null,embed);
 				
@@ -343,42 +346,43 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		}
 	}
 	
-	private Integer getGPSUM(Integer guildID,String mode) 
+	private Integer getGPSUM(Integer guildID,String mode,boolean refresh) 
 	{
 
 		Integer result = -1;
 		boolean updateOK = true;
 		String request = "";
 
-		try {
-			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
+		if(refresh) {
+			try {
+				updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
 
-			if(SHIP_MODE.equals(mode)) {
-				updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
-				request=SQL_SUM_GUILD_UNITS_GP;
+				if(SHIP_MODE.equals(mode)) {
+					updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
+					request=SQL_SUM_GUILD_UNITS_GP;
+				}
+
+				if(CHAR_MODE.equals(mode)) {
+					updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
+					request=SQL_SUM_GUILD_SHIPS_GP;
+				}
 			}
 
-			if(CHAR_MODE.equals(mode)) {
-				updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
-				request=SQL_SUM_GUILD_SHIPS_GP;
+			catch(IOException e) {
+				logger.error(e.getMessage());
+				e.printStackTrace();
+				if(e.getMessage().contains("Server returned HTTP response code: 402")) {
+					return -2;
+				}
+
+				return -3;
+			}
+
+			if(!updateOK) {
+				return -1;
 			}
 		}
 
-		catch(IOException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-			if(e.getMessage().contains("Server returned HTTP response code: 402")) {
-				return -2;
-			}
-
-			return -3;
-		}
-		
-		if(!updateOK) {
-			return -1;
-		}
-
-		
 			
 		Connection conn = null;
 		PreparedStatement stmt = null;
