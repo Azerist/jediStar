@@ -68,7 +68,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String SQL_COUNT_GUILD_UNITS = "SELECT COUNT(*) as count FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=?";
 	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
 	private final static String SQL_SUM_GUILD_SHIPS_GP = "SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN ships s ON (s.baseID=u.charID) WHERE guildID=?";
-	private final static String SQL_FIND_EXPIRATION_DATE = "SELECT MAX(expiration) FROM guildUnits WHERE guildID=?";
+	private final static String SQL_FIND_EXPIRATION_DATE = "SELECT MAX(expiration) as expiration FROM guildUnits WHERE guildID=?";
 	
 	private final static String CHAR_MODE = "characters";
 	private final static String SHIP_MODE = "ships";
