@@ -169,7 +169,8 @@
 			"noUnitFound":"Aucun membre n'a cette unité au niveau de rareté demandé dans votre guilde",
 			"maxStarResult" : "GP Personnages : %s\r\nGP Vaisseaux : %s\r\nTOTAL GP : %s\r\n------\r\nMaximum possible pour l'aérien : %d :star:\r\nMaximum possible pour les terrestres : %d :star:\r\nTOTAL : %d :star:\r\n",
 			"maxStarTitle" : "Maximum possible avec l'ensembles des pelotons complets et les missions de combats intégralement réussies par 50 membres.",
-			"minStarTitle" : "Minimum possible avec l'ensembles des pelotons vides et aucunes missions de combats effectués"
+			"minStarTitle" : "Minimum possible avec l'ensembles des pelotons vides et aucunes missions de combats effectués",
+			"outdatedData" : "Les données de votre guilde n'ont pas pu être rafraîchies. La réponse ci-dessous est basée sur des données obsolètes (dernière mise à jour : %tF )."
 		},
 		"errorMessages": {
 			"noChannel": "Cette commande doit être appelée depuis un serveur (pas de MP)",
@@ -180,7 +181,8 @@
 			"incorrectNumber": "Le nombre entré n'a pas été reconnu correctement",
 			"dbUpdateError": "Erreur lors de la mise à jour de la base de données",
 			"tooMuchResults": "Trop de résultats, voici les personnages correspondant à votre recherche\r\n",
-			"swgohGGblocker": "swgoh.gg a refusé de nous envoyer des informations sur votre guilde.\r\nCeci est probablement dû à une trop forte activité sur la commande %tb actuellement.\r\nMerci de réessayer dans quelques minutes."
+			"swgohGGblocker": "swgoh.gg a refusé de nous envoyer des informations sur votre guilde.\r\nCeci est probablement dû à une trop forte activité sur la commande %tb actuellement.\r\nMerci de réessayer dans quelques minutes.",
+			"swgohGGbug": "Une erreur interne à swgoh.gg s'est produite."
 		}
 	},
 	"helpCommandParameters": {
