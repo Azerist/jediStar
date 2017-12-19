@@ -214,10 +214,12 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 					receivedMessage.reply(message);
 					
 					Thread.sleep(50);
+					
+					characterGP = getGPSUM(guildID,SHIP_MODE,false);
+					shipGP = getGPSUM(guildID,CHAR_MODE,false);
 				}
 				
-				characterGP = getGPSUM(guildID,SHIP_MODE,false);
-				shipGP = getGPSUM(guildID,CHAR_MODE,false);
+				
 				
 				GalaticPowerToStars strat = new GalaticPowerToStars(characterGP,shipGP);
 				Integer starFromAir = strat.starFromShip;
@@ -383,6 +385,13 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			}
 		}
 
+		if(SHIP_MODE.equals(mode)) {
+			request=SQL_SUM_GUILD_UNITS_GP;
+		}
+
+		if(CHAR_MODE.equals(mode)) {
+			request=SQL_SUM_GUILD_SHIPS_GP;
+		}
 			
 		Connection conn = null;
 		PreparedStatement stmt = null;
