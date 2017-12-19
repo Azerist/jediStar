@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String MAX_STARS_FROM_GP_TITLE;
 	private final String MIN_STARS_FROM_GP_TITLE;
 	private final String MAX_STARS_FROM_GP;
+	private final String OUTDATED_DATA;
 	
 	private final String ERROR_MESSAGE;
 	private final String ERROR_MESSAGE_SQL;
@@ -57,6 +59,8 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String ERROR_DB_UPDATE;
 	private final String TOO_MUCH_RESULTS;
 	private final String ERROR_SWGOHGG_BLOCKER;
+	private final String ERROR_SWGOHGG_BUG;
+
 
 	private final static String SQL_GUILD_ID = "SELECT guildID FROM guild WHERE channelID=?;";
 	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE";
@@ -64,6 +68,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String SQL_COUNT_GUILD_UNITS = "SELECT COUNT(*) as count FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=?";
 	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
 	private final static String SQL_SUM_GUILD_SHIPS_GP = "SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN ships s ON (s.baseID=u.charID) WHERE guildID=?";
+	private final static String SQL_FIND_EXPIRATION_DATE = "SELECT MAX(expiration) FROM guildUnits WHERE guildID=?";
 	
 	private final static String CHAR_MODE = "characters";
 	private final static String SHIP_MODE = "ships";
@@ -93,6 +98,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP = "maxStarResult";
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE = "maxStarTitle";
 	private final static String JSON_TB_MESSAGES_MIN_STARS_FROM_GP_TITLE = "minStarTitle";
+	private final static String JSON_TB_MESSAGES_OUTDATED_DATA = "outdatedData";
 
 	private final static String JSON_TB_ERROR_MESSAGES = "errorMessages";
 	private final static String JSON_TB_ERROR_MESSAGES_SQL = "sqlError";
@@ -104,6 +110,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_ERROR_MESSAGES_DB_UPDATE = "dbUpdateError";
 	private final static String JSON_TB_TOO_MUCH_RESULTS = "tooMuchResults";
 	private final static String JSON_TB_SWGOHGG_BLOCKER = "swgohGGblocker";
+	private final static String JSON_TB_SWGOHGG_BUG = "swgohGGbug";
 
 	public TerritoryBattlesCommand() {
 
@@ -129,6 +136,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		MAX_STARS_FROM_GP = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP);
 		MAX_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE);
 		MIN_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MIN_STARS_FROM_GP_TITLE);
+		OUTDATED_DATA = messages.getString(JSON_TB_MESSAGES_OUTDATED_DATA);
 		
 		JSONObject errorMessages = tbParams.getJSONObject(JSON_TB_ERROR_MESSAGES);
 		ERROR_MESSAGE_SQL = errorMessages.getString(JSON_TB_ERROR_MESSAGES_SQL);
@@ -140,6 +148,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		ERROR_DB_UPDATE = errorMessages.getString(JSON_TB_ERROR_MESSAGES_DB_UPDATE);
 		TOO_MUCH_RESULTS = errorMessages.getString(JSON_TB_TOO_MUCH_RESULTS);
 		ERROR_SWGOHGG_BLOCKER = errorMessages.getString(JSON_TB_SWGOHGG_BLOCKER);
+		ERROR_SWGOHGG_BUG = errorMessages.getString(JSON_TB_SWGOHGG_BUG);
 	}
 
 	@Override
@@ -179,8 +188,30 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				Integer CharacterGP = getGPSUM(guildID,SHIP_MODE);
 				Integer ShipGP =getGPSUM(guildID,CHAR_MODE);
 				
+				String errorMessage = "";
+				
 				if(CharacterGP == -1 || ShipGP == -1) {
-					return new CommandAnswer(ERROR_MESSAGE_SQL, null);
+					errorMessage = ERROR_MESSAGE_SQL;
+				}
+				else if(CharacterGP == -2 || ShipGP == -2) {
+					errorMessage = ERROR_SWGOHGG_BLOCKER;
+				}
+				else if(CharacterGP == -3 || ShipGP == -3) {
+					errorMessage = ERROR_SWGOHGG_BUG;
+				}
+				
+				if(!StringUtils.isBlank(errorMessage)) {
+					Calendar lastUpdate = findLastUpdateDate(guildID);
+					
+					if(lastUpdate == null) {
+						return new CommandAnswer(errorMessage,null);
+					}
+					
+					String message = receivedMessage.getAuthor().getMentionTag();
+					
+					message += "\r\n"+errorMessage+ "\r\n" + String.format(OUTDATED_DATA, lastUpdate);
+					
+					receivedMessage.reply(message);
 				}
 				
 				GalaticPowerToStars strat = new GalaticPowerToStars(CharacterGP,ShipGP);
@@ -211,7 +242,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 			
 		if(params.size() < 4) {
-			return new CommandAnswer(ERROR_MESSAGE_PARAMS_NUMBER,null);
+			return new CommandAnswer(error(ERROR_MESSAGE_PARAMS_NUMBER),null);
 		}
 
 		if(COMMAND_PLATOON.equals(params.get(0))) {
@@ -335,7 +366,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				return -2;
 			}
 
-			return -1;
+			return -3;
 		}
 		
 		if(!updateOK) {
@@ -387,6 +418,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private String findUnits(Integer guildID,String mode,String charName,Integer rarity,Message receivedMessage) {
 		
 		boolean updateOK = true;
+		String errorMessage = "";
 		
 		try {
 			updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseGuildUnits(guildID);
@@ -403,14 +435,27 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 			if(e.getMessage().contains("Server returned HTTP response code: 402")) {
-				return ERROR_SWGOHGG_BLOCKER;
+				errorMessage = ERROR_SWGOHGG_BLOCKER;
 			}
-
-			return ERROR_DB_UPDATE;
+			else {
+				errorMessage= ERROR_SWGOHGG_BUG;
+			}
+			
+			updateOK = false;
 		}
 		
 		if(!updateOK) {
-			return ERROR_DB_UPDATE;
+			Calendar lastUpdate = findLastUpdateDate(guildID);
+			
+			if(lastUpdate == null) {
+				return errorMessage;
+			}
+			
+			String message = receivedMessage.getAuthor().getMentionTag();
+			
+			message += "\r\n"+errorMessage+ "\r\n" + String.format(OUTDATED_DATA, lastUpdate);
+			
+			receivedMessage.reply(message);
 		}
 		
 		List<Character> charsList = findMatchingCharacters(charName,mode);
@@ -574,6 +619,51 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			}
 			
 			return charList;
+		}
+		catch(SQLException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				if(stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+			}
+		}
+	}
+	
+	private Calendar findLastUpdateDate(Integer guildID) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = StaticVars.getJdbcConnection();
+
+			stmt = conn.prepareStatement(SQL_FIND_EXPIRATION_DATE);
+	
+			stmt.setInt(1, guildID);
+			
+			logger.debug("Executing query : "+stmt.toString());
+
+			rs = stmt.executeQuery();
+
+			Calendar result = Calendar.getInstance();
+			
+			while(rs.next()) {
+				result.setTime(rs.getDate("expiration"));
+			}
+			
+			result.add(Calendar.HOUR, -24);
+			
+			return result;
 		}
 		catch(SQLException e) {
 			logger.error(e.getMessage());

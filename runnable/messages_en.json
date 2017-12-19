@@ -138,7 +138,8 @@
 			"noUnitFound": "No one in your guild has this unit at the requested rarity level",
 			"maxStarResult": "GP Characters : %s\r\nGP Ships : %s\r\nTOTAL GP : %s\r\n------\r\nMaximum achievable from air : %d :star:\r\nMaximum achievable from ground : %d :star:\r\nTOTAL : %d :star:\r\n",
 			"maxStarTitle": "Maximum achievable with all platoons filled and perfect combats missions for 50 players",
-			"minStarTitle" : "Minimum achievable with all platoons empty and zero combats missions done"
+			"minStarTitle" : "Minimum achievable with all platoons empty and zero combats missions done",
+			"outdatedData" : "We could not refresh your guild data. The following answer will be based on outdated data (last update : %tF )."
 		},
 		"errorMessages": {
 			"noChannel": "This command must be typed from a server (not through a private message)",
@@ -149,7 +150,8 @@
 			"incorrectNumber": "We did not recognized a number",
 			"dbUpdateError": "Database update error ",
 			"tooMuchResults": "Too many results, try limiting your search to one ofthe following chararacters :\r\n",
-			"swgohGGblocker": "swgoh.gg refused to send us data about your guild.\r\nThis is most likely due to a high number of guilds trying to use the %tb function at this time.\r\nPlease try again in a few minutes."
+			"swgohGGblocker": "swgoh.gg refused to send us data about your guild.\r\nThis is most likely due to a high number of guilds trying to use the %tb function at this time.\r\nPlease try again in a few minutes.",
+			"swgohGGbug": "An internal error occurred inside swgoh.gg."
 		}
 	},
 	"helpCommandParameters": {
