@@ -212,6 +212,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 					message += "\r\n"+errorMessage+ "\r\n" + String.format(OUTDATED_DATA, lastUpdate);
 					
 					receivedMessage.reply(message);
+					Thread.sleep(50);
 				}
 				
 				GalaticPowerToStars strat = new GalaticPowerToStars(CharacterGP,ShipGP);
@@ -234,6 +235,9 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			}
 			catch(NumberFormatException e) {
 				return new CommandAnswer("Invalid number",null);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return null;
 			}
 		
 			
