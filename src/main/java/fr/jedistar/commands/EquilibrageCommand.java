@@ -96,7 +96,7 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private final static String KEY_PODIUMS = "podiums";
 	private final static String KEY_WITHOUT_PODIUM = "withoutPodium";
 	private static final Object COMMAND_AUTO_PODIUM = "podium-auto";
-	private static final Integer MIN_RAIDS_FOR_PODIUM = 10;
+	private static final Integer MIN_RAIDS_FOR_PODIUM = 15;
 
 	private Map<String,String> rulesPerRaid;
 
@@ -1214,23 +1214,41 @@ public class EquilibrageCommand implements JediStarBotCommand {
 	private class PodiumUserScore implements Comparable<PodiumUserScore>{
 
 		public Integer userId;
-		private Double score;
+		private Double ratioPodiumsTotalRaids;
 		private Integer nbRaidsWithoutPodium;
 
 		public PodiumUserScore(Integer userId,Integer nbPodiums, Integer totalNbRaids, Integer nbRaidsWithoutPodium) {
 			this.userId = userId;
-			this.score = nbPodiums.doubleValue() / totalNbRaids;
+			this.ratioPodiumsTotalRaids = nbPodiums.doubleValue() / totalNbRaids;
 			this.nbRaidsWithoutPodium = nbRaidsWithoutPodium;
 		}
 
+		
+		/**
+		 * Warning : sorts in descending order.
+		 * @return positive int if other is greater than this.
+		 */
 		@Override
-		public int compareTo(PodiumUserScore o) {
+		public int compareTo(PodiumUserScore other) {
 
-			if(this.nbRaidsWithoutPodium.equals(o.nbRaidsWithoutPodium)) {
-				return (int) (10000 * (this.score - o.score));
+			//Un utilisateur qui a plus de 30 raids sans podiums est automatiquement prioritaire sur un utilisateur 
+			// qui a moins de 30
+			if(this.nbRaidsWithoutPodium > 30 && other.nbRaidsWithoutPodium < 30) {
+				return -1;
 			}
+			if(other.nbRaidsWithoutPodium > 30 && this.nbRaidsWithoutPodium < 30) {
+				return 1;
+			}
+			
+			//Si les ratios sont égaux : Critère secondaire, le nb raids sans podium
+			if(this.ratioPodiumsTotalRaids.equals(other.ratioPodiumsTotalRaids)) {
+				return other.nbRaidsWithoutPodium - this.nbRaidsWithoutPodium;
+			}
+			
+			//Critère principal : le ratio du nombre de podiums par rapport au nombre de raids
+			return (int) (10000 * (this.ratioPodiumsTotalRaids - other.ratioPodiumsTotalRaids));
 
-			return o.nbRaidsWithoutPodium - this.nbRaidsWithoutPodium;
+			
 		}
 	}
 
