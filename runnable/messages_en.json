@@ -210,9 +210,11 @@
 		"commands": {
 			"main": "payouts",
 			"add": "add",
-			"delete": "delete"
+			"delete": "delete",
+			"copy": "copy",
+			"clear": "clear"
 		},
-		"help": "This command allows you to manage your arena payouts.\r\n**Examples :** %payouts\r\n**Administration commands :**\r\n%payouts add user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts add user 12:00 EST\r\n%payouts delete user",
+		"help": "This command allows you to manage your arena payouts.\r\n**Examples :** %payouts\r\n**Administration commands :**\r\n%payouts add user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts add user 12:00 EST\r\n%payouts delete user\r\n%payouts clear\r\n%payouts copy #channel",
 		"messages": {
 			"embedTitle": "Time left before next payout :",
 			"timezoneConfirmation": "Using timezone **%s**, my guess is **%s**'s payout is **%02d:%02d** hours from now.\r\nIs it correct ?",
@@ -221,7 +223,11 @@
 			"cancel": "OK, cancelling.",
 			"addUserSuccess": "Successfully added user",
 			"deleteConfirmation": "Are you sure you want to remove this user ?",
-			"deleteSuccess": "User successfully deleted."
+			"deleteSuccess": "User successfully deleted.",
+			"clearWarning": "This action will delete all declared players in this channel for the payouts command.\r\n:warning: **This action cannot be undone !!** :warning:",
+			"clearSuccess": "This channel was successfully cleared",
+			"copyWarning": "This action will copy all declared players in the channel **%s** for the payouts command into this channel.\r\n",
+			"copySuccess": "The copy was successful."
 		},
 		"errorMessages": {
 			"forbidden": "You may not execute this command.\r\nYou must be part of the «botAdmins» Discord group to administrate the bot.",
@@ -231,7 +237,8 @@
 			"noChannel": "This command must be used from a Discord channel (no private messages)",
 			"noUserFound": "This user isn't registered for the %payouts in this channel",
 			"noUsersInThisChan": "No user has been registered in this channel. Please use **%payouts add**",
-			"noTimezone": "No timezone was provided in your command"
+			"noTimezone": "No timezone was provided in your command",
+			"channelFormat": "Channel not found. Please use the #channel-name format to declare a channel name in this command."
 		}
 	}
 }

@@ -211,9 +211,11 @@
 		"commands": {
 			"main": "payouts",
 			"add": "ajouter",
-			"delete": "supprimer"
+			"delete": "supprimer",
+			"copy": "copier",
+			"clear": "vider"
 		},
-		"help": "Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user",
+		"help": "Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user\r\n%payouts vider\r\n%payouts copier #channel",
 		"messages": {
 			"embedTitle": "Temps avant le prochain payout :",
 			"timezoneConfirmation": "En utilisant le fuseau horaire **%s**, je calcule que le payout de **%s** aura lieu dans **%02d:%02d** heures.\r\nEst-ce correct ?",
@@ -222,7 +224,11 @@
 			"cancel": "OK, j'annule.",
 			"addUserSuccess": "Utilisateur ajouté avec succès",
 			"deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
-			"deleteSuccess": "Supression de l'utilisateur réussie"
+			"deleteSuccess": "Supression de l'utilisateur réussie",
+			"clearWarning": "Cette action va effacer tous les joueurs enregistrés dans ce salon pour la commande payouts\r\n:warning: **Cette action est irréversible !** :warning:",
+			"clearSuccess": "Ce salon a été vidé avec succès.",
+			"copyWarning": "Cette action va copier tous les joueurs déclarés dans le salon **%s** pour la commande payouts.",
+			"copySuccess": "La copie a réussi."
 		},
 		"errorMessages": {
 			"forbidden": "Vous n'avez pas le droit d'exécuter cette commande.\r\nVous devez faire partie du groupe Discord «botadmins» pour administrer le bot.",
@@ -232,7 +238,8 @@
 			"noChannel": "Cette commande doit être utilisée depuis un salon Discord (pas de message privé)",
 			"noUserFound": "Cet utilisateur n'est pas enregistré dans la commande %payouts dans ce salon",
 			"noUsersInThisChan": "Aucun utilisateur n'a été enregistré dans ce salon. Utilisez la commande **%payouts ajouter**",
-			"noTimezone": "Votre commande ne contient pas de timeZone"
+			"noTimezone": "Votre commande ne contient pas de timeZone",
+			"channelFormat": "Salon non trouvé. Merci d'utiliser les tags #nom-salon dans cette commande."
 		}
 	}
 }

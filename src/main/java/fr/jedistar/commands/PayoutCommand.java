@@ -13,9 +13,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vdurmont.emoji.EmojiManager;
 
+import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.entities.message.embed.EmbedBuilder;
 import de.btobastian.javacord.entities.message.impl.ImplReaction;
@@ -43,6 +42,8 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final String COMMAND;
 	private final String COMMAND_ADD;
 	private final String COMMAND_DELETE;
+	private final String COMMAND_COPY;
+	private final String COMMAND_CLEAR;
 	
 	private final String HELP;
 	
@@ -53,6 +54,10 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final String MESSAGE_ADD_USER_SUCCESS;
 	private final String MESSAGE_CONFIRM_DELETE;
 	private final String MESSAGE_DELETE_SUCCESS;
+	private final String MESSAGE_CLEAR_WARNING;
+	private final String MESSAGE_CLEAR_SUCCESS;
+	private final String MESSAGE_COPY_WARNING;
+	private final String MESSAGE_COPY_SUCCESS;
 	private final String EMBED_TITLE;
 	
 	private final String FORBIDDEN;
@@ -64,9 +69,11 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final String ERROR_USER_NOT_FOUND;
 	private final String ERROR_NO_USER_IN_CHAN;
 	private final String ERROR_NO_TIMEZONE;
+	private final String ERROR_CHANNEL_FORMAT;
 
 	private final static Color EMBED_COLOR = Color.YELLOW;
 	private final static String CLOCK_IMG_URL = "http://37.187.39.193/swgoh/clock.png";
+	
 	//SQL
 	private final static String SQL_INSERT_USER = "INSERT INTO payoutTime(channelID,userName,payoutTime,flag,swgohggLink) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE payoutTime=VALUES(payoutTime),flag=VALUES(flag),swgohggLink=VALUES(swgohggLink);";
 	private final static String SQL_SELECT_USER = "SELECT * FROM payoutTime WHERE channelID=? AND userName=?";
@@ -86,6 +93,8 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final static String JSON_PAYOUT_COMMANDS_MAIN = "main";
 	private final static String JSON_PAYOUT_COMMANDS_ADD = "add";
 	private final static String JSON_PAYOUT_COMMANDS_DELETE = "delete";
+	private final static String JSON_PAYOUT_COMMANDS_COPY = "copy";
+	private final static String JSON_PAYOUT_COMMANDS_CLEAR = "clear";
 	
 	private final static String JSON_PAYOUT_MESSAGES = "messages";
 	private final static String JSON_PAYOUT_MESSAGES_TIMEZONE_CONFIRMATION = "timezoneConfirmation";
@@ -96,6 +105,11 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final static String JSON_PAYOUT_MESSAGES_CONFIRM_DELETE = "deleteConfirmation";
 	private final static String JSON_PAYOUT_MESSAGES_DELETE_SUCCESS = "deleteSuccess";
 	private final static String JSON_PAYOUT_MESSAGES_EMBED_TITLE = "embedTitle";
+	private final static String JSON_PAYOUT_MESSAGES_CLEAR_WARNING = "clearWarning";
+	private final static String JSON_PAYOUT_MESSAGES_CLEAR_SUCCESS = "clearSuccess";
+	private final static String JSON_PAYOUT_MESSAGES_COPY_WARNING = "copyWarning";
+	private final static String JSON_PAYOUT_MESSAGES_COPY_SUCCESS = "copySuccess";
+
 
 	private final static String JSON_PAYOUT_ERRORS = "errorMessages";
 	private final static String JSON_PAYOUT_ERRORS_FORBIDDEN = "forbidden";
@@ -106,6 +120,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	private final static String JSON_PAYOUT_ERRORS_USER_NOT_FOUND = "noUserFound";
 	private final static String JSON_PAYOUT_ERRORS_NO_USER_IN_CHAN = "noUsersInThisChan";
 	private final static String JSON_PAYOUT_ERRORS_NO_TIMEZONE = "noTimezone";
+	private final static String JSON_PAYOUT_ERRORS_CHANNEL_FORMAT = "channelFormat";
 
 
 
@@ -122,6 +137,8 @@ public class PayoutCommand implements JediStarBotCommand {
 		COMMAND = commands.getString(JSON_PAYOUT_COMMANDS_MAIN);
 		COMMAND_ADD  = commands.getString(JSON_PAYOUT_COMMANDS_ADD);
 		COMMAND_DELETE = commands.getString(JSON_PAYOUT_COMMANDS_DELETE);
+		COMMAND_COPY = commands.getString(JSON_PAYOUT_COMMANDS_COPY);
+		COMMAND_CLEAR = commands.getString(JSON_PAYOUT_COMMANDS_CLEAR);
 		
 		JSONObject messages = payoutParams.getJSONObject(JSON_PAYOUT_MESSAGES);
 		MESSAGE_CONFIRM_TIMEZONE = messages.getString(JSON_PAYOUT_MESSAGES_TIMEZONE_CONFIRMATION);
@@ -132,6 +149,10 @@ public class PayoutCommand implements JediStarBotCommand {
 		MESSAGE_CONFIRM_DELETE = messages.getString(JSON_PAYOUT_MESSAGES_CONFIRM_DELETE);
 		MESSAGE_DELETE_SUCCESS = messages.getString(JSON_PAYOUT_MESSAGES_DELETE_SUCCESS);
 		EMBED_TITLE = messages.getString(JSON_PAYOUT_MESSAGES_EMBED_TITLE);
+		MESSAGE_CLEAR_WARNING = messages.getString(JSON_PAYOUT_MESSAGES_CLEAR_WARNING);
+		MESSAGE_CLEAR_SUCCESS = messages.getString(JSON_PAYOUT_MESSAGES_CLEAR_SUCCESS);
+		MESSAGE_COPY_WARNING = messages.getString(JSON_PAYOUT_MESSAGES_COPY_WARNING);
+		MESSAGE_COPY_SUCCESS = messages.getString(JSON_PAYOUT_MESSAGES_COPY_SUCCESS);
 		
 		JSONObject errorMessages = payoutParams.getJSONObject(JSON_PAYOUT_ERRORS);
 		ERROR_UNRECOGNIZED_COMMAND = errorMessages.getString(JSON_PAYOUT_ERRORS_UNRECOGNIZED_COMMAND);
@@ -142,6 +163,7 @@ public class PayoutCommand implements JediStarBotCommand {
 		ERROR_USER_NOT_FOUND = errorMessages.getString(JSON_PAYOUT_ERRORS_USER_NOT_FOUND);
 		ERROR_NO_USER_IN_CHAN = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_USER_IN_CHAN);
 		ERROR_NO_TIMEZONE = errorMessages.getString(JSON_PAYOUT_ERRORS_NO_TIMEZONE);
+		ERROR_CHANNEL_FORMAT = errorMessages.getString(JSON_PAYOUT_ERRORS_CHANNEL_FORMAT);
 	}
 	
 	@Override
@@ -158,6 +180,29 @@ public class PayoutCommand implements JediStarBotCommand {
 		
 		if(params.size() == 0) {
 			return formatPayouts(receivedMessage.getChannelReceiver().getId());
+		}
+		
+		if(params.size() == 1 && COMMAND_CLEAR.equals(params.get(0))) {
+			return beforeClear(receivedMessage);
+		}
+		
+		if(params.size() == 2 && COMMAND_COPY.equals(params.get(0))) {
+			
+			Matcher matcher = Pattern.compile("<?#?([0-9]+)>?").matcher(params.get(1));
+			
+			if(!matcher.matches()) {
+				return new CommandAnswer(ERROR_CHANNEL_FORMAT,null);
+			}
+			
+			String channelID = matcher.group(1);
+			
+			Channel sourceChannel = receivedMessage.getChannelReceiver().getServer().getChannelById(channelID);
+			
+			if(sourceChannel == null) {
+				return new CommandAnswer(ERROR_CHANNEL_FORMAT,null);
+			}
+			
+			return beforeCopy(receivedMessage,sourceChannel);
 		}
 		
 		if(params.size() >=4 && COMMAND_ADD.equals(params.get(0))) {
@@ -604,6 +649,117 @@ public class PayoutCommand implements JediStarBotCommand {
 		}
 	}
 
+	private CommandAnswer beforeClear(Message receivedMessage) {
+		String emojiX = EmojiManager.getForAlias("x").getUnicode();
+		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
+		
+		String channelID = receivedMessage.getChannelReceiver().getId();
+		
+		PendingAction action = new PendingAction(receivedMessage.getAuthor(), "clear", this, receivedMessage, 1, channelID);
+		JediStarBotReactionAddListener.addPendingAction(action);
+		
+		return new CommandAnswer(MESSAGE_CLEAR_WARNING, null, emojiV,emojiX);
+	}
+	
+	public String clear(ImplReaction reaction, String channelID) {
+
+		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
+
+		if(!emojiV.equals(reaction.getUnicodeEmoji())) {
+			return MESSAGE_CANCEL;
+		}
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+
+		try {
+			conn = StaticVars.getJdbcConnection();
+			
+			stmt = conn.prepareStatement(SQL_CLEAR_CHAN);
+			
+			stmt.setString(1, channelID);
+			
+			logger.info("executingQuery "+stmt.toString());
+			stmt.executeUpdate();
+			
+			return MESSAGE_CLEAR_SUCCESS;
+		}
+		catch(SQLException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			return SQL_ERROR;
+		}
+		finally {
+			
+			if(stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			}
+		}
+	}
+	
+	
+	private CommandAnswer beforeCopy(Message receivedMessage,Channel sourceChannel) {
+		String emojiX = EmojiManager.getForAlias("x").getUnicode();
+		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
+		
+		String channelID = receivedMessage.getChannelReceiver().getId();
+		
+		String sourceChannelID = sourceChannel.getId();
+		String sourceChannelName = sourceChannel.getName();
+		
+		PendingAction action = new PendingAction(receivedMessage.getAuthor(), "copy", this, receivedMessage, 1, channelID,sourceChannelID);
+		JediStarBotReactionAddListener.addPendingAction(action);
+		
+		String message = String.format(MESSAGE_COPY_WARNING, sourceChannelName);
+		return new CommandAnswer(message, null, emojiV,emojiX);
+	}
+	
+	public String copy(ImplReaction reaction, String channelID,String sourceChannelID) {
+
+		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
+
+		if(!emojiV.equals(reaction.getUnicodeEmoji())) {
+			return MESSAGE_CANCEL;
+		}
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+
+		try {
+			conn = StaticVars.getJdbcConnection();
+			
+			stmt = conn.prepareStatement(SQL_COPY_CHAN);
+			
+			stmt.setString(1, sourceChannelID);
+			stmt.setString(2, channelID);
+			
+			logger.info("executingQuery "+stmt.toString());
+			stmt.executeUpdate();
+			
+			return MESSAGE_COPY_SUCCESS;
+		}
+		catch(SQLException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			return SQL_ERROR;
+		}
+		finally {
+			
+			if(stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			}
+		}
+	}
+	
+	
 	/**
 	 * Instanciates a Calendar from a HH:MM String
 	 * @param string
