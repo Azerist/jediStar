@@ -75,9 +75,10 @@ DELIMITER //
 
 CREATE PROCEDURE copyPayouts (IN source VARCHAR(64),IN dest VARCHAR(64))
 BEGIN
+	DROP TABLE IF EXISTS temp;
 	CREATE TEMPORARY TABLE temp AS SELECT * FROM payoutTime WHERE channelID=source;
 	UPDATE temp set channelID=dest;
-	INSERT INTO payoutTime SELECT * FROM temp;
+	REPLACE INTO payoutTime SELECT * FROM temp;
 	DROP TABLE temp;
 END//
 
