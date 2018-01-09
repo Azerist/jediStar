@@ -129,12 +129,14 @@
             "characters":"chars",
             "ships":"ships",
 			"strategy":"gp",
-			"strategyMin":"min"
+			"strategyMin":"min",
+			"reverseOrder":"reverse"
 			
 		},
 		"help":"Possible command :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*\r\n%tb gp\r\n%tb gp min",
 		"messages": {
 			"displayedResults": "15 weakest units (total %d)",
+			"displayedResultsReverse": "15 strongest units (total %d)",
 			"noUnitFound": "No one in your guild has this unit at the requested rarity level",
 			"maxStarResult": "GP Characters : %s\r\nGP Ships : %s\r\nTOTAL GP : %s\r\n------\r\nMaximum achievable from air : %d :star:\r\nMaximum achievable from ground : %d :star:\r\nTOTAL : %d :star:\r\n",
 			"maxStarTitle": "Maximum achievable with all platoons filled and perfect combats missions for 50 players",
