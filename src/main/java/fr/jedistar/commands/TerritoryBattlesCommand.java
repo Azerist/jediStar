@@ -10,6 +10,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,10 +40,12 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String COMMAND_SHIPS;
 	private final String COMMAND_STRATEGY;
 	private final String COMMAND_MIN_STRATEGY;
+	private final String COMMAND_REVERSE_ORDER;
 
 	private final String HELP;
 
 	private final String DISPLAYED_RESULTS;
+	private final String DISPLAYED_RESULTS_REVERSE;
 	private final String NO_UNIT_FOUND;
 	private final String MAX_STARS_FROM_GP_TITLE;
 	private final String MIN_STARS_FROM_GP_TITLE;
@@ -65,6 +68,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String SQL_GUILD_ID = "SELECT guildID FROM guild WHERE channelID=?;";
 	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE";
 	private final static String SQL_FIND_GUILD_UNITS = "SELECT * FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=? ORDER BY power LIMIT 15";
+	private final static String SQL_FIND_GUILD_UNITS_REVERSE = "SELECT * FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=? ORDER BY power DESC LIMIT 15";
 	private final static String SQL_COUNT_GUILD_UNITS = "SELECT COUNT(*) as count FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=?";
 	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
 	private final static String SQL_SUM_GUILD_SHIPS_GP = "SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN ships s ON (s.baseID=u.charID) WHERE guildID=?";
@@ -91,9 +95,11 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_COMMANDS_SHIPS = "ships";
 	private final static String JSON_TB_COMMANDS_STRATEGY = "strategy";
 	private final static String JSON_TB_COMMANDS_MIN_STRATEGY = "strategyMin";
+	private final static String JSON_TB_COMMANDS_REVERSE_ORDER = "reverseOrder";
 	
 	private final static String JSON_TB_MESSAGES = "messages";
 	private final static String JSON_TB_MESSAGES_DISPLAYED_RESULTS = "displayedResults";
+	private final static String JSON_TB_MESSAGES_DISPLAYED_RESULTS_REVERSE = "displayedResultsReverse";
 	private final static String JSON_TB_MESSAGES_NO_UNTI_FOUND = "noUnitFound";
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP = "maxStarResult";
 	private final static String JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE = "maxStarTitle";
@@ -129,9 +135,11 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		COMMAND_SHIPS = commands.getString(JSON_TB_COMMANDS_SHIPS);
 		COMMAND_STRATEGY = commands.getString(JSON_TB_COMMANDS_STRATEGY);
 		COMMAND_MIN_STRATEGY = commands.getString(JSON_TB_COMMANDS_MIN_STRATEGY);
+		COMMAND_REVERSE_ORDER = commands.getString(JSON_TB_COMMANDS_REVERSE_ORDER);
 
 		JSONObject messages = tbParams.getJSONObject(JSON_TB_MESSAGES);
 		DISPLAYED_RESULTS = messages.getString(JSON_TB_MESSAGES_DISPLAYED_RESULTS);
+		DISPLAYED_RESULTS_REVERSE = messages.getString(JSON_TB_MESSAGES_DISPLAYED_RESULTS_REVERSE);
 		NO_UNIT_FOUND = messages.getString(JSON_TB_MESSAGES_NO_UNTI_FOUND);
 		MAX_STARS_FROM_GP = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP);
 		MAX_STARS_FROM_GP_TITLE = messages.getString(JSON_TB_MESSAGES_MAX_STARS_FROM_GP_TITLE);
@@ -270,10 +278,16 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				return new CommandAnswer(ERROR_MESSAGE_NO_GUILD_NUMBER,null);
 			}
 			
+			boolean reverseOrder = false;
 			Integer rarity = 0;
 			try {
 				String rarityAsString = params.get(params.size()-1).replace("*","");
-				rarity = Integer.parseInt(rarityAsString);
+				if(COMMAND_REVERSE_ORDER.equals(rarityAsString)) {
+					reverseOrder=true;
+				}
+				else {
+					rarity = Integer.parseInt(rarityAsString);
+				}
 			}
 			catch(NumberFormatException e) {
 				logger.warn(e.getMessage());
@@ -282,16 +296,16 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 			
 			//récupérer le nom du perso si celui-ci contient des espaces
 			String unitName = params.get(2);
-			for(int i=3;i<params.size()-1;i++) {
+			for(int i=3 ; i<params.size()-1 ; i++) {
 				unitName += " "+params.get(i);
 			}
 			
 			String retour = error(ERROR_COMMAND);
 			if(COMMAND_SHIPS.equals(params.get(1))) {
-				retour = findUnits(guildID, SHIP_MODE, unitName, rarity,receivedMessage);
+				retour = findUnits(guildID, SHIP_MODE, unitName, rarity,receivedMessage,reverseOrder);
 			}
 			else if(COMMAND_CHARS.equals(params.get(1))) {
-				retour = findUnits(guildID, CHAR_MODE, unitName, rarity,receivedMessage);
+				retour = findUnits(guildID, CHAR_MODE, unitName, rarity,receivedMessage,reverseOrder);
 			}
 			
 			return new CommandAnswer(retour,null);
@@ -433,7 +447,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		return result;
 	}
 
-	private String findUnits(Integer guildID,String mode,String charName,Integer rarity,Message receivedMessage) {
+	private String findUnits(Integer guildID,String mode,String charName,Integer rarity,Message receivedMessage,boolean reverseOrder) {
 		
 		boolean updateOK = true;
 		String errorMessage = "";
@@ -524,14 +538,16 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 					embed.setTitle(NO_UNIT_FOUND);
 				}
 				if(totalMatchNumber > 15) {
-					embed.setTitle(String.format(DISPLAYED_RESULTS, totalMatchNumber));
+					String message = reverseOrder ? DISPLAYED_RESULTS_REVERSE : DISPLAYED_RESULTS;
+					embed.setTitle(String.format(message, totalMatchNumber));
 				}
 				
 				rs.close();
 				stmt.close();
 				
 				if(totalMatchNumber > 0) {
-					stmt = conn.prepareStatement(SQL_FIND_GUILD_UNITS);
+					String query = reverseOrder ? SQL_FIND_GUILD_UNITS_REVERSE : SQL_FIND_GUILD_UNITS;
+					stmt = conn.prepareStatement(query);
 
 					stmt.setInt(1,guildID);
 					stmt.setString(2, chara.baseID);
@@ -541,11 +557,21 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 
 					rs = stmt.executeQuery();
 
-					Map<Integer,String> contentPerRarity = new HashMap<Integer,String>();
+					//Utilisation de LinkedHashMap pour conserver l'ordre
+					Map<Integer,String> contentPerRarity = new LinkedHashMap<Integer,String>();
 
-					for(int i=rarity;i<=7;i++) {
-						contentPerRarity.put(i, "");
+					//population de la table dans le bon ordre
+					if(!reverseOrder) {
+						for(int i=rarity;i<=7;i++) {
+							contentPerRarity.put(i, "");
+						}
 					}
+					else {
+						for(int i=7 ; i>=rarity && i>0 ; i--) {
+							contentPerRarity.put(i, "");
+						}
+					}
+					
 
 					while(rs.next()) {
 
@@ -557,7 +583,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 						currentContent += power +" GP - "+rs.getString("player")+" \r\n";
 						contentPerRarity.put(currRarity,currentContent);
 					}
-
+					
 					for(Map.Entry<Integer, String> entry : contentPerRarity.entrySet()) {
 						if(!StringUtils.isEmpty(entry.getValue())) {
 							embed.addField(entry.getKey()+"*",entry.getValue(),true);
