@@ -39,6 +39,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String COMMAND_SHIPS;
 	private final String COMMAND_STRATEGY;
 	private final String COMMAND_MIN_STRATEGY;
+	private final String COMMAND_DS_STRATEGY = "ds";
 
 	private final String HELP;
 
@@ -166,7 +167,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 		if(COMMAND_STRATEGY.equals(params.get(0))) {
 			
-			if(params.size() >  2 ) {
+			if(params.size() >  3 ) {
 				return new CommandAnswer(ERROR_COMMAND,null);
 			}
 			
@@ -218,16 +219,22 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 					characterGP = getGPSUM(guildID,SHIP_MODE,false);
 					shipGP = getGPSUM(guildID,CHAR_MODE,false);
 				}
+				Boolean isDark = false;
+				if(
+				(params.size() == 2 && COMMAND_DS_STRATEGY.equals(params.get(1))) || 
+				(params.size() == 3 && COMMAND_DS_STRATEGY.equals(params.get(2)))
+				)
+				{
+					isDark = true;
+				}
 				
-				
-				
-				GalaticPowerToStars strat = new GalaticPowerToStars(characterGP,shipGP);
+				GalaticPowerToStars strat = new GalaticPowerToStars(characterGP,shipGP,isDark);
 				Integer starFromAir = strat.starFromShip;
 				Integer starFromGround = strat.starFromCharacter;
 				String 	strategyText = strat.strategy;
 				String 	title = MAX_STARS_FROM_GP_TITLE;
 				
-				if(params.size() == 2 && COMMAND_MIN_STRATEGY.equals(params.get(1)))
+				if(params.size() >= 2 && COMMAND_MIN_STRATEGY.equals(params.get(1)))
 				{
 					starFromAir = strat.minStarFromShip;
 					starFromGround =strat.minStarFromCharacter;

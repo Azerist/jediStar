@@ -15,6 +15,7 @@ public class GalaticPowerToStars {
 	public Integer minStarFromCharacter=0;
 	public String 	strategy ="";
 	public String 	minStrategy ="";
+	public Boolean isDarkSide = false;
 	
 	private TerritoryBattleStrategy groundStrategy;
 	private TerritoryBattleStrategy airStrategy;
@@ -132,19 +133,121 @@ public class GalaticPowerToStars {
 			 	     		       
 		    }});
 	
-	public GalaticPowerToStars(Integer CharacterGP,Integer ShipGP)
+	private static final SortedMap<Integer, TerritoryBattleStrategy> groundGPMapDS = Collections.unmodifiableSortedMap(
+		    new TreeMap<Integer, TerritoryBattleStrategy>() {/**
+				 * 
+				 */
+				private static final long serialVersionUID = 8633415667127566560L;
+
+			{
+				put(0			, 	new TerritoryBattleStrategy(21,new String[] {"2/2","2/2","2/2","1/2","1/2","1/2"}));
+				put(858000		, 	new TerritoryBattleStrategy(22,new String[] {"2/2","2/2","2/2","2/2","1/2","1/2"}));
+				put(12806000	, 	new TerritoryBattleStrategy(23,new String[] {"2/2","2/2","2/2","2/2","1/3","1/2"}));
+				put(13266000	, 	new TerritoryBattleStrategy(24,new String[] {"2/2","2/3","2/2","2/2","1/3","1/2"}));
+				put(14706000	, 	new TerritoryBattleStrategy(25,new String[] {"2/3","2/3","2/2","2/2","1/3","1/2"}));
+				put(21678000	, 	new TerritoryBattleStrategy(26,new String[] {"2/3","2/3","2/3","2/2","1/3","1/2"}));
+				put(28380000	, 	new TerritoryBattleStrategy(27,new String[] {"2/3","2/3","2/3","2/2","1/3","1/3"}));
+				put(33283000	, 	new TerritoryBattleStrategy(28,new String[] {"2/3","2/3","2/3","2/3","1/3","1/3"}));
+				put(50226000	, 	new TerritoryBattleStrategy(29,new String[] {"2/3","3/3","2/3","2/3","1/3","1/3"}));
+				put(50471000	, 	new TerritoryBattleStrategy(30,new String[] {"2/3","3/3","2/3","2/3","2/3","1/3"}));
+				put(55677000	, 	new TerritoryBattleStrategy(31,new String[] {"3/3","3/3","2/3","2/3","2/3","1/3"}));
+				put(63978000	, 	new TerritoryBattleStrategy(32,new String[] {"3/3","3/3","3/3","2/3","2/3","1/3"}));
+				put(76580000	, 	new TerritoryBattleStrategy(33,new String[] {"3/3","3/3","3/3","2/3","2/3","2/3"}));
+				put(82758000	, 	new TerritoryBattleStrategy(34,new String[] {"3/3","3/3","3/3","3/3","2/3","2/3"}));
+				put(101976000	, 	new TerritoryBattleStrategy(35,new String[] {"3/3","3/3","3/3","3/3","3/3","2/3"}));
+				put(127380000	, 	new TerritoryBattleStrategy(35,new String[] {"3/3","3/3","3/3","3/3","3/3","3/3"}));   	     		       
+		    }});
+	
+	private static final SortedMap<Integer, TerritoryBattleStrategy> airGPMapDS = Collections.unmodifiableSortedMap(
+		    new TreeMap<Integer, TerritoryBattleStrategy>() {/**
+				 * 
+				 */
+				private static final long serialVersionUID = 8926699849073076427L;
+
+			{
+		    	put(0			, 	new TerritoryBattleStrategy(6,new String[] {"","","2/","2/","1/","1/"}));
+		    	put(3160000		, 	new TerritoryBattleStrategy(7,new String[] {"","","2/","2/","1/","2/"}));
+		    	put(3469000		, 	new TerritoryBattleStrategy(8,new String[] {"","","2/","2/","2/","2/"}));
+		    	put(5248000		, 	new TerritoryBattleStrategy(9,new String[] {"","","2/","3/","2/","2/"}));
+		    	put(7974000		, 	new TerritoryBattleStrategy(10,new String[] {"","","3/","3/","2/","2/"}));
+		    	put(25269000	, 	new TerritoryBattleStrategy(11,new String[] {"","","3/","3/","3/","2/"}));
+		    	put(36280000	, 	new TerritoryBattleStrategy(12,new String[] {"","","3/","3/","3/","3/"}));	    		     		       
+		    }});
+	
+	private static final SortedMap<Integer, TerritoryBattleStrategy> groundGPMinMapDS = Collections.unmodifiableSortedMap(
+		    new TreeMap<Integer, TerritoryBattleStrategy>() {{
+		    	put(0			, 	new TerritoryBattleStrategy(0 ,new String[] {"0/0","0/0","0/0","0/0","0/0","0/0"}));
+		    	put(885000		, 	new TerritoryBattleStrategy(1 ,new String[] {"1/0","0/0","0/0","0/0","0/0","0/0"}));
+		    	put(1330000		, 	new TerritoryBattleStrategy(2 ,new String[] {"1/1","0/0","0/0","0/0","0/0","0/0"}));
+		    	put(1900000		, 	new TerritoryBattleStrategy(3 ,new String[] {"1/1","1/0","0/0","0/0","0/0","0/0"}));
+		    	put(3510000		, 	new TerritoryBattleStrategy(4 ,new String[] {"1/1","1/0","1/0","0/0","0/0","0/0"}));
+		    	put(3800000		, 	new TerritoryBattleStrategy(5 ,new String[] {"1/1","1/1","1/0","0/0","0/0","0/0"}));
+		    	put(3919000		, 	new TerritoryBattleStrategy(6 ,new String[] {"1/2","1/1","1/0","0/0","0/0","0/0"}));
+		    	put(5220000		, 	new TerritoryBattleStrategy(7 ,new String[] {"1/2","1/1","1/0","1/0","0/0","0/0"}));
+		    	put(7020000		, 	new TerritoryBattleStrategy(8 ,new String[] {"1/2","1/1","1/1","1/0","0/0","0/0"}));
+		    	put(10383000	, 	new TerritoryBattleStrategy(9 ,new String[] {"2/2","1/1","1/1","1/0","0/0","0/0"}));
+		    	put(10440000	, 	new TerritoryBattleStrategy(10,new String[] {"2/2","1/1","1/1","1/1","0/0","0/0"}));
+		    	put(11100000	, 	new TerritoryBattleStrategy(11,new String[] {"2/2","1/1","1/1","1/1","0/1","0/0"}));
+		    	put(18070000	, 	new TerritoryBattleStrategy(12,new String[] {"2/2","1/2","1/1","1/1","0/1","0/0"}));
+		    	put(25200000	, 	new TerritoryBattleStrategy(13,new String[] {"2/2","1/2","1/1","1/1","1/1","0/0"}));
+		    	put(26400000	, 	new TerritoryBattleStrategy(14,new String[] {"2/2","1/2","1/1","1/1","1/1","0/1"}));
+		    	put(27030000	, 	new TerritoryBattleStrategy(15,new String[] {"2/2","1/2","1/2","1/1","1/1","0/1"}));
+		    	put(30984000	, 	new TerritoryBattleStrategy(16,new String[] {"2/3","1/2","1/2","1/1","1/1","0/1"}));
+		    	put(36960000	, 	new TerritoryBattleStrategy(17,new String[] {"2/3","2/2","1/2","1/1","1/1","0/1"}));
+		    	put(41655000	, 	new TerritoryBattleStrategy(18,new String[] {"2/3","2/2","1/2","1/2","1/1","0/1"}));
+		    	put(52500000	, 	new TerritoryBattleStrategy(19,new String[] {"2/3","2/2","2/2","1/2","1/1","0/1"}));
+		    	put(57150000	, 	new TerritoryBattleStrategy(20,new String[] {"2/3","2/2","2/2","1/2","1/2","0/1"}));
+		    	put(57400000	, 	new TerritoryBattleStrategy(21,new String[] {"2/3","2/2","2/2","1/2","1/2","1/1"}));
+		    	put(66780000	, 	new TerritoryBattleStrategy(22,new String[] {"2/3","2/3","2/2","1/2","1/2","1/1"}));
+		    	put(71955000	, 	new TerritoryBattleStrategy(23,new String[] {"3/3","2/3","2/2","1/2","1/2","1/1"}));
+		    	put(72870000	, 	new TerritoryBattleStrategy(24,new String[] {"3/3","2/3","2/2","2/2","1/2","1/1"}));
+		    	put(83790000	, 	new TerritoryBattleStrategy(25,new String[] {"3/3","2/3","2/3","2/2","1/2","1/1"}));
+		    	put(96230000	, 	new TerritoryBattleStrategy(26,new String[] {"3/3","2/3","2/3","2/2","1/2","1/2"}));
+		    	put(96440000	, 	new TerritoryBattleStrategy(27,new String[] {"3/3","2/3","2/3","2/2","1/3","1/2"}));
+		    	put(103740000	, 	new TerritoryBattleStrategy(28,new String[] {"3/3","3/3","2/3","2/2","1/3","1/2"}));
+		    	put(105295000	, 	new TerritoryBattleStrategy(29,new String[] {"3/3","3/3","2/3","2/3","1/3","1/2"}));
+		    	put(126090000	, 	new TerritoryBattleStrategy(30,new String[] {"3/3","3/3","3/3","2/3","1/3","1/2"}));
+		    	put(134105000	, 	new TerritoryBattleStrategy(31,new String[] {"3/3","3/3","3/3","2/3","2/3","1/2"}));
+		    	put(136950000	, 	new TerritoryBattleStrategy(32,new String[] {"3/3","3/3","3/3","2/3","2/3","1/3"}));
+		    	put(154770000	, 	new TerritoryBattleStrategy(33,new String[] {"3/3","3/3","3/3","3/3","2/3","1/3"}));
+		    	put(185150000	, 	new TerritoryBattleStrategy(34,new String[] {"3/3","3/3","3/3","3/3","2/3","2/3"}));
+		    	put(185610000	, 	new TerritoryBattleStrategy(35,new String[] {"3/3","3/3","3/3","3/3","3/3","2/3"}));
+		    	put(235950000	, 	new TerritoryBattleStrategy(36,new String[] {"3/3","3/3","3/3","3/3","3/3","3/3"}));
+			 	    		       
+		    }});
+	
+	private static final SortedMap<Integer, TerritoryBattleStrategy> airGPMinMapDS = Collections.unmodifiableSortedMap(
+		    new TreeMap<Integer, TerritoryBattleStrategy>() {{
+		    	put(0			, 	new TerritoryBattleStrategy(0 ,new String[] {"","","0/","0/","0/","0/"}));
+		    	put(1920000		, 	new TerritoryBattleStrategy(1 ,new String[] {"","","1/","0/","0/","0/"}));
+		    	put(2176000		, 	new TerritoryBattleStrategy(2 ,new String[] {"","","1/","1/","0/","0/"}));
+		    	put(17325000	, 	new TerritoryBattleStrategy(3 ,new String[] {"","","2/","1/","0/","0/"}));
+		    	put(18000000	, 	new TerritoryBattleStrategy(4 ,new String[] {"","","2/","1/","1/","0/"}));
+		    	put(19635000	, 	new TerritoryBattleStrategy(5 ,new String[] {"","","2/","2/","1/","0/"}));
+		    	put(21600000	, 	new TerritoryBattleStrategy(6 ,new String[] {"","","2/","2/","1/","1/"}));
+		    	put(28930000	, 	new TerritoryBattleStrategy(7 ,new String[] {"","","3/","2/","1/","1/"}));
+		    	put(32780000	, 	new TerritoryBattleStrategy(8 ,new String[] {"","","3/","3/","1/","1/"}));
+		    	put(35700000	, 	new TerritoryBattleStrategy(9 ,new String[] {"","","3/","3/","2/","1/"}));
+		    	put(44880000	, 	new TerritoryBattleStrategy(10,new String[] {"","","3/","3/","2/","2/"}));
+		    	put(57500000	, 	new TerritoryBattleStrategy(11,new String[] {"","","3/","3/","3/","2/"}));
+		    	put(78000000	, 	new TerritoryBattleStrategy(12,new String[] {"","","3/","3/","3/","3/"}));
+			 	     		       
+		    }});
+	
+	public GalaticPowerToStars(Integer CharacterGP,Integer ShipGP, Boolean isDark)
 	{
 		this.characterGP =CharacterGP;
 		this.shipGP =ShipGP;
+		this.isDarkSide = isDark;
 		
-		this.minGroundStrategy = getStrategyFromGP(CharacterGP,groundGPMinMap);
-		this.minAirStrategy = getStrategyFromGP(ShipGP,airGPMinMap);
+		this.minGroundStrategy = getStrategyFromGP(CharacterGP,isDark?groundGPMinMapDS:groundGPMinMap);
+		this.minAirStrategy = getStrategyFromGP(ShipGP,isDark?airGPMinMapDS:airGPMinMap);
 		this.minStarFromShip =minAirStrategy.starCount;
 		this.minStarFromCharacter=minGroundStrategy.starCount;
 		this.minStrategy = FormatGroundAndAirStrategy(this.minAirStrategy,this.minGroundStrategy);
 		
-		this.groundStrategy = getStrategyFromGP(CharacterGP,groundGPMap);
-		this.airStrategy = getStrategyFromGP(ShipGP,airGPMap);
+		this.groundStrategy = getStrategyFromGP(CharacterGP,isDark?groundGPMapDS:groundGPMap);
+		this.airStrategy = getStrategyFromGP(ShipGP,isDark?airGPMapDS:airGPMap);
 		this.starFromShip =airStrategy.starCount;
 		this.starFromCharacter=groundStrategy.starCount;
 		this.strategy = FormatGroundAndAirStrategy(this.airStrategy,this.groundStrategy);
