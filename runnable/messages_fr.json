@@ -159,13 +159,15 @@
 			"characters":"persos",
 			"ships":"vaisseaux",
 			"strategy":"gp",
-			"strategyMin":"min"
+			"strategyMin":"min",
+			"reverseOrder":"inverse"
 		},
 		
-		"help":"Commandes possibles :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp\r\n%tb gp min",
+		"help":"Commandes possibles :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp\r\n%tb gp min\r\n%tb platoon vaisseaux ghost inverse",
 		
 		"messages":{
 			"displayedResults":"Liste des 15 plus faibles (total %d)",
+			"displayedResultsReverse": "Liste des 15 plus fortes (total %d)",
 			"noUnitFound":"Aucun membre n'a cette unité au niveau de rareté demandé dans votre guilde",
 			"maxStarResult" : "GP Personnages : %s\r\nGP Vaisseaux : %s\r\nTOTAL GP : %s\r\n------\r\nMaximum possible pour l'aérien : %d :star:\r\nMaximum possible pour les terrestres : %d :star:\r\nTOTAL : %d :star:\r\n",
 			"maxStarTitle" : "Maximum possible avec l'ensembles des pelotons complets et les missions de combats intégralement réussies par 50 membres.",

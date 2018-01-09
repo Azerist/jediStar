@@ -133,7 +133,7 @@
 			"reverseOrder":"reverse"
 			
 		},
-		"help":"Possible command :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*\r\n%tb gp\r\n%tb gp min",
+		"help":"Possible command :\r\n%tb platoon chars aayla 5\\*\r\n%tb platoon ships ghost 5\\*\r\n%tb gp\r\n%tb gp min\r\n%tb platoon chars aayla reverse",
 		"messages": {
 			"displayedResults": "15 weakest units (total %d)",
 			"displayedResultsReverse": "15 strongest units (total %d)",
