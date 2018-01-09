@@ -77,6 +77,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		TerritoryBattlesCommand tb = new TerritoryBattlesCommand();
         HelpCommand help = new HelpCommand();
         PayoutCommand payout = new PayoutCommand();
+        
 
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
