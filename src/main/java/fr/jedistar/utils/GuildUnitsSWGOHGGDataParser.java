@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.common.util.concurrent.TimeLimiter;
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 import fr.jedistar.StaticVars;
 
@@ -52,7 +54,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 	public static List<String> shipsNames = new ArrayList<String>();
 	public static List<String> charactersNames = new ArrayList<String>();
 
-	public static String retrieveJSONfromURL(String urlJSON) throws MalformedURLException, IOException {
+	public static String retrieveJSONfromURL(String urlJSON) throws MalformedURLException, IOException,UncheckedTimeoutException {
 		BufferedReader in;
 		URL url = new URL(urlJSON);
 		URLConnection connection = url.openConnection();
@@ -67,6 +69,11 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 		try {
 			json = timeLimiter.callWithTimeout(in::readLine, 10, TimeUnit.SECONDS,true);
 		} catch (Exception e) {
+			
+			if(e instanceof UncheckedTimeoutException) {
+				throw (UncheckedTimeoutException) e;
+			}
+			
 			e.printStackTrace();
 			logger.debug(e.getMessage());
 			
@@ -78,13 +85,13 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 		return json;
 	}
 
-	public static boolean parseCharacters() throws IOException {
+	public static boolean parseCharacters() throws IOException, UncheckedTimeoutException {
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			//Vérifier si une màj est nécessaire
+			//Vï¿½rifier si une mï¿½j est nï¿½cessaire
 			conn = StaticVars.getJdbcConnection();
 
 			stmt = conn.prepareStatement(SQL_SELECT_CHARS_EXPIRATION);
@@ -113,7 +120,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 
 			JSONArray charsJson = new JSONArray(json);
 
-			//Insérer les données
+			//Insï¿½rer les donnï¿½es
 			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(SQL_INSERT_CHARS);
 
@@ -177,7 +184,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 
 
 
-	public static boolean parseShips() throws IOException {
+	public static boolean parseShips() throws IOException, UncheckedTimeoutException {
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -275,7 +282,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 		return true;
 	}
 
-	public static boolean parseGuildUnits(Integer guildID) throws IOException {
+	public static boolean parseGuildUnits(Integer guildID) throws IOException, UncheckedTimeoutException {
 
 		if(guildID == null) {
 			return false;
@@ -316,7 +323,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 
 			JSONObject unitsJson = new JSONObject(json);
 
-			//InsÃ©rer les donnï¿½es
+			//InsÃ©rer les donnÃ©es
 			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(SQL_INSERT_GUILD_UNITS);
 

@@ -13,10 +13,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,7 +43,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String COMMAND_SHIPS;
 	private final String COMMAND_STRATEGY;
 	private final String COMMAND_MIN_STRATEGY;
-	private final String COMMAND_DS_STRATEGY = "ds";
+	private final String COMMAND_DS_STRATEGY;
 	private final String COMMAND_REVERSE_ORDER;
 
 	private final String HELP;
@@ -95,6 +98,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String JSON_TB_COMMANDS_CHARS = "characters";
 	private final static String JSON_TB_COMMANDS_SHIPS = "ships";
 	private final static String JSON_TB_COMMANDS_STRATEGY = "strategy";
+	private final static String JSON_TB_COMMANDS_DS_STRATEGY = "dsStrategy";
 	private final static String JSON_TB_COMMANDS_MIN_STRATEGY = "strategyMin";
 	private final static String JSON_TB_COMMANDS_REVERSE_ORDER = "reverseOrder";
 	
@@ -135,6 +139,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		COMMAND_CHARS = commands.getString(JSON_TB_COMMANDS_CHARS);
 		COMMAND_SHIPS = commands.getString(JSON_TB_COMMANDS_SHIPS);
 		COMMAND_STRATEGY = commands.getString(JSON_TB_COMMANDS_STRATEGY);
+		COMMAND_DS_STRATEGY = commands.getString(JSON_TB_COMMANDS_DS_STRATEGY);
 		COMMAND_MIN_STRATEGY = commands.getString(JSON_TB_COMMANDS_MIN_STRATEGY);
 		COMMAND_REVERSE_ORDER = commands.getString(JSON_TB_COMMANDS_REVERSE_ORDER);
 
@@ -391,7 +396,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				}
 			}
 
-			catch(IOException e) {
+			catch(IOException|UncheckedTimeoutException e) {
 				logger.error(e.getMessage());
 				e.printStackTrace();
 				if(e.getMessage().contains("Server returned HTTP response code: 402")) {
@@ -470,7 +475,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
 			}
 		}
-		catch(IOException e) {
+		catch(IOException|UncheckedTimeoutException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 			if(e.getMessage().contains("Server returned HTTP response code: 402")) {

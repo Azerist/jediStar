@@ -159,6 +159,7 @@
 			"characters":"persos",
 			"ships":"vaisseaux",
 			"strategy":"gp",
+			"dsStrategy":"ds",
 			"strategyMin":"min",
 			"reverseOrder":"inverse"
 		},

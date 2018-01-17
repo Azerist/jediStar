@@ -129,6 +129,7 @@
             "characters":"chars",
             "ships":"ships",
 			"strategy":"gp",
+			"dsStrategy":"ds",
 			"strategyMin":"min",
 			"reverseOrder":"reverse"
 			
