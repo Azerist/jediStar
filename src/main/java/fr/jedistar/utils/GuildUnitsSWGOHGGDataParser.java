@@ -53,7 +53,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 
 	public static List<String> shipsNames = new ArrayList<String>();
 	public static List<String> charactersNames = new ArrayList<String>();
-
+	
 	public static String retrieveJSONfromURL(String urlJSON) throws MalformedURLException, IOException,UncheckedTimeoutException {
 		BufferedReader in;
 		URL url = new URL(urlJSON);
@@ -67,7 +67,7 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 
 		String json;
 		try {
-			json = timeLimiter.callWithTimeout(in::readLine, 10, TimeUnit.SECONDS,true);
+			json = timeLimiter.callWithTimeout(in::readLine, 2, TimeUnit.SECONDS,true);
 		} catch (Exception e) {
 			
 			if(e instanceof UncheckedTimeoutException) {
