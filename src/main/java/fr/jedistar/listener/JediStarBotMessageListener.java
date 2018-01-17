@@ -71,7 +71,6 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		//AJOUTER ICI DE NOUVELLES COMMANDES
 		RaidCommand raid = new RaidCommand();
 		ModsCommand mods = new ModsCommand();
-		EquilibrageCommand balancing = new EquilibrageCommand();
 		AreneCommand arene = new AreneCommand();
 		SetUpCommand setup = new SetUpCommand();
 		TerritoryBattlesCommand tb = new TerritoryBattlesCommand();
@@ -81,7 +80,6 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 
 		commandsMap.put(raid.getCommand(), raid);
 		commandsMap.put(mods.getCommand(), mods);
-		commandsMap.put(balancing.getCommand(), balancing);
 		commandsMap.put(arene.getCommand(), arene);
 		commandsMap.put(setup.getCommand(),setup);
 		commandsMap.put(tb.getCommand(), tb);
