@@ -130,6 +130,7 @@
             "ships":"ships",
 			"strategy":"gp",
 			"dsStrategy":"ds",
+			"lsStrategy":"ls",
 			"strategyMin":"min",
 			"reverseOrder":"reverse"
 			
@@ -139,10 +140,14 @@
 			"displayedResults": "15 weakest units (total %d)",
 			"displayedResultsReverse": "15 strongest units (total %d)",
 			"noUnitFound": "No one in your guild has this unit at the requested rarity level",
-			"maxStarResult": "GP Characters : %s\r\nGP Ships : %s\r\nTOTAL GP : %s\r\n------\r\nMaximum achievable from air : %d :star:\r\nMaximum achievable from ground : %d :star:\r\nTOTAL : %d :star:\r\n",
+			"maxStarResult": "GP Characters : %s\r\nGP Ships : %s\r\nTOTAL GP : %s\r\n------\r\nMaximum achievable from air : %s\r\nMaximum achievable from ground : %s\r\nTOTAL : %d :star:\r\n",
 			"maxStarTitle": "Maximum achievable with all platoons filled and perfect combats missions for 50 players",
 			"minStarTitle" : "Minimum achievable with all platoons empty and zero combats missions done",
-			"outdatedData" : "We could not refresh your guild data. The following answer will be based on outdated data (last update : %tF )."
+			"outdatedData" : "We could not refresh your guild data. The following answer will be based on outdated data (last update : %tF ).",
+			"dsBattleName" : "Imperial Retaliation",
+			"lsBattleName" : "Rebel Assault",
+			"startCountMargin" : "%d :star: with a %s margin. ",
+			"nextStar" : " %s required for next one."
 		},
 		"errorMessages": {
 			"noChannel": "This command must be typed from a server (not through a private message)",
