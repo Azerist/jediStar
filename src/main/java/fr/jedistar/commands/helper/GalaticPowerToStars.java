@@ -7,12 +7,35 @@ import java.util.TreeMap;
 
 
 public class GalaticPowerToStars {
-	private Integer characterGP = 0;
-	private Integer shipGP = 0;
-	public Integer starFromShip =0;
-	public Integer starFromCharacter=0;
-	public Integer minStarFromShip =0;
-	public Integer minStarFromCharacter=0;
+	
+	public class StarInfo
+	{		
+			public Integer starCount;
+			public Integer GPMargin;
+			public Integer GPToNextStar;
+			public StarInfo(TerritoryBattleStrategy strategy)
+			{
+				this.starCount = strategy.starCount;
+				this.GPMargin = strategy.GPMargin;
+				this.GPToNextStar = strategy.GPToNextStar;
+			}
+			public String FormatToString(String margin,String Next)
+			{
+				String sResult = String.format(margin,starCount,StringFormating.formatNumber(GPMargin));
+				if(GPToNextStar != 0)
+				{
+					sResult += String.format(Next,StringFormating.formatNumber(GPToNextStar));
+				}
+				return sResult;
+			}
+	}
+	
+	private Integer characterGP;
+	private Integer shipGP;
+	public StarInfo starFromShip;
+	public StarInfo starFromCharacter;
+	public StarInfo minStarFromShip;
+	public StarInfo minStarFromCharacter;
 	public String 	strategy ="";
 	public String 	minStrategy ="";
 	public Boolean isDarkSide = false;
@@ -27,6 +50,8 @@ public class GalaticPowerToStars {
 				
 			private Integer starCount;
 			private String[] strategies;
+			private Integer GPMargin = 0;
+			private Integer GPToNextStar = 0;
 			
 			public TerritoryBattleStrategy(Integer starCount,String[] strategies)
 			{
@@ -240,16 +265,16 @@ public class GalaticPowerToStars {
 		this.shipGP =ShipGP;
 		this.isDarkSide = isDark;
 		
-		this.minGroundStrategy = getStrategyFromGP(CharacterGP,isDark?groundGPMinMapDS:groundGPMinMap);
-		this.minAirStrategy = getStrategyFromGP(ShipGP,isDark?airGPMinMapDS:airGPMinMap);
-		this.minStarFromShip =minAirStrategy.starCount;
-		this.minStarFromCharacter=minGroundStrategy.starCount;
+		this.minGroundStrategy = getStrategyFromGP(this.characterGP,isDark?groundGPMinMapDS:groundGPMinMap);
+		this.minAirStrategy = getStrategyFromGP(this.shipGP,isDark?airGPMinMapDS:airGPMinMap);
+		this.minStarFromShip = new StarInfo(minAirStrategy);
+		this.minStarFromCharacter=new StarInfo(minGroundStrategy);
 		this.minStrategy = FormatGroundAndAirStrategy(this.minAirStrategy,this.minGroundStrategy);
 		
-		this.groundStrategy = getStrategyFromGP(CharacterGP,isDark?groundGPMapDS:groundGPMap);
-		this.airStrategy = getStrategyFromGP(ShipGP,isDark?airGPMapDS:airGPMap);
-		this.starFromShip =airStrategy.starCount;
-		this.starFromCharacter=groundStrategy.starCount;
+		this.groundStrategy = getStrategyFromGP(this.characterGP,isDark?groundGPMapDS:groundGPMap);
+		this.airStrategy = getStrategyFromGP(this.shipGP,isDark?airGPMapDS:airGPMap);
+		this.starFromShip =new StarInfo(airStrategy);
+		this.starFromCharacter=new StarInfo(groundStrategy);
 		this.strategy = FormatGroundAndAirStrategy(this.airStrategy,this.groundStrategy);
 		
 	}
@@ -258,13 +283,25 @@ public class GalaticPowerToStars {
 	{
 		TerritoryBattleStrategy bestStrategy;
 		SortedMap<Integer, TerritoryBattleStrategy> reachableGroundStars = possibleStrategy.headMap(GP);
+		SortedMap<Integer, TerritoryBattleStrategy> unreachableGroundStars = possibleStrategy.tailMap(GP);
 		if(reachableGroundStars.isEmpty())
 		{
 			bestStrategy = possibleStrategy.get(possibleStrategy.firstKey());
+			bestStrategy.GPMargin =GP - possibleStrategy.firstKey()  ;
+			bestStrategy.GPToNextStar = 0;
 		}
 		else
 		{
 			bestStrategy = reachableGroundStars.get(reachableGroundStars.lastKey());
+			bestStrategy.GPMargin =GP - reachableGroundStars.lastKey();
+			if(unreachableGroundStars.isEmpty())
+			{
+				bestStrategy.GPToNextStar = 0;
+			}
+			else
+			{
+				bestStrategy.GPToNextStar =unreachableGroundStars.firstKey()-GP ;
+			}
 		}
 		return bestStrategy;
 	}
