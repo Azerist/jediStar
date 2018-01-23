@@ -235,7 +235,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	private CommandAnswer formatPayouts(String channelID) {
 		
 		String[] embedContent = new String[24];
-		String[] embedTitles = new String[24];
+		//String[] embedTitles = new String[24];
 
 		
 		TimeZone utc = TimeZone.getTimeZone("UTC");
@@ -285,13 +285,11 @@ public class PayoutCommand implements JediStarBotCommand {
 				String contentLine = embedContent[index];
 				
 				if(contentLine == null) {
-					
-					contentLine = "";
-					
+										
 					String strHours = StringUtils.leftPad(hoursDifference.toString(), 2, "0");
-					String strMinutes = StringUtils.leftPad(minutesDifference.toString(), 2, "0");
+					String strMinutes = StringUtils.leftPad(minutesDifference.toString(), 2, "0");	
 					
-					embedTitles[index] = strHours+":"+strMinutes;
+					contentLine = String.format("`%s:%s` ",strHours,strMinutes);
 				}
 				
 				boolean hasLink = StringUtils.isNotBlank(swgohggLink);
@@ -319,12 +317,11 @@ public class PayoutCommand implements JediStarBotCommand {
 			
 			for(int i = 0 ; i < 24 ; i++) {
 				String contentLine = embedContent[i];
-				String contentTitle = embedTitles[i];
 				
 				contentLine = StringUtils.removeEnd(contentLine, " - ");
 				
 				if(StringUtils.isNotBlank(contentLine)) {
-					embed.addField(contentTitle,contentLine,false);
+					embed.addField("-",contentLine,false);
 				}
 			}
 						
