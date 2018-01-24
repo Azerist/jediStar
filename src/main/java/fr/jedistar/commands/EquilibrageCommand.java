@@ -996,12 +996,13 @@ public class EquilibrageCommand implements JediStarBotCommand {
 
 	private CommandAnswer beforeDeleteUser(Message message,Integer userToDelete) {
 
-		JediStarBotReactionAddListener.addPendingAction(new PendingAction(message.getAuthor(),"deleteUser",this, message,1,userToDelete));
+		PendingAction pendingAction = new PendingAction(message.getAuthor(),"deleteUser",this,1,userToDelete);
+		JediStarBotReactionAddListener.addPendingAction(pendingAction);
 
 		String emojiX = EmojiManager.getForAlias("x").getUnicode();
 		String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
 
-		return new CommandAnswer(String.format(CONFIRM_DELETE,userToDelete),null,emojiV,emojiX);
+		return new CommandAnswer(String.format(CONFIRM_DELETE,userToDelete),null,emojiV,emojiX).addPendingActions(pendingAction);
 	}
 
 	public String deleteUser(ImplReaction reaction, Integer userToDelete) {

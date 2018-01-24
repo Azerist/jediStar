@@ -38,6 +38,7 @@ import fr.jedistar.commands.RaidCommand;
 import fr.jedistar.commands.SetUpCommand;
 import fr.jedistar.commands.TerritoryBattlesCommand;
 import fr.jedistar.formats.CommandAnswer;
+import fr.jedistar.formats.PendingAction;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
 
@@ -196,6 +197,22 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 					e.printStackTrace();
 					return;
 				}
+			}
+			
+		}
+		
+		//Handle pending actions
+		if(answer.getPendingActions() != null && !answer.getPendingActions().isEmpty()) {
+			Message sentMessage = null;
+			try {
+				sentMessage = future.get(1, TimeUnit.MINUTES);
+			} catch (InterruptedException | ExecutionException | TimeoutException e) {
+				e.printStackTrace();
+				return;
+			}
+							
+			for(PendingAction action : answer.getPendingActions()) {
+				action.setMessage(sentMessage);
 			}
 			
 		}

@@ -26,7 +26,9 @@ public class JediStarBotReactionAddListener implements ReactionAddListener {
 				pendingActions.remove(action);
 			}
 			
-			if(action.getUser().getId().equals(user.getId())) {
+			if(action.getUser().getId().equals(user.getId())
+					&& action.getMessage().getId().equals(reaction.getMessage().getId())) {
+				
 				action.doAction(reaction);
 				pendingActions.remove(action);
 				return;

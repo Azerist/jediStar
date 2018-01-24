@@ -375,10 +375,10 @@ public class PayoutCommand implements JediStarBotCommand {
 				return new CommandAnswer(ERROR_USER_NOT_FOUND,null);
 			}
 			
-			PendingAction action = new PendingAction(receivedMessage.getAuthor(),"deleteUser",this,receivedMessage,1,userName,channelID);
+			PendingAction action = new PendingAction(receivedMessage.getAuthor(),"deleteUser",this,1,userName,channelID);
 			JediStarBotReactionAddListener.addPendingAction(action);
 			
-			return new CommandAnswer(MESSAGE_CONFIRM_DELETE,null,emojiV,emojiX);
+			return new CommandAnswer(MESSAGE_CONFIRM_DELETE,null,emojiV,emojiX).addPendingActions(action);
 		}
 		catch(SQLException e) {
 			logger.error(e.getMessage());
@@ -591,10 +591,10 @@ public class PayoutCommand implements JediStarBotCommand {
 				
 		String message = String.format(MESSAGE_CONFIRM_TIMEZONE, timezoneName,userName,hoursDifference,minutesDifference);
 		
-		PendingAction action = new PendingAction(receivedMessage.getAuthor(),"addUser",this, receivedMessage,5, userName,payoutCalendar2,flag,swgohggLink,receivedMessage.getChannelReceiver().getId());
+		PendingAction action = new PendingAction(receivedMessage.getAuthor(),"addUser",this,5, userName,payoutCalendar2,flag,swgohggLink,receivedMessage.getChannelReceiver().getId());
 		JediStarBotReactionAddListener.addPendingAction(action);
 		
-		return new CommandAnswer(message,null,emojiV,emojiX);
+		return new CommandAnswer(message,null,emojiV,emojiX).addPendingActions(action);
 		
 	}
 	
@@ -652,10 +652,10 @@ public class PayoutCommand implements JediStarBotCommand {
 		
 		String channelID = receivedMessage.getChannelReceiver().getId();
 		
-		PendingAction action = new PendingAction(receivedMessage.getAuthor(), "clear", this, receivedMessage, 1, channelID);
+		PendingAction action = new PendingAction(receivedMessage.getAuthor(), "clear", this, 1, channelID);
 		JediStarBotReactionAddListener.addPendingAction(action);
 		
-		return new CommandAnswer(MESSAGE_CLEAR_WARNING, null, emojiV,emojiX);
+		return new CommandAnswer(MESSAGE_CLEAR_WARNING, null, emojiV,emojiX).addPendingActions(action);
 	}
 	
 	public String clear(ImplReaction reaction, String channelID) {
@@ -708,11 +708,11 @@ public class PayoutCommand implements JediStarBotCommand {
 		String sourceChannelID = sourceChannel.getId();
 		String sourceChannelName = sourceChannel.getName();
 		
-		PendingAction action = new PendingAction(receivedMessage.getAuthor(), "copy", this, receivedMessage, 1, channelID,sourceChannelID);
+		PendingAction action = new PendingAction(receivedMessage.getAuthor(), "copy", this, 1, channelID,sourceChannelID);
 		JediStarBotReactionAddListener.addPendingAction(action);
 		
 		String message = String.format(MESSAGE_COPY_WARNING, sourceChannelName);
-		return new CommandAnswer(message, null, emojiV,emojiX);
+		return new CommandAnswer(message, null, emojiV,emojiX).addPendingActions(action);
 	}
 	
 	public String copy(ImplReaction reaction, String channelID,String sourceChannelID) {
