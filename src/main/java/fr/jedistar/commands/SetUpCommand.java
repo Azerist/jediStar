@@ -169,11 +169,12 @@ public class SetUpCommand implements JediStarBotCommand {
 				return new CommandAnswer(SETUP_GUILD_OK,null);
 			}
 			
-			JediStarBotReactionAddListener.addPendingAction(new PendingAction(receivedMessage.getAuthor(),"executeUpdate",this,receivedMessage,1,channelID,guildID));
+			PendingAction action = new PendingAction(receivedMessage.getAuthor(),"executeUpdate",this,1,channelID,guildID);
+			JediStarBotReactionAddListener.addPendingAction(action);
 			String emojiX = EmojiManager.getForAlias("x").getUnicode();
 			String emojiV = EmojiManager.getForAlias("white_check_mark").getUnicode();
 
-			return new CommandAnswer(String.format(CONFIRM_UPDATE_GUILD,existingGuildID),null,emojiV,emojiX);
+			return new CommandAnswer(String.format(CONFIRM_UPDATE_GUILD,existingGuildID),null,emojiV,emojiX).addPendingActions(action);
 		}
 		
 		Connection conn = null;

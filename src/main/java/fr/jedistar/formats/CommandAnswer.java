@@ -1,5 +1,6 @@
 package fr.jedistar.formats;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class CommandAnswer {
 	private String message = "";
 	private EmbedBuilder embed;
 	private List<String> reactions;
+	private List<PendingAction> pendingActions = new ArrayList<PendingAction>();
 
 	public CommandAnswer(String message, EmbedBuilder embed,String...reactions) {
 		if(message !=null) {
@@ -40,5 +42,14 @@ public class CommandAnswer {
 		this.embed = embed;
 	}
 
-
+	public List<PendingAction> getPendingActions() {
+		return pendingActions;
+	}
+	
+	public CommandAnswer addPendingActions(PendingAction...actions) {
+		for(PendingAction action : actions) {
+			pendingActions.add(action);
+		}
+		return this;
+	}
 }

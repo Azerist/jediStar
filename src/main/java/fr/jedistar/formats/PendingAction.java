@@ -1,7 +1,6 @@
 package fr.jedistar.formats;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import de.btobastian.javacord.entities.User;
@@ -34,22 +33,24 @@ public class PendingAction {
 	 * @param method : A method that should return a String and take a Reaction as first argument
 	 * @param object : The object on which <i>method</i> will be called
 	 * @param args : The arguments for the method call
-	 * @param message : The message that triggered this action
 	 * @param expiration : the time in minutes in which this action will expire
 	 */
-	public PendingAction(User user, String methodName, Object object, Message message, Integer expiration,Object... args) {
+	public PendingAction(User user, String methodName, Object object,Integer expiration,Object... args) {
 
 		this.user = user;
 		this.methodName = methodName;
 		this.object = object;
 		this.args = args;
-		this.message = message;
-
+		
 		Calendar cal = Calendar.getInstance();
 
 		cal.add(Calendar.MINUTE, expiration);
 
 		this.expiration = cal;
+	}
+	
+	public void setMessage(Message message) {
+		this.message = message;
 	}
 	
 	public boolean isExpired() {
@@ -58,9 +59,7 @@ public class PendingAction {
 	
 	
 	public void doAction(Reaction reaction) {
-		try {
-			ArrayList<Class<?>> paramsTypes = new ArrayList<Class<?>>();
-			
+		try {			
 			Object[] params = new Object[args.length+1];
 			
 			params[0] = reaction;

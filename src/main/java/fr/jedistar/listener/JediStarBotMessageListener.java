@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.btobastian.javacord.DiscordAPI;
-import de.btobastian.javacord.entities.Channel;
 import de.btobastian.javacord.entities.Server;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
@@ -40,6 +39,7 @@ import fr.jedistar.commands.RaidCommand;
 import fr.jedistar.commands.SetUpCommand;
 import fr.jedistar.commands.TerritoryBattlesCommand;
 import fr.jedistar.formats.CommandAnswer;
+import fr.jedistar.formats.PendingAction;
 
 public class JediStarBotMessageListener implements MessageCreateListener {
 
@@ -200,6 +200,22 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 					e.printStackTrace();
 					return;
 				}
+			}
+			
+		}
+		
+		//Handle pending actions
+		if(answer.getPendingActions() != null && !answer.getPendingActions().isEmpty()) {
+			Message sentMessage = null;
+			try {
+				sentMessage = future.get(1, TimeUnit.MINUTES);
+			} catch (InterruptedException | ExecutionException | TimeoutException e) {
+				e.printStackTrace();
+				return;
+			}
+							
+			for(PendingAction action : answer.getPendingActions()) {
+				action.setMessage(sentMessage);
 			}
 			
 		}
