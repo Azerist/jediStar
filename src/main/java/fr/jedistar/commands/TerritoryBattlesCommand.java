@@ -196,10 +196,14 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 		if(COMMAND_STRATEGY.equals(params.get(0))) {
 			
-			if(params.size() >  3 || params.size() <  2) {
+			if(params.size() >  3 ) 
+			{
 				return new CommandAnswer(ERROR_COMMAND,null);
 			}
-			
+			if(params.size() <  2)
+			{
+				return new CommandAnswer(error(ERROR_MESSAGE_PARAMS_NUMBER),null);
+			}
 			try {
 				
 				Integer guildID = getGuildIDFromDB(receivedMessage);
