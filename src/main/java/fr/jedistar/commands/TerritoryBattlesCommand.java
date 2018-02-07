@@ -32,6 +32,7 @@ import fr.jedistar.commands.helper.GalaticPowerToStars.StarInfo;
 import fr.jedistar.commands.helper.StringFormating;
 import fr.jedistar.commands.helper.StringMatcher;
 import fr.jedistar.formats.CommandAnswer;
+import fr.jedistar.utils.DbUtils;
 import fr.jedistar.utils.GuildUnitsSWGOHGGDataParser;
 
 public class TerritoryBattlesCommand implements JediStarBotCommand {
@@ -75,7 +76,6 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final String ERROR_SWGOHGG_BUG;
 
 
-	private final static String SQL_GUILD_ID = "SELECT guildID FROM guild WHERE channelID=?;";
 	private final static String SQL_FIND_CHARS = "SELECT * FROM %s WHERE";
 	private final static String SQL_FIND_GUILD_UNITS = "SELECT * FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=? ORDER BY power LIMIT 15";
 	private final static String SQL_FIND_GUILD_UNITS_REVERSE = "SELECT * FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=? ORDER BY power DESC LIMIT 15";
@@ -196,13 +196,21 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		
 		if(COMMAND_STRATEGY.equals(params.get(0))) {
 			
-			if(params.size() >  3 || params.size() <  2) {
+			if(params.size() >  3 ) 
+			{
 				return new CommandAnswer(ERROR_COMMAND,null);
 			}
-			
+			if(params.size() <  2)
+			{
+				return new CommandAnswer(error(ERROR_MESSAGE_PARAMS_NUMBER),null);
+			}
 			try {
 				
-				Integer guildID = getGuildIDFromDB(receivedMessage);
+				if(receivedMessage.getChannelReceiver() == null) {
+					return new CommandAnswer(ERROR_MESSAGE_NO_CHANNEL,null);
+				}
+				
+				Integer guildID = DbUtils.getGuildIDFromDB(receivedMessage);
 
 				if(guildID == null) {
 					return new CommandAnswer(ERROR_MESSAGE_SQL, null);
@@ -307,7 +315,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				return new CommandAnswer(ERROR_MESSAGE_NO_CHANNEL,null);
 			}
 
-			Integer guildID = getGuildIDFromDB(receivedMessage);
+			Integer guildID = DbUtils.getGuildIDFromDB(receivedMessage);
 
 			if(guildID == null) {
 				return new CommandAnswer(ERROR_MESSAGE_SQL, null);
@@ -353,53 +361,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		return new CommandAnswer(error(ERROR_COMMAND),null);
 	}
 
-	/**
-	 * Gets the guild ID associated with this Discord server from the DB
-	 * @param message
-	 * @return
-	 */
-	private Integer getGuildIDFromDB(Message message) {
 
-		String channelID = message.getChannelReceiver().getId();
-
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-
-		try {
-			conn = StaticVars.getJdbcConnection();
-
-			stmt = conn.prepareStatement(SQL_GUILD_ID);
-
-			stmt.setString(1,channelID);
-
-			logger.debug("Executing query : "+stmt.toString());
-
-			rs = stmt.executeQuery();
-
-			if(rs.next()) {
-				return rs.getInt("guildID");
-			}
-			return -1;
-		}
-		catch(SQLException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-			return null;
-		}
-		finally {
-			try {
-				if(rs != null) {
-					rs.close();
-				}
-				if(stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-			}
-		}
-	}
 	
 	private Integer getGPSUM(Integer guildID,String mode,boolean refresh) 
 	{
@@ -740,9 +702,11 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 
 			Calendar result = Calendar.getInstance();
 			
-			while(rs.next()) {
-				result.setTime(rs.getDate("expiration"));
+			if(rs == null || !rs.next() || rs.getDate("expiration")==null ) {
+				return null;
 			}
+			
+			result.setTime(rs.getDate("expiration"));
 			
 			result.add(Calendar.HOUR, -24);
 			

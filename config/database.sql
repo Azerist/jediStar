@@ -83,3 +83,64 @@ BEGIN
 END//
 
 DELIMITER ;
+
+CREATE TABLE IF NOT EXISTS raid
+(
+	raidName varchar(16) PRIMARY KEY,
+	raidAliases varchar(64)
+);
+
+CREATE TABLE IF NOT EXISTS balancingGuildRules
+(
+	guildID INT NOT NULL,
+	raidName varchar(16),
+	textualRules varchar(2000),
+	minRaidsForPodium INT NOT NULL DEFAULT 15,
+	PRIMARY KEY (guildID,raidName),
+	FOREIGN KEY (raidName) REFERENCES raid(raidName)
+);
+
+CREATE TABLE IF NOT EXISTS balancingGuildRanks
+(
+	guildID INT,
+	raidName varchar(16),
+	rankID INT NOT NULL,
+	rankName varchar(32) NOT NULL,
+	rankWidth INT NOT NULL,
+	PRIMARY KEY (guildID,raidName,rankID),
+	FOREIGN KEY (guildID,raidName) REFERENCES balancingGuildRules(guildID,raidName)
+);
+
+CREATE TABLE IF NOT EXISTS balancingUserValues
+(
+	userID varchar(64) NOT NULL,
+	raidName varchar(16),
+	guildID INT,
+	podiums INT NOT NULL DEFAULT 0,
+	withoutPodium INT NOT NULL DEFAULT 0,
+	targetRank INT,
+	PRIMARY KEY (userID,raidName,guildID),
+	FOREIGN KEY (guildID,raidName) REFERENCES balancingGuildRules(guildID,raidName)
+);
+
+CREATE TABLE IF NOT EXISTS balancingUserValuesPerRank
+(
+	userID varchar(64),
+	raidName varchar(16),
+	guildID INT,
+	rankID INT,
+	userValue INT NOT NULL DEFAULT 0,
+	PRIMARY KEY (userID,raidName,guildID,rankID),
+	FOREIGN KEY (userID,raidName,guildID) REFERENCES balancingUserValues(userID,raidName,guildID),
+	FOREIGN KEY (guildID,raidName,rankID) REFERENCES balancingGuildRanks(guildID,raidName,rankID)
+);
+
+CREATE TABLE IF NOT EXISTS balancingActionHistory
+(
+	guildID INT NOT NULL,
+	userID varchar(64) NOT NULL,
+	raidName varchar(16) NOT NULL,
+	ts TIMESTAMP,
+	actionName varchar(64),
+	payload varchar(128)
+);
