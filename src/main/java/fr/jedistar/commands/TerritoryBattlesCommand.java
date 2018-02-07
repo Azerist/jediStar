@@ -223,8 +223,8 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.setColor(EMBED_COLOR);
 				
-				Integer characterGP = getGPSUM(guildID,SHIP_MODE,true);
-				Integer shipGP = getGPSUM(guildID,CHAR_MODE,true);
+				Integer characterGP = getGPSUM(guildID,CHAR_MODE,true);
+				Integer shipGP = getGPSUM(guildID,SHIP_MODE,true);
 				
 				String errorMessage = "";
 				
@@ -253,8 +253,8 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 					
 					Thread.sleep(50);
 					
-					characterGP = getGPSUM(guildID,SHIP_MODE,false);
-					shipGP = getGPSUM(guildID,CHAR_MODE,false);
+					characterGP = getGPSUM(guildID,CHAR_MODE,false);
+					shipGP = getGPSUM(guildID,SHIP_MODE,false);
 				}
 				Boolean isDark;
 				String 	battleTitle;
@@ -376,12 +376,12 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 
 				if(SHIP_MODE.equals(mode)) {
 					updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseShips();
-					request=SQL_SUM_GUILD_UNITS_GP;
+					request=SQL_SUM_GUILD_SHIPS_GP;
 				}
 
 				if(CHAR_MODE.equals(mode)) {
 					updateOK = updateOK && GuildUnitsSWGOHGGDataParser.parseCharacters();
-					request=SQL_SUM_GUILD_SHIPS_GP;
+					request=SQL_SUM_GUILD_UNITS_GP;
 				}
 			}
 
@@ -401,11 +401,11 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		}
 
 		if(SHIP_MODE.equals(mode)) {
-			request=SQL_SUM_GUILD_UNITS_GP;
+			request=SQL_SUM_GUILD_SHIPS_GP;
 		}
 
 		if(CHAR_MODE.equals(mode)) {
-			request=SQL_SUM_GUILD_SHIPS_GP;
+			request=SQL_SUM_GUILD_UNITS_GP;
 		}
 			
 		Connection conn = null;
