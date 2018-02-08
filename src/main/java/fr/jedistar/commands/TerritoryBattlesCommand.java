@@ -82,7 +82,6 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 	private final static String SQL_COUNT_GUILD_UNITS = "SELECT COUNT(*) as count FROM guildUnits WHERE guildID=? AND charID=? AND rarity>=?";
 	private final static String SQL_SUM_GUILD_UNITS_GP ="SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN characters c ON (c.baseID=u.charID) WHERE guildID=?";
 	private final static String SQL_SUM_GUILD_SHIPS_GP = "SELECT SUM(u.power) as sumGP FROM guildUnits u INNER JOIN ships s ON (s.baseID=u.charID) WHERE guildID=?";
-	private final static String SQL_FIND_EXPIRATION_DATE = "SELECT MAX(expiration) as expiration FROM guildUnits WHERE guildID=?";
 	
 	private final static String CHAR_MODE = "characters";
 	private final static String SHIP_MODE = "ships";
@@ -239,7 +238,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 				}
 				
 				if(!StringUtils.isBlank(errorMessage)) {
-					Calendar lastUpdate = findLastUpdateDate(guildID);
+					Calendar lastUpdate = DbUtils.findLastUpdateDateForGuild(guildID);
 					
 					if(lastUpdate == null) {
 						return new CommandAnswer(errorMessage,null);
@@ -478,7 +477,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		}
 		
 		if(!updateOK) {
-			Calendar lastUpdate = findLastUpdateDate(guildID);
+			Calendar lastUpdate = DbUtils.findLastUpdateDateForGuild(guildID);
 			
 			if(lastUpdate == null) {
 				return errorMessage;
@@ -684,52 +683,7 @@ public class TerritoryBattlesCommand implements JediStarBotCommand {
 		}
 	}
 	
-	private Calendar findLastUpdateDate(Integer guildID) {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		
-		try {
-			conn = StaticVars.getJdbcConnection();
 
-			stmt = conn.prepareStatement(SQL_FIND_EXPIRATION_DATE);
-	
-			stmt.setInt(1, guildID);
-			
-			logger.debug("Executing query : "+stmt.toString());
-
-			rs = stmt.executeQuery();
-
-			Calendar result = Calendar.getInstance();
-			
-			if(rs == null || !rs.next() || rs.getDate("expiration")==null ) {
-				return null;
-			}
-			
-			result.setTime(rs.getDate("expiration"));
-			
-			result.add(Calendar.HOUR, -24);
-			
-			return result;
-		}
-		catch(SQLException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-			return null;
-		}
-		finally {
-			try {
-				if(rs != null) {
-					rs.close();
-				}
-				if(stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-			}
-		}
-	}
 	
 	private String error(String message) {
 		return ERROR_MESSAGE +"**"+ message + "**\r\n\r\n"+ HELP;

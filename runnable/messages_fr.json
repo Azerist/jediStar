@@ -165,7 +165,7 @@
 			"reverseOrder":"inverse"
 		},
 		
-		"help":"**Commandes possibles** :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp ls\r\n%tb gp ds min\r\n%tb platoon vaisseaux ghost inverse",
+		"help":"Commandes possibles :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp ls\r\n%tb gp ds min\r\n%tb platoon vaisseaux ghost inverse",
 		
 		"messages":{
 			"displayedResults":"Liste des 15 plus faibles (total %d)",
@@ -207,7 +207,7 @@
 			"raidMessage": "**Voici des exemples de commandes disponibles pour déterminer vos résultats de raid** :\r\n\r\n- **%raid rancor p1 5.5%** ==> Donne les dégâts correspondant à 5.5% réalisés en P1 sur le rancor\r\n- **%raid rancor p2 10% 4%** ==> Donne les dégâts correspondant à 6% réalisés sur la P2 du rancor\r\n - ** %raid aat p3 40000 ** == > Donne le % correspondant à 40 K de dégâts sur la p3 du tank\r\n - ** %raid tank p4 35 % 100000 ** == > Donne le % cible à atteindre pour réaliser 100 K dégâts en commençant le combat à 35 % sur la P4 du tank\r\n - ** %raid tank p4 35 % 100000 300000 ** == > Donne les % cibles à atteindre pour réaliser 100 K et 300 k dégâts en commençant le combat à 35 % sur la P4 du tank",
 			"equilibrageMessage": "**Cette commande vous permet de connaître votre équilibrage sur un raid.**\r\n\r\n**Exemple d'appel**\r\n%equilibrage rancor\r\n**Commandes pour les officiers :**\r\n%equilibrage maj\r\n%equilibrage lancer rancor @podium1 @podium2 @podium3 @exclus1 @exclus2\r\n%equilibrage ajouter @user\r\n%equilibrage supprimer @user\r\n%equlibrage supprimer XXXX\r\n%equilibrage terminer tank\r\n%equilibrage lancer tank podium-auto @exclusDuTop10\r\n%equilibrage lancer tank @podium1 @podium2 @podium3 @exclusDuTop10",
 			"arenaMessage": "**Cette commande donne le plus haut rang d'arène accessible en 5 combats.**\r\n\r\n**Exemple d'appel**\r\n%arene 26",
-			"tbMessage": "**Commandes possibles** :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp ls\r\n%tb gp ds min\r\n%tb platoon vaisseaux ghost inverse",
+			"tbMessage": "**Commandes possibles** :\r\n%tb platoon persos aayla 5\\*\r\n%tb platoon vaisseaux ghost 5\\*\r\n%tb gp",
 			"payoutsMessage": "Cette commande permet de gérer les payouts d'arène.\r\n**Exemple d'appel : %payouts**\r\n**Pour les administrateurs :**\r\n%payouts ajouter user 15:00 UTC flag_us https://swgoh.gg/u/user\r\n%payouts ajouter user 12:00 EST\r\n%payouts supprimer user"
 		},
 		"errorMessages": {
@@ -248,6 +248,37 @@
 			"noUsersInThisChan": "Aucun utilisateur n'a été enregistré dans ce salon. Utilisez la commande **%payouts ajouter**",
 			"noTimezone": "Votre commande ne contient pas de timeZone",
 			"channelFormat": "Salon non trouvé. Merci d'utiliser les tags #nom-salon dans cette commande."
+		}
+	},
+	"guildReportCommandParameters":{
+		"commands":{
+			"main":"guildreport",
+			"all":"all"
+		},
+
+		"errorMessages": {
+			"forbidden": "Vous n'avez pas le droit d'exécuter cette commande.\r\nVous devez faire partie du groupe Discord «botadmins» pour administrer le bot.",
+			"noGuildNumber": "Aucune guilde n'est associée avec ce salon Discord. Veuillez demander à un administrateur du bot d'utiliser la commande %parametrage",
+			"noChannel": "Cette commande doit être utilisée depuis un salon Discord (pas de message privé)",
+			"sqlError": "Une erreur est survenue lors de l'accès à la base de données",
+			"swgohGGblocker": "swgoh.gg a refusé de nous envoyer des informations sur votre guilde.\r\nCeci est probablement dû à une trop forte activité sur la commande %tb actuellement.\r\nMerci de réessayer dans quelques minutes.",
+			"swgohGGbug": "Une erreur interne à swgoh.gg s'est produite.",
+			"outdatedData" : "Les données de votre guilde n'ont pas pu être rafraîchies. Le rapport généré est basée sur des données obsolètes (dernière mise à jour : %tF )."		
+		},
+		
+		"excelValues":{
+			"headers":{
+				"unitType":"Type",
+				"unitName":"Nom",
+				"unitRarity":"Rareté",
+				"unitPower":"Puissance",
+				"unitLevel":"Niveau"
+			},
+			"unitTypes":{
+				"ship":"vaisseau",
+				"toon":"personnage"
+			},
+			"filename":"rapportGuildeSwgoh_%s.xlsx"
 		}
 	}
 }
