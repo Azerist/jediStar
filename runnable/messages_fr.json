@@ -250,6 +250,7 @@
 			"channelFormat": "Salon non trouvé. Merci d'utiliser les tags #nom-salon dans cette commande."
 		}
 	},
+
 	"guildReportCommandParameters":{
 		"commands":{
 			"main":"guildreport",
@@ -278,7 +279,7 @@
 				"ship":"vaisseau",
 				"toon":"personnage"
 			},
-			"filename":"rapportGuildeSwgoh_%s.xlsx"
+			"filename":"rapportGuildeSwgoh_%tF.xlsx"
 		}
 	}
 }

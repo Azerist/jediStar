@@ -1,19 +1,29 @@
 package fr.jedistar.commands;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -70,8 +80,9 @@ public class GuildReportCommand implements JediStarBotCommand{
 	private final String EXCEL_UNIT_TYPE_TOON;
 	private final String EXCEL_FILENAME;
 
-
-	private final static String SQL_FIND_GUILD_UNITS = "SELECT player,power,rarity,level,charID FROM guildUnits WHERE guildID=? ORDER BY player";
+	private final static String SQL_FIND_HISTORY = "SELECT expiration,fileContent FROM guildReportHistory WHERE guildID=?;";
+	private final static String SQL_FIND_GUILD_UNITS = "SELECT player,power,rarity,level,charID,expiration FROM guildUnits WHERE guildID=? ORDER BY player;";
+	private final static String SQL_INSERT_FILE_HISTORY = "REPLACE INTO guildReportHistory(guildID,fileContent,expiration) VALUES (?,?,?);";
 
 	//Nom des champs JSON
 	private final static String JSON_GUILD_REPORT = "guildReportCommandParameters";
@@ -204,14 +215,19 @@ public class GuildReportCommand implements JediStarBotCommand{
 		}
 
 		if(COMMAND_ALL.equals(params.get(0))) {
-			generateGuildReport (guildID,receivedMessage);
+
+			boolean historyFileFound = findHistoryFile(guildID,receivedMessage);
+
+			if(historyFileFound) {
+				return null;
+			}
+
+			new GuildReportGenerator(guildID,receivedMessage).start();
 		}
 		return null;
 	}
 
-	private void generateGuildReport(Integer guildID, Message receivedMessage) {
-
-		Workbook wb = new XSSFWorkbook();
+	private boolean findHistoryFile(Integer guildID, Message receivedMessage) {
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -220,104 +236,35 @@ public class GuildReportCommand implements JediStarBotCommand{
 		try {
 			conn = StaticVars.getJdbcConnection();
 
-			stmt = conn.prepareStatement(SQL_FIND_GUILD_UNITS);
+			stmt = conn.prepareStatement(SQL_FIND_HISTORY);
 
 			stmt.setInt(1, guildID);
 
+			logger.debug("Executing query : "+stmt.toString());
+
 			rs = stmt.executeQuery();
 
-			String currentPlayer = "";
-			XSSFSheet sheet = null;
-			int rowCur = 1;
-			long tableId = 1L;
+			if(rs.next() && rs.getTimestamp("expiration").after(new Date())) {
+				Blob file = rs.getBlob("fileContent");
 
-			while(rs.next()) {
-				String player = rs.getString("player");
+				InputStream stream = file.getBinaryStream();
 
-				if(!player.equals(currentPlayer)) {
-
-					if(sheet != null) {
-						sheet.autoSizeColumn(0);
-						sheet.autoSizeColumn(1);
-						sheet.autoSizeColumn(2);
-						sheet.setColumnWidth(2, sheet.getColumnWidth(2) + 500);
-						sheet.autoSizeColumn(3);
-						sheet.setColumnWidth(3, sheet.getColumnWidth(3) + 500);
-						sheet.autoSizeColumn(4);
-						sheet.setColumnWidth(4, sheet.getColumnWidth(4) + 500);
-						
-						XSSFTable table = sheet.createTable();
-						CTTable cttable = table.getCTTable();
-
-						cttable.setId(tableId);
-
-						cttable.setDisplayName("Table"+tableId);
-						cttable.setName("Table"+tableId);
-
-						CTTableStyleInfo tableStyle = cttable.addNewTableStyleInfo();
-						tableStyle.setName("TableStyleMedium9");           
-
-						tableStyle.setShowColumnStripes(false);
-						tableStyle.setShowRowStripes(true);   
-
-						@SuppressWarnings("deprecation")
-						AreaReference dataRange = new AreaReference(new CellReference(0, 0), new CellReference(rowCur, 4));    
-						cttable.setRef(dataRange.formatAsString());
-
-						CTTableColumns columns = cttable.addNewTableColumns();
-						columns.setCount(5L); 
-						CTAutoFilter autofilter = cttable.addNewAutoFilter();
-						for (int i = 0; i < 5; i++)
-						{
-							CTTableColumn column = columns.addNewTableColumn();   
-							column.setName("Column" + i);      
-							column.setId(i+1);
-						
-							CTFilterColumn filter = autofilter.addNewFilterColumn();
-					        filter.setColId(i + 1);
-					        filter.setShowButton(true);
-						}   
-
-						tableId++;
-
-					}
-
-					currentPlayer = player;
-					sheet = initializeNewSheet(wb,player);
-					rowCur = 1;
-				}
-
-				String baseID = rs.getString("charID");
-				Unit unit = DbUtils.findUnitByID(baseID);
-
-				if(unit == null) {
-					continue;
-				}
-
-				XSSFRow row = sheet.createRow(rowCur);
-
-				XSSFCell cell = row.createCell(0);
-				if(Unit.UNIT_TYPE_SHIP == unit.getCombatType()) {
-					cell.setCellValue(EXCEL_UNIT_TYPE_SHIP);
-				}
-				else if(Unit.UNIT_TYPE_TOON == unit.getCombatType()) {
-					cell.setCellValue(EXCEL_UNIT_TYPE_TOON);
-				}
-
-				row.createCell(1).setCellValue(unit.getName());
-
-				row.createCell(2).setCellValue(rs.getInt("rarity"));
-
-				row.createCell(3).setCellValue(rs.getInt("power"));
-
-				row.createCell(4).setCellValue(rs.getInt("level"));
-
-				rowCur ++;
+				Calendar dataDate = Calendar.getInstance();
+				dataDate.setTime(rs.getTimestamp("expiration"));
+				dataDate.add(Calendar.HOUR_OF_DAY, -24);
+				
+				String fileName = String.format(EXCEL_FILENAME,dataDate);
+				receivedMessage.getChannelReceiver().sendFile(stream,fileName);
+				
+				return true;
 			}
+			return false;
+
 		}
 		catch(SQLException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
+			return false;
 		}
 		finally {
 			try {
@@ -331,51 +278,224 @@ public class GuildReportCommand implements JediStarBotCommand{
 				logger.error(e.getMessage());
 			}
 		}
+	}
 
-		try {
+	private class GuildReportGenerator extends Thread{
 
-			String filename = String.format(EXCEL_FILENAME, new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()));
-			FileOutputStream fileOut = new FileOutputStream(filename);
+		Integer guildID;
+		Message receivedMessage;
 
-			wb.write(fileOut);
-			fileOut.close();
-			wb.close();
-
-			receivedMessage.getChannelReceiver().sendFile(new File(filename)).get();
-
-			Files.delete(Paths.get(filename));
-
-		} catch (IOException | InterruptedException | ExecutionException e) {
-			//Should never happen
-			e.printStackTrace();
+		public GuildReportGenerator(Integer guildID, Message receivedMessage) {
+			this.guildID = guildID;
+			this.receivedMessage = receivedMessage;
 		}
+
+		@Override
+		public void run() {
+
+			Workbook wb = new XSSFWorkbook();
+
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+
+			try {
+				conn = StaticVars.getIndependantJdbcConnection();
+
+				stmt = conn.prepareStatement(SQL_FIND_GUILD_UNITS);
+
+				stmt.setInt(1, guildID);
+
+				logger.debug("executing query : "+stmt.toString());
+				rs = stmt.executeQuery();
+
+				String currentPlayer = "";
+				XSSFSheet sheet = null;
+				int rowCur = 1;
+				long tableId = 1L;
+				Timestamp expirationDate = null;
+
+				while(rs.next()) {
+					String player = rs.getString("player");
+					
+					if(expirationDate == null) {
+						expirationDate = rs.getTimestamp("expiration");
+					}
+					
+					if(!player.equals(currentPlayer)) {
+
+						tableId = formatSheet(sheet, rowCur, tableId);
+
+						currentPlayer = player;
+						sheet = initializeNewSheet(wb,player);
+						rowCur = 1;
+					}
+
+					String baseID = rs.getString("charID");
+					Unit unit = DbUtils.findUnitByID(baseID);
+
+					if(unit == null) {
+						continue;
+					}
+
+					XSSFRow row = sheet.createRow(rowCur);
+
+					XSSFCell cell = row.createCell(0);
+					if(Unit.UNIT_TYPE_SHIP == unit.getCombatType()) {
+						cell.setCellValue(EXCEL_UNIT_TYPE_SHIP);
+					}
+					else if(Unit.UNIT_TYPE_TOON == unit.getCombatType()) {
+						cell.setCellValue(EXCEL_UNIT_TYPE_TOON);
+					}
+
+					row.createCell(1).setCellValue(unit.getName());
+
+					row.createCell(2).setCellValue(rs.getInt("rarity"));
+
+					row.createCell(3).setCellValue(rs.getInt("power"));
+
+					row.createCell(4).setCellValue(rs.getInt("level"));
+
+					rowCur ++;
+				}
+
+				tableId = formatSheet(sheet, rowCur, tableId);
+
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+				wb.write(stream);
+				wb.close();
+
+				Blob blob = new SerialBlob(stream.toByteArray());
+
+				ByteArrayInputStream inputStream = new ByteArrayInputStream(stream.toByteArray());
+
+				Calendar dataDate = Calendar.getInstance();
+				dataDate.setTime(expirationDate);
+				dataDate.add(Calendar.HOUR_OF_DAY, -24);
+
+				
+				String fileName = String.format(EXCEL_FILENAME,dataDate);
+
+				receivedMessage.getChannelReceiver().sendFile(inputStream,fileName);
+
+				stream.close();
+				inputStream.close();
+				
+				rs.close();
+				stmt.close();
+				
+				stmt = conn.prepareStatement(SQL_INSERT_FILE_HISTORY);
+
+				stmt.setInt(1, guildID);
+				stmt.setTimestamp(3,expirationDate);
+				
+				logger.debug("Executing query : "+stmt.toString());
+				
+				stmt.setBlob(2, blob);
+
+				stmt.executeUpdate();
+			}
+			catch(SQLException e) {
+				logger.error(e.getMessage());
+				e.printStackTrace();
+				receivedMessage.reply(ERROR_SQL);
+			} catch (IOException e) {
+				//Should never happen
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					if(rs != null) {
+						rs.close();
+					}
+					if(stmt != null) {
+						stmt.close();
+					}
+					if(conn != null) {
+						conn.close();
+					}
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+				}
+			}
+
+		}
+
+		private long formatSheet(XSSFSheet sheet, int rowCur, long tableId) {
+			if(sheet != null) {
+				sheet.autoSizeColumn(0);
+				sheet.autoSizeColumn(1);
+				sheet.autoSizeColumn(2);
+				sheet.setColumnWidth(2, sheet.getColumnWidth(2) + 500);
+				sheet.autoSizeColumn(3);
+				sheet.setColumnWidth(3, sheet.getColumnWidth(3) + 500);
+				sheet.autoSizeColumn(4);
+				sheet.setColumnWidth(4, sheet.getColumnWidth(4) + 500);
+
+				XSSFTable table = sheet.createTable();
+				CTTable cttable = table.getCTTable();
+
+				cttable.setId(tableId);
+
+				cttable.setDisplayName("Table"+tableId);
+				cttable.setName("Table"+tableId);
+
+				CTTableStyleInfo tableStyle = cttable.addNewTableStyleInfo();
+				tableStyle.setName("TableStyleMedium9");           
+
+				tableStyle.setShowColumnStripes(false);
+				tableStyle.setShowRowStripes(true);   
+
+				@SuppressWarnings("deprecation")
+				AreaReference dataRange = new AreaReference(new CellReference(0, 0), new CellReference(rowCur, 4));    
+				cttable.setRef(dataRange.formatAsString());
+
+				CTTableColumns columns = cttable.addNewTableColumns();
+				columns.setCount(5L); 
+				CTAutoFilter autofilter = cttable.addNewAutoFilter();
+				for (int i = 0; i < 5; i++)
+				{
+					CTTableColumn column = columns.addNewTableColumn();   
+					column.setName("Column" + i);      
+					column.setId(i+1);
+
+					CTFilterColumn filter = autofilter.addNewFilterColumn();
+					filter.setColId(i + 1);
+					filter.setShowButton(true);
+				}   
+
+				tableId++;
+
+			}
+			return tableId;
+		}
+
+		private XSSFSheet initializeNewSheet(Workbook wb, String player) {
+
+			XSSFRow row;
+			XSSFCell cell;
+			XSSFSheet sheet = (XSSFSheet) wb.createSheet(StringUtils.remove(player,"'"));
+
+			row = sheet.createRow(0);
+
+			cell = row.createCell(0);
+			cell.setCellValue(EXCEL_HEADER_UNIT_TYPE);
+
+			cell = row.createCell(1);
+			cell.setCellValue(EXCEL_HEADER_UNIT_NAME);
+
+			cell = row.createCell(2);
+			cell.setCellValue(EXCEL_HEADER_UNIT_RARITY);
+
+			cell = row.createCell(3);
+			cell.setCellValue(EXCEL_HEADER_UNIT_POWER);
+
+			cell = row.createCell(4);
+			cell.setCellValue(EXCEL_HEADER_UNIT_LEVEL);
+
+			return sheet;
+		}
+
 	}
-
-	private XSSFSheet initializeNewSheet(Workbook wb, String player) {
-
-		XSSFRow row;
-		XSSFCell cell;
-		XSSFSheet sheet = (XSSFSheet) wb.createSheet(StringUtils.remove(player,"'"));
-
-		row = sheet.createRow(0);
-
-		cell = row.createCell(0);
-		cell.setCellValue(EXCEL_HEADER_UNIT_TYPE);
-
-		cell = row.createCell(1);
-		cell.setCellValue(EXCEL_HEADER_UNIT_NAME);
-
-		cell = row.createCell(2);
-		cell.setCellValue(EXCEL_HEADER_UNIT_RARITY);
-
-		cell = row.createCell(3);
-		cell.setCellValue(EXCEL_HEADER_UNIT_POWER);
-
-		cell = row.createCell(4);
-		cell.setCellValue(EXCEL_HEADER_UNIT_LEVEL);
-
-		return sheet;
-	}
-
-
 }
