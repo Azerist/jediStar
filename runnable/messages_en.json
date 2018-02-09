@@ -261,8 +261,8 @@
 			"noChannel": "This command must be used from a Discord channel (no private messages)",
 			"sqlError": "An error occurred while accessing the database.",
 			"swgohGGblocker": "swgoh.gg refused to send us data about your guild.\r\nThis is most likely due to a high number of guilds trying to use the %tb function at this time.\r\nPlease try again in a few minutes.",
-			"swgohGGbug": "An internal error occurred inside swgoh.gg."
-			"outdatedData" : "We could not refresh your guild data. The following answer will be based on outdated data (last update : %tF ).",
+			"swgohGGbug": "An internal error occurred inside swgoh.gg.",
+			"outdatedData" : "We could not refresh your guild data. The following answer will be based on outdated data (last update : %tF )."
 		},
 		
 		"excelValues":{
