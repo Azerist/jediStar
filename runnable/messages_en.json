@@ -277,7 +277,7 @@
 				"ship":"vaisseau",
 				"toon":"personnage"
 			},
-			"filename":"rapportGuildeSwgoh_%tF.xlsx"
+			"filename":"swgohGuildReport_%tF.xlsx"
 		}
 	}
 }
