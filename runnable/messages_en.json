@@ -248,5 +248,36 @@
 			"noTimezone": "No timezone was provided in your command",
 			"channelFormat": "Channel not found. Please use the #channel-name format to declare a channel name in this command."
 		}
+	},
+		"guildReportCommandParameters":{
+		"commands":{
+			"main":"guildreport",
+			"all":"all"
+		},
+
+		"errorMessages": {
+			"forbidden": "You may not execute this command.\r\nYou must be part of the «botAdmins» Discord group to administrate the bot.",
+			"noGuildNumber": "No guild associated to this Discord channel. Ask your bot admins to run *%setup*",
+			"noChannel": "This command must be used from a Discord channel (no private messages)",
+			"sqlError": "An error occurred while accessing the database.",
+			"swgohGGblocker": "swgoh.gg refused to send us data about your guild.\r\nThis is most likely due to a high number of guilds trying to use the %tb function at this time.\r\nPlease try again in a few minutes.",
+			"swgohGGbug": "An internal error occurred inside swgoh.gg."
+			"outdatedData" : "We could not refresh your guild data. The following answer will be based on outdated data (last update : %tF ).",
+		},
+		
+		"excelValues":{
+			"headers":{
+				"unitType":"Type",
+				"unitName":"Nom",
+				"unitRarity":"Rareté",
+				"unitPower":"Puissance",
+				"unitLevel":"Niveau"
+			},
+			"unitTypes":{
+				"ship":"vaisseau",
+				"toon":"personnage"
+			},
+			"filename":"rapportGuildeSwgoh_%tF.xlsx"
+		}
 	}
 }

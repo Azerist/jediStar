@@ -24,6 +24,10 @@ public abstract class StaticVars {
 
 		return jdbcConnection;
 	}
+	
+	public static Connection getIndependantJdbcConnection() throws SQLException{
+		return DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPasswd);
+	}
 
 	public static void setJdbcConnection(Connection jdbcConnection) {
 		StaticVars.jdbcConnection = jdbcConnection;

@@ -31,6 +31,7 @@ import de.btobastian.javacord.listener.message.MessageCreateListener;
 import fr.jedistar.JediStarBotCommand;
 import fr.jedistar.StaticVars;
 import fr.jedistar.commands.AreneCommand;
+import fr.jedistar.commands.GuildReportCommand;
 import fr.jedistar.commands.HelpCommand;
 import fr.jedistar.commands.ModsCommand;
 import fr.jedistar.commands.PayoutCommand;
@@ -75,6 +76,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		TerritoryBattlesCommand tb = new TerritoryBattlesCommand();
         HelpCommand help = new HelpCommand();
         PayoutCommand payout = new PayoutCommand();
+        GuildReportCommand guildReport = new GuildReportCommand();
         
 
 		commandsMap.put(raid.getCommand(), raid);
@@ -84,7 +86,8 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		commandsMap.put(tb.getCommand(), tb);
         commandsMap.put(help.getCommand(), help);
         commandsMap.put(payout.getCommand(), payout);
-
+        commandsMap.put(guildReport.getCommand(), guildReport);
+        
 		//Lecture du Json
 		try {
 			JSONObject parameters = StaticVars.jsonSettings;
@@ -125,7 +128,7 @@ public class JediStarBotMessageListener implements MessageCreateListener {
 		}
 		
 		
-		//On retire le !
+		//On retire le préfixe
 		messageAsString = messageAsString.substring(1);
 		
 		//On éclate les différentes parties du message

@@ -144,3 +144,10 @@ CREATE TABLE IF NOT EXISTS balancingActionHistory
 	actionName varchar(64),
 	payload varchar(128)
 );
+
+CREATE TABLE IF NOT EXISTS guildReportHistory
+(
+	guildID INT PRIMARY KEY,
+	expiration TIMESTAMP NOT NULL,
+	fileContent MEDIUMBLOB
+);
