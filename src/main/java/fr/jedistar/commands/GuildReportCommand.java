@@ -322,7 +322,7 @@ public class GuildReportCommand implements JediStarBotCommand{
 						expirationDate = rs.getTimestamp("expiration");
 					}
 					
-					if(!player.equals(currentPlayer)) {
+					if(!player.equalsIgnoreCase(currentPlayer)) {
 
 						tableId = formatSheet(sheet, rowCur, tableId);
 
