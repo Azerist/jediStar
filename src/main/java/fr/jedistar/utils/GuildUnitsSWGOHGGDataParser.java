@@ -38,13 +38,13 @@ public abstract class GuildUnitsSWGOHGGDataParser {
 	private final static Logger logger = LoggerFactory.getLogger(GuildUnitsSWGOHGGDataParser.class);
 
 	private final static String SQL_SELECT_CHARS_EXPIRATION = "SELECT expiration FROM characters LIMIT 1;";
-	private final static String SQL_INSERT_CHARS = "INSERT INTO characters (name,baseID,url,image,power,description,combatType,expiration) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE baseID=VALUES(baseID),url=VALUES(url),image=VALUES(image),power=VALUES(power),description=VALUES(description),combatType=VALUES(combatType),expiration=VALUES(expiration);";
+	private final static String SQL_INSERT_CHARS = "REPLACE INTO characters (name,baseID,url,image,power,description,combatType,expiration) VALUES (?,?,?,?,?,?,?,?);";
 
 	private final static String SQL_SELECT_SHIPS_EXPIRATION = "SELECT expiration FROM ships LIMIT 1;";
-	private final static String SQL_INSERT_SHIPS = "INSERT INTO ships (name,baseID,url,image,power,description,combatType,expiration) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE baseID=VALUES(baseID),url=VALUES(url),image=VALUES(image),power=VALUES(power),description=VALUES(description),combatType=VALUES(combatType),expiration=VALUES(expiration);";
+	private final static String SQL_INSERT_SHIPS = "REPLACE INTO ships (name,baseID,url,image,power,description,combatType,expiration) VALUES (?,?,?,?,?,?,?,?);";
 
 	private final static String SQL_SELECT_GUILD_UNITS_EXPIRATION = "SELECT expiration FROM guildUnits WHERE guildID=? LIMIT 1";
-	private final static String SQL_INSERT_GUILD_UNITS = "INSERT INTO guildUnits (guildID,player,charID,rarity,combatType,power,level,expiration) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE rarity=VALUES(rarity),combatType=VALUES(combatType),power=VALUES(power),level=VALUES(level),expiration=VALUES(expiration);";
+	private final static String SQL_INSERT_GUILD_UNITS = "REPLACE INTO guildUnits (guildID,player,charID,rarity,combatType,power,level,expiration) VALUES (?,?,?,?,?,?,?,?) ;";
 	private final static String SQL_DELETE_EXPIRED_GUILD_UNITS = "DELETE FROM guildUnits WHERE guildID=? AND expiration<CURRENT_TIMESTAMP";
 
 	private final static String CHARS_URI = "https://swgoh.gg/api/characters/?format=json";
