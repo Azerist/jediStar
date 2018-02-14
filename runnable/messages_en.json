@@ -268,14 +268,14 @@
 		"excelValues":{
 			"headers":{
 				"unitType":"Type",
-				"unitName":"Nom",
-				"unitRarity":"Rareté",
-				"unitPower":"Puissance",
-				"unitLevel":"Niveau"
+				"unitName":"Name",
+				"unitRarity":"Rarity",
+				"unitPower":"Power",
+				"unitLevel":"Level"
 			},
 			"unitTypes":{
-				"ship":"vaisseau",
-				"toon":"personnage"
+				"ship":"Ship",
+				"toon":"Toon"
 			},
 			"filename":"swgohGuildReport_%tF.xlsx"
 		}
