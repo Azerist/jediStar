@@ -283,6 +283,10 @@ public class PayoutCommand implements JediStarBotCommand {
 				Long hoursDifference = difference / (60 * 60 * 1000) %24;
 				Long minutesDifference = difference / (60 * 1000) %60;
 				
+				if(minutesDifference < 0) {
+					minutesDifference += 60;
+					hoursDifference += 23;
+				}
 				int index = (int)(hoursDifference * 100 + minutesDifference);
 				
 				String contentLine = embedContent.get(index);
