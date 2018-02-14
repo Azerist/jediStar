@@ -13,8 +13,11 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -234,7 +237,7 @@ public class PayoutCommand implements JediStarBotCommand {
 	
 	private CommandAnswer formatPayouts(String channelID) {
 		
-		String[] embedContent = new String[24];
+		Map<Integer,String> embedContent = new TreeMap<Integer,String>();
 		//String[] embedTitles = new String[24];
 
 		
@@ -280,9 +283,9 @@ public class PayoutCommand implements JediStarBotCommand {
 				Long hoursDifference = difference / (60 * 60 * 1000) %24;
 				Long minutesDifference = difference / (60 * 1000) %60;
 				
-				int index = (int)hoursDifference.longValue();
+				int index = (int)(hoursDifference * 24 + minutesDifference);
 				
-				String contentLine = embedContent[index];
+				String contentLine = embedContent.get(index);
 				
 				if(contentLine == null) {
 										
@@ -308,15 +311,14 @@ public class PayoutCommand implements JediStarBotCommand {
 				builder.append(" - ");
 				contentLine += builder.toString();	
 				
-				embedContent[index] =  contentLine;
+				embedContent.put(index, contentLine);
 			}
 			
 			if(!hasAnswer) {
 				return new CommandAnswer(ERROR_NO_USER_IN_CHAN,null);
 			}
 			
-			for(int i = 0 ; i < 24 ; i++) {
-				String contentLine = embedContent[i];
+			for(String contentLine : embedContent.values()) {
 				
 				contentLine = StringUtils.removeEnd(contentLine, " - ");
 				
