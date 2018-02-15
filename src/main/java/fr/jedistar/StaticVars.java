@@ -15,6 +15,8 @@ public abstract class StaticVars {
 	private static String jdbcUrl;
 	private static String jdbcUser;
 	private static String jdbcPasswd;
+	
+	public static boolean useCache = true;
 
 	public static Connection getJdbcConnection() throws SQLException {
 
@@ -38,4 +40,6 @@ public abstract class StaticVars {
 		jdbcPasswd = pwd;
 		jdbcUser = user;
 	}
+	
+	
 }
