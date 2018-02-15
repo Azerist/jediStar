@@ -38,15 +38,19 @@ public class Main {
 		String parametersFilePath = "";
 		String messagesFilePath =DEFAULT_MESSAGE_FILE_NAME ;
 
-		// Si un argument, on l'utilise comme chemin au fichier de param�tres
+		// Si un argument, on l'utilise comme chemin au fichier de paramètres
 		if (args.length != 0) {
 			parametersFilePath = args[0];
 		}
-		// Sinon, on utilise le chemin par d�faut
+		// Sinon, on utilise le chemin par défaut
 		else {
 			parametersFilePath = DEFAULT_PARAMETERS_FILE;
 		}
 
+		if(args.length > 1 && "noCache".equals(args[1])) {
+			StaticVars.useCache = false;
+		}
+		
 		String token = "";
 
 		// Lecture du fichier Json et récupération des paramètres

@@ -1,34 +1,24 @@
 package fr.jedistar.commands;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -56,7 +46,7 @@ import fr.jedistar.utils.GuildUnitsSWGOHGGDataParser;
 
 public class GuildReportCommand implements JediStarBotCommand{
 
-	final static Logger logger = LoggerFactory.getLogger(JediStarBotCommand.class);
+	final static Logger logger = LoggerFactory.getLogger(GuildReportCommand.class);
 
 	private final String COMMAND;
 	private final String COMMAND_ALL;
@@ -81,7 +71,7 @@ public class GuildReportCommand implements JediStarBotCommand{
 	private final String EXCEL_FILENAME;
 
 	private final static String SQL_FIND_HISTORY = "SELECT expiration,fileContent FROM guildReportHistory WHERE guildID=?;";
-	private final static String SQL_FIND_GUILD_UNITS = "SELECT player,power,rarity,level,charID,expiration FROM guildUnits WHERE guildID=? ORDER BY player;";
+	private final static String SQL_FIND_GUILD_UNITS = "SELECT player,power,rarity,level,charID,expiration FROM guildUnits WHERE guildID=? ORDER BY player,charID;";
 	private final static String SQL_INSERT_FILE_HISTORY = "REPLACE INTO guildReportHistory(guildID,fileContent,expiration) VALUES (?,?,?);";
 
 	//Nom des champs JSON
@@ -216,11 +206,14 @@ public class GuildReportCommand implements JediStarBotCommand{
 
 		if(COMMAND_ALL.equals(params.get(0))) {
 
-			boolean historyFileFound = findHistoryFile(guildID,receivedMessage);
+			if(StaticVars.useCache) {
+				boolean historyFileFound = findHistoryFile(guildID,receivedMessage);
 
-			if(historyFileFound) {
-				return null;
+				if(historyFileFound) {
+					return null;
+				}
 			}
+			
 
 			new GuildReportGenerator(guildID,receivedMessage).start();
 		}
@@ -302,17 +295,17 @@ public class GuildReportCommand implements JediStarBotCommand{
 			try {
 				conn = StaticVars.getIndependantJdbcConnection();
 
-				stmt = conn.prepareStatement(SQL_FIND_GUILD_UNITS);
+				String query = SQL_FIND_GUILD_UNITS;
+				
+				stmt = conn.prepareStatement(query);
 
 				stmt.setInt(1, guildID);
 
 				logger.debug("executing query : "+stmt.toString());
 				rs = stmt.executeQuery();
 
-				String currentPlayer = "";
 				XSSFSheet sheet = null;
 				int rowCur = 1;
-				long tableId = 1L;
 				Timestamp expirationDate = null;
 
 				while(rs.next()) {
@@ -321,16 +314,21 @@ public class GuildReportCommand implements JediStarBotCommand{
 					if(expirationDate == null) {
 						expirationDate = rs.getTimestamp("expiration");
 					}
-					
-					if(!player.equalsIgnoreCase(currentPlayer)) {
 
-						tableId = formatSheet(sheet, rowCur, tableId);
-
-						currentPlayer = player;
-						sheet = initializeNewSheet(wb,player);
-						rowCur = 1;
+					String sheetName = WorkbookUtil.createSafeSheetName(player);
+										
+					if(StringUtils.isEmpty(sheetName)) {
+						continue;
 					}
 
+					sheet = (XSSFSheet) wb.getSheet(sheetName);
+
+					if(sheet == null) {	
+						sheet = initializeNewSheet(wb,sheetName);
+					}
+
+					rowCur = sheet.getLastRowNum() +1;
+				
 					String baseID = rs.getString("charID");
 					Unit unit = DbUtils.findUnitByID(baseID);
 
@@ -359,7 +357,9 @@ public class GuildReportCommand implements JediStarBotCommand{
 					rowCur ++;
 				}
 
-				tableId = formatSheet(sheet, rowCur, tableId);
+				for(int i=0; i < wb.getNumberOfSheets() ; i++) {
+					formatSheet((XSSFSheet)wb.getSheetAt(i), i+1);
+				}
 
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -422,7 +422,7 @@ public class GuildReportCommand implements JediStarBotCommand{
 
 		}
 
-		private long formatSheet(XSSFSheet sheet, int rowCur, long tableId) {
+		private void formatSheet(XSSFSheet sheet, long tableId) {
 			if(sheet != null) {
 				sheet.autoSizeColumn(0);
 				sheet.autoSizeColumn(1);
@@ -448,34 +448,28 @@ public class GuildReportCommand implements JediStarBotCommand{
 				tableStyle.setShowRowStripes(true);   
 
 				@SuppressWarnings("deprecation")
-				AreaReference dataRange = new AreaReference(new CellReference(0, 0), new CellReference(rowCur, 4));    
+				AreaReference dataRange = new AreaReference(new CellReference(0, 0), new CellReference(sheet.getLastRowNum(), 4));    
 				cttable.setRef(dataRange.formatAsString());
 
 				CTTableColumns columns = cttable.addNewTableColumns();
 				columns.setCount(5L); 
-				CTAutoFilter autofilter = cttable.addNewAutoFilter();
+				
 				for (int i = 0; i < 5; i++)
 				{
 					CTTableColumn column = columns.addNewTableColumn();   
 					column.setName("Column" + i);      
 					column.setId(i+1);
-
-					CTFilterColumn filter = autofilter.addNewFilterColumn();
-					filter.setColId(i + 1);
-					filter.setShowButton(true);
 				}   
-
-				tableId++;
-
+				
+				cttable.addNewAutoFilter();
 			}
-			return tableId;
 		}
 
 		private XSSFSheet initializeNewSheet(Workbook wb, String player) {
-
+			
 			XSSFRow row;
 			XSSFCell cell;
-			XSSFSheet sheet = (XSSFSheet) wb.createSheet(StringUtils.remove(player,"'"));
+			XSSFSheet sheet = (XSSFSheet) wb.createSheet(player);
 
 			row = sheet.createRow(0);
 
